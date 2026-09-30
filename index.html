@@ -473,6 +473,81 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--cedar);b
   .chk.big{font-size:16px;padding:13px 14px}
   #addbtn{padding:9px 12px}
 }
+
+/* ---------- Scripting 2.0 ---------- */
+.lbl-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.help{font-size:12px;color:var(--ink3);line-height:1.4}
+.sg-card{border:1px solid var(--line);border-radius:var(--r2);padding:16px 16px 14px;background:var(--surface);margin-bottom:14px;border-top:3px solid var(--cedar)}
+.flow{font-size:12.5px;color:var(--ink3);margin:-4px 0 14px;font-weight:500}
+.flow span{color:var(--cedar);margin:0 3px}
+.shots.compact{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px 14px;margin:6px 0 4px}
+.shots.compact .chk{font-size:13.5px}
+.sr-box{margin-top:12px;padding:12px 14px;border-radius:var(--r1);background:var(--surface2);border:1px solid var(--line)}
+.sr-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sr-badge{font:600 17px var(--fd);letter-spacing:.3px;color:var(--cedarD)}
+.sr-badge.ok{color:var(--greenD)}
+.sr-miss{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--ink2)}
+.sr-chip{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--cedarL);color:var(--cedarD)}
+.sr-chip.ok{background:var(--greenL);color:var(--greenD)}
+.sg-prev{border:1px dashed var(--line2);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px}
+.sg-prev-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.sg-prev-h h3{font:600 18px var(--fd);letter-spacing:.2px}
+.sg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sg li{display:flex;flex-direction:column;gap:2px;padding-left:12px;border-left:3px solid var(--line2)}
+.sg li.is-hook{border-color:var(--cedar)}.sg li.is-cta{border-color:var(--green)}
+.sg-k{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.4px;text-transform:uppercase}
+.sg-v{font-size:15px;line-height:1.45}
+.sg-vis{font-size:12.5px;color:var(--slate)}
+details.adv{border:1px solid var(--line);border-radius:var(--r2);margin-bottom:12px;background:var(--surface)}
+details.adv summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14px;color:var(--ink2);list-style:none;display:flex;align-items:center;gap:8px}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv summary::before{content:'';width:7px;height:7px;border-right:2px solid var(--ink3);border-bottom:2px solid var(--ink3);transform:rotate(-45deg);transition:transform .15s}
+details.adv[open] summary::before{transform:rotate(45deg)}
+.adv-b{padding:4px 14px 6px}
+.secs{display:flex;flex-direction:column;gap:10px}
+.sec{border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px;background:var(--surface2)}
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sec-n{flex:none;width:26px;height:26px;border-radius:7px;background:var(--green);color:#fff;display:grid;place-items:center;font:600 15px var(--fd)}
+.sec-h input{flex:1;font-weight:600;font-size:15px;background:var(--surface)}
+.sec .form-grid{margin-bottom:6px}
+.sec-reel{margin-top:10px;padding:10px 12px;border-radius:var(--r1);background:var(--surface);border:1px solid var(--line)}
+.sec-reel p{margin:0;display:flex;gap:8px;align-items:center}
+.shorts-box{margin:18px 0 14px;padding:14px 16px;border-radius:var(--r2);background:var(--greenL);border:1px solid transparent}
+.shorts-box .short{background:var(--surface)}
+.sb-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sb-h h3{font:600 19px var(--fd);letter-spacing:.2px}
+.shorts-box>p{margin:4px 0 10px}
+.short-h .pill{margin-left:auto}
+.short-h b+.muted{margin-left:auto}
+.modal.lg{width:min(640px,calc(100vw - 32px))}
+.lib-g{margin-bottom:14px}
+.lib-g h4{font:600 16px var(--fd);letter-spacing:.3px;margin-bottom:6px;color:var(--ink2)}
+.lib-i{display:block;width:100%;padding:10px 12px;margin-bottom:6px;border:1px solid var(--line);border-radius:var(--r1);background:var(--surface);font-size:14px;line-height:1.4}
+.lib-i:hover{border-color:var(--cedar);background:var(--cedarL)}
+.cmp p{margin:2px 0 12px;padding:8px 10px;border-radius:var(--r1);background:var(--surface2)}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.st-i{border:1px solid var(--line);border-radius:var(--r1);padding:10px 12px;background:var(--surface2)}
+.st-i h4{font:600 16px var(--fd);letter-spacing:.2px}
+.st-i .flow{margin:4px 0 0}
+.kc-ready{margin-top:6px;font-size:12px;font-weight:600;color:var(--greenD)}
+/* Need to Film, built for a glance at a jobsite */
+.fc-h{display:block}
+.fc-h h3{margin:0 0 6px}
+.fc-tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.fc-big{font-size:18px;line-height:1.45;font-weight:500}
+.fc-hook{border-left:4px solid var(--cedar);padding-left:12px!important;border-top:0!important;margin:10px 0}
+.fc-cta{border-left:4px solid var(--green);padding-left:12px!important;border-top:0!important;margin:10px 0}
+.fc-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:fp}
+.fc-points li{display:flex;flex-direction:column;gap:2px;padding-left:34px;position:relative;counter-increment:fp}
+.fc-points li::before{content:counter(fp);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:6px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font:600 14px var(--fd);color:var(--ink2)}
+.fp-k{font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px;text-transform:uppercase}
+.fp-v{font-size:17px;line-height:1.45}
+.fcard .shots .chk.big{padding:9px 12px}
+@media (max-width:820px){
+  .fc-big{font-size:19px}.fp-v{font-size:18px}
+  .shots.compact{grid-template-columns:1fr 1fr}
+  .sec-h input{font-size:16px}
+}
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
@@ -547,6 +622,54 @@ const JOBSITE=[
  {g:'After',items:['Wide hero shot','Front angle','Side angle','View from house','Decking close-up','Railings','Steps','Roof / pergola','Add-ons','Vertical walkthrough','Horizontal walkthrough','Before / after comparison','Customer reaction if available']}
 ];
 const RECAP_FIELDS=[['month','Month'],['projects','Projects completed'],['bestClips','Best finished deck clips'],['team','Team footage'],['construction','Construction footage'],['beforeAfter','Before / afters'],['funny','Funny / human moments'],['customer','Customer moments'],['bestProject','Best project of the month'],['cta','CTA']];
+/* ---------- Scripting 2.0 configuration ---------- */
+const SCRIPT_TYPES={
+ 'Educational':{flow:['Hook','Answer','Why','Example','CTA'],labels:['Answer / Point 1','Why It Matters','Example / Proof'],
+   ph:['The direct answer or main point','Why this matters to a homeowner','A real example from one of our projects'],hookPh:'Grab attention in one sentence'},
+ 'FAQ':{flow:['Question','Direct Answer','Explanation','Example','CTA'],labels:['Direct Answer','Explanation','Example'],
+   ph:['Answer the question in one sentence','The reason behind the answer','A project or situation where this came up'],hookPh:'The question, the way a customer would ask it'},
+ 'Comparison':{flow:['Hook','Option A','Option B','Who Each Is For','CTA'],labels:['Option A','Option B','Who Each Is For'],
+   ph:['The first option and its main tradeoff','The second option and its main tradeoff','Who should pick which option'],hookPh:'Frame the choice the homeowner is making'},
+ 'Process':{flow:['Hook','Step 1','Step 2','Step 3','Result','CTA'],labels:['Step 1','Step 2','Step 3'],
+   ph:['What happens first','What happens next','The final step and the result'],hookPh:"Tell them what you're about to show"},
+ 'Problem / Solution':{flow:['Problem','Why It Matters','Solution','Proof','CTA'],labels:['The Problem','Why It Matters','The Solution'],
+   ph:['The problem, stated plainly','What it affects for the homeowner','How we handle it, with proof if you have it'],hookPh:'Name the problem without fear-selling'},
+ 'Project Showcase':{flow:['Result','Customer Goal','What We Built','Interesting Detail','Final Reveal','CTA'],labels:['Customer Goal','What We Built','Interesting Detail'],
+   ph:['What the homeowner wanted','The deck and features we built','One detail worth pointing out on camera'],hookPh:'Open on the finished result'},
+ 'Trust / Company':{flow:['Question / Hook','Who We Are','How We Work','Proof','CTA'],labels:['Point 1','Point 2','Proof / Example'],
+   ph:['Who we are or what we believe','How we work with homeowners','A real example that backs it up'],hookPh:'A question or statement that invites trust'},
+ 'Promotional':{flow:['Pain Point','Solution','Offer','Benefit','CTA'],labels:['Pain Point','Solution','Benefit'],
+   ph:['The frustration the homeowner has','How we solve it (and the offer)','What they get out of it'],hookPh:'Lead with the pain point'}
+};
+const SCRIPT_TYPE_NAMES=Object.keys(SCRIPT_TYPES);
+const HOOK_LIBRARY=[
+ {cat:'Question',items:['Should you actually spend the extra money on ___?','How often do you really need to ___?','Do you actually need ___ before ___?','Which option makes more sense: ___ or ___?']},
+ {cat:'Curiosity',items:["There's something underneath this deck most homeowners will never notice.","One of the most important parts of this deck is something you'll barely ever see.",'This small detail can make a big difference in how your deck is built.',"Here's something most homeowners don't think about when buying a deck."]},
+ {cat:'Demonstration',items:["Here's exactly how we ___.","Here's what ___ actually looks like.",'Let me show you how we ___.','This is how we build ___.']},
+ {cat:'Mistake / problem',items:['One mistake we see with ___ is ___.',"This is something you don't want to overlook when ___.","Here's one problem that can cause issues with ___.",'One thing homeowners should pay attention to is ___.']},
+ {cat:'Comparison',items:["Here's the difference between ___ and ___.","These two options may look similar, but they're built differently.","If you're deciding between ___ and ___, here's what you need to know."]},
+ {cat:'Buying / sales',items:['There are three different ways you can ___.',"You don't necessarily have to pay for your entire deck upfront.","Here's what happens after you submit a deck quote.","We've made getting a deck quote pretty simple."]}
+];
+const CTA_LIBRARY=[
+ {cat:'Quote',items:["If you're planning a deck project, you can start a quote through our website.",'Ready to start your deck? Submit your project through our website.']},
+ {cat:'Website',items:['Check out our website to see more of the deck options we offer.','You can see more examples and options on our website.']},
+ {cat:'Comment',items:["If you've got another deck question you want us to answer, leave it in the comments.",'What deck question should we answer next?']},
+ {cat:'Follow',items:['Follow us to see more of how these decks are actually built.','Follow along for more deck-building tips and project walkthroughs.']},
+ {cat:'Consultative',items:["If you're deciding between these options, send us your project and we'll help you figure out what makes sense.","If you're not sure which option fits your project, reach out and we can walk you through it."]}
+];
+function inferScriptType(it){
+  const t=String(it.title||'').toLowerCase();
+  if(/\bvs\.?\b/.test(t))return 'Comparison';
+  if(it.topic==='FAQs')return 'FAQ';
+  if(it.reelKind==='Recap'||it.pillar==='Projects')return 'Project Showcase';
+  if(it.pillar==='Problems')return 'Problem / Solution';
+  if(it.pillar==='Trust')return 'Trust / Company';
+  return 'Educational';
+}
+const scriptDef=it=>SCRIPT_TYPES[it.scriptType]||SCRIPT_TYPES.Educational;
+const blankShort=()=>({hook:'',section:'',reelId:'',angle:'',sectionIdx:-1});
+const blankSec=()=>({title:'',visual:''});
+
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -618,20 +741,22 @@ function newItem(type,o){
     plannedMonth:'',planDate:'',scriptDate:'',filmDate:'',editDate:'',publishDate:'',
     platforms:defaultPlatforms(type),
     mainTopic:'',audienceProblem:'',mainMessage:'',takeaway:'',cta:'',offer:'',
-    hook:'',script:'',talking:'',shotText:'',broll:'',jobsite:'',location:'',
+    scriptType:'',hook:'',script:'',talking:'',shotText:'',broll:'',jobsite:'',location:'',
     thumbNeeded:true,thumbStatus:'Not started',captionNeeded:true,captionStatus:'Not started',
     goal:'',points:['','',''],
-    finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],conclusion:'',thumbIdea:'',
+    finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],secMeta:[blankSec(),blankSec(),blankSec(),blankSec(),blankSec()],conclusion:'',thumbIdea:'',
     recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
     shots:{},prod:{},
-    shorts:type==='Long Form'?[{hook:'',section:'',reelId:''},{hook:'',section:'',reelId:''},{hook:'',section:'',reelId:''}]:[],
+    shorts:type==='Long Form'?[blankShort(),blankShort(),blankShort()]:[],
     parentId:'',repurposedFrom:'',relatedId:'',
     publishedLink:'',publishedDate:'',
     perf:{views:'',likes:'',comments:'',shares:'',saves:'',watchHours:'',avgDuration:'',leads:'',learnings:''},
     winning:false,winWhy:'',winReuse:'',
     created:Date.now()+_c
   };
-  return Object.assign(base,o||{});
+  const out=Object.assign(base,o||{});
+  if(!out.scriptType&&out.type==='Reel')out.scriptType=inferScriptType(out);
+  return out;
 }
 function normalize(it){
   const base=newItem(it.type||'Reel');
@@ -642,6 +767,12 @@ function normalize(it){
   if(!Array.isArray(m.sections))m.sections=['','','','',''];
   while(m.sections.length<5)m.sections.push('');
   if(!Array.isArray(m.shorts))m.shorts=[];
+  m.shorts=m.shorts.map(s=>{const x=Object.assign(blankShort(),s||{});x.sectionIdx=Number.isInteger(+x.sectionIdx)?+x.sectionIdx:-1;return x;});
+  // Scripting 2.0: section outline metadata runs parallel to the existing sections text
+  if(!Array.isArray(m.secMeta))m.secMeta=[];
+  while(m.secMeta.length<m.sections.length)m.secMeta.push(blankSec());
+  m.secMeta=m.secMeta.map(s=>Object.assign(blankSec(),s||{}));
+  if(it.scriptType==null||(m.type==='Reel'&&!SCRIPT_TYPES[m.scriptType]))m.scriptType=m.type==='Reel'?inferScriptType(m):'';
   if(!Array.isArray(m.platforms))m.platforms=defaultPlatforms(m.type);
   return m;
 }
@@ -749,13 +880,42 @@ function seed(){
   if(first){Object.assign(first,{status:'Ready to Film',mainTopic:'Who Benchmark Decks is',goal:'Introduce the company to homeowners in Northern Texas and Southern Oklahoma.',
     audienceProblem:"Homeowners don't know who we are or whether they can trust a deck builder they just found online.",
     mainMessage:'We build custom decks and outdoor structures, and we make the process easy.',points:['Who we are and where we build','What we build','Why homeowners trust us'],
-    cta:'Request a quote with our 3D configurator.',talking:'Who we are and where we build (Northern Texas & Southern Oklahoma)\nWhat we build\nWhy homeowners trust us\nCTA: request a quote with the 3D configurator',
+    cta:'Request a quote with our 3D configurator.',scriptType:'Trust / Company',hook:"If you've never heard of Benchmark Decks, here's who we are.",
     broll:'Crew working, finished deck wide shot, materials close-up',jobsite:'Wide hero shot of a finished deck',location:'Any active jobsite or finished project'});}
   if(firstL){Object.assign(firstL,{status:'Ready to Film',mainQuestion:'Who is Benchmark Decks, and why should I trust them with my deck?',
     targetViewer:'Homeowners in Northern Texas and Southern Oklahoma who are thinking about a deck',audienceProblem:"They don't know the company yet and aren't sure what the process looks like.",
-    takeaway:"We're a builder you can understand, trust, and work with easily.",sections:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'],
+    takeaway:"We're a builder you can understand, trust, and work with easily.",hook:"Before you trust anyone to build your deck, you should know who they are.",sections:['','','','',''],secMeta:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'].map(t=>({title:t,visual:''})),
     cta:'Use the 3D configurator to request a quote.',broll:'Jobsite footage, finished decks, team at work',location:'Finished project or active jobsite'});}
+  applyExamples(st);st.examplesV2=true;
   return st;
+}
+
+/* Scripting 2.0 worked examples. Fills only blank fields on matching roadmap videos, so nothing the user wrote is ever replaced. */
+function applyExamples(st){
+  const find=t=>st.items.find(i=>i.roadmap&&i.title.toLowerCase()===t.toLowerCase());
+  const fill=(it,o)=>{if(!it)return;Object.keys(o).forEach(k=>{
+    if(k==='points'){if(it.points.every(x=>!String(x).trim()))it.points=o.points.slice();}
+    else if(k==='scriptType'){if(!['hook','cta'].some(f=>String(it[f]||'').trim()))it.scriptType=o.scriptType;}
+    else if(!String(it[k]||'').trim())it[k]=o[k];});};
+  fill(find('What Joist Tape Does'),{scriptType:'Educational',goal:'Explain why joist tape is offered and what it protects.',
+    hook:"This is one deck upgrade you'll probably never see once your deck is finished.",
+    points:['Joist tape goes over the tops of the joists.','It helps protect areas of the framing from moisture.','The framing is one of the most difficult parts of the deck to replace later.'],
+    cta:'We offer this as one of the upgrades you can add when designing your deck.',broll:'Roll of joist tape\nApplying tape\nExposed framing\nDeck boards being installed'});
+  fill(find('Composite vs Treated Wood in 60 Seconds'),{scriptType:'Comparison',goal:'Help homeowners understand why someone might choose either material.',
+    hook:'Should you actually spend the extra money on composite decking?',
+    points:['Treated lumber has a lower upfront cost but requires ongoing maintenance.','Composite costs more upfront but generally requires less maintenance.','The right choice depends on budget, appearance, maintenance expectations, and the project.'],
+    cta:"If you're not sure which option makes sense for your deck, send us your project and we'll walk you through both."});
+  const L=find('How We Build Our Decks: Full Framing Breakdown');
+  if(L&&L.sections.every(s=>!String(s).trim())&&L.secMeta.every(s=>!s.title.trim())){
+    fill(L,{hook:'A finished deck might look simple from the top, but most of what determines how it performs is underneath it.',
+      takeaway:'Show homeowners how Benchmark Decks frames decks and explain the reasoning behind the construction choices.'});
+    const S5=[['Posts','Post size\nPlacement\nSupport','Exposed posts / footings','Why deck posts matter'],['Beams','Beam structure\nLoad support\nConnection','Beam close-up',''],
+      ['Joists','Spacing\nBlocking\nLayout','','Why joist spacing matters'],['Fasteners','','','What screws we use and why'],['Protection','','','What joist tape actually does']];
+    S5.forEach((s,i)=>{
+      L.sections[i]=s[1];L.secMeta[i]={title:s[0],visual:s[2]};
+      if(s[3]){let slot=L.shorts.find(x=>!x.reelId&&!x.hook.trim()&&x.sectionIdx<0);if(!slot){slot=blankShort();L.shorts.push(slot);}slot.hook=s[3];slot.sectionIdx=i;}
+    });
+  }
 }
 
 /* ================= state ================= */
@@ -770,6 +930,7 @@ function fixState(o){
   st.settings=Object.assign({reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks'},o.settings||{});
   st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},(o.settings||{}).offsets||{});
   st.items=o.items.map(normalize);
+  if(!st.examplesV2){applyExamples(st);st.examplesV2=true;}
   return st;
 }
 function save(now){
@@ -792,7 +953,7 @@ const ui={
   view:'dashboard',month:'',calMonth:'',calMode:'content',planMonth:'',pipeMonth:'',q:'',
   ideaTopic:'All',ideaRoadmap:false,lib:{},perf:{type:'',platform:'',pillar:'',month:''},perfTab:'overview',
   tplTab:'reel',pub:{type:'',pillar:'',platform:''},projDraft:blankProj(),projResults:false,
-  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null
+  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null
 };
 function focusMonthDefault(){
   const cur=mk(today());
@@ -926,6 +1087,7 @@ function kcard(it){
    +'<div class="kc-top">'+typeTag(it)+'<span class="kc-date">'+(it.publishDate?'Posts '+fmt(it.publishDate):'No publish date')+'</span></div>'
    +'<h4>'+esc(title(it))+'</h4>'
    +'<div class="kc-meta"><span class="chip sm">'+esc(it.pillar)+'</span><span>'+esc(platText(it))+'</span></div>'
+   +(it.type==='Reel'&&i<2&&scriptReady(it)?'<div class="kc-ready">Script ready ✓</div>':'')
    +'<div class="kc-foot"><span>'+(it.filmDate?'Film '+fmt(it.filmDate):'Filming date not set')+'</span>'+(i<7?'<button class="icon-btn sm" data-act="advance" data-id="'+it.id+'" title="Move to '+STATUSES[i+1]+'" aria-label="Move to '+STATUSES[i+1]+'">'+I('right')+'</button>':'')+'</div></article>';
 }
 function viewPipeline(){
@@ -996,23 +1158,68 @@ function viewMonth(){
 }
 
 /* ================= need to film ================= */
-function talkingText(it){
-  if(it.talking.trim())return it.talking;
-  const L=it.type==='Long Form';
-  return [it.hook&&((L?'Intro / hook: ':'Hook: ')+it.hook)]
-    .concat(L?(it.sections||[]).map((s,i)=>s&&('Section '+(i+1)+': '+s)):(it.points||[]).map((p,i)=>p&&('Point '+(i+1)+': '+p)))
-    .concat([L&&it.conclusion&&('Conclusion: '+it.conclusion),it.cta&&('CTA: '+it.cta)]).filter(Boolean).join('\n');
+/* ---------- Scripting 2.0: speaking guide + readiness ---------- */
+const nonEmpty=v=>String(v==null?'':v).trim()!=='';
+const secLabel=(it,i)=>{const t=(it.secMeta[i]||{}).title;return 'Section '+(i+1)+(nonEmpty(t)?': '+t:'');};
+/* One place that decides what the speaker says. Custom talking points always win over the auto guide. */
+function guideParts(it){
+  const out=[], custom=nonEmpty(it.talking);
+  if(it.type==='Long Form'){
+    if(custom)return it.talking.split('\n').filter(nonEmpty).map(l=>({k:'',v:l.trim(),custom:true,point:true}));
+    if(nonEmpty(it.hook))out.push({k:'Intro / hook',v:it.hook,hook:true});
+    it.sections.forEach((s,i)=>{const m=it.secMeta[i]||{};if(nonEmpty(s)||nonEmpty(m.title)||nonEmpty(m.visual))out.push({k:secLabel(it,i),v:s,visual:m.visual});});
+    if(nonEmpty(it.conclusion))out.push({k:'Conclusion',v:it.conclusion});
+    if(nonEmpty(it.cta))out.push({k:'CTA',v:it.cta,cta:true});
+    return out;
+  }
+  const d=scriptDef(it);
+  if(nonEmpty(it.hook))out.push({k:it.scriptType==='FAQ'?'Question':'Hook',v:it.hook,hook:true});
+  if(custom)it.talking.split('\n').filter(nonEmpty).forEach(l=>out.push({k:'',v:l.trim(),custom:true,point:true}));
+  else it.points.forEach((p,i)=>{if(nonEmpty(p))out.push({k:d.labels[i],v:p,point:true});});
+  if(nonEmpty(it.cta))out.push({k:'CTA',v:it.cta,cta:true});
+  return out;
 }
+function talkingText(it){
+  if(nonEmpty(it.talking))return it.talking;
+  return guideParts(it).map(p=>(p.k?p.k+': ':'')+p.v+(p.visual?' (visual: '+p.visual+')':'')).join('\n');
+}
+function hasVisual(it){return Object.values(it.shots||{}).some(Boolean)||[it.broll,it.jobsite,it.shotText].some(nonEmpty);}
+function pointCount(it){
+  const n=it.points.filter(nonEmpty).length;
+  return nonEmpty(it.talking)?Math.max(n,it.talking.split('\n').filter(nonEmpty).length):n;
+}
+/* Reels only. Full script, strategy, thumbnail and caption are never required. */
+function scriptMissing(it){
+  const m=[];
+  if(!nonEmpty(it.hook))m.push('Hook');
+  if(pointCount(it)<2)m.push('At least 2 talking points');
+  if(!nonEmpty(it.cta))m.push('CTA');
+  if(!hasVisual(it))m.push('Visual / B-roll');
+  return m;
+}
+const scriptReady=it=>it.type==='Reel'&&!scriptMissing(it).length;
+function guideHtml(parts){
+  if(!parts.length)return '<p class="muted sm">Start with a hook and a couple of talking points. The guide builds itself as you type.</p>';
+  return '<ol class="sg">'+parts.map(p=>'<li class="'+(p.hook?'is-hook':p.cta?'is-cta':'')+'">'+(p.k?'<span class="sg-k">'+esc(p.k)+'</span>':'')+'<span class="sg-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>';
+}
+
+/* ================= need to film ================= */
 function fcard(it){
-  const late=it.filmDate&&it.filmDate<today();
-  const tt=talkingText(it);
-  return '<article class="fcard card" data-item-id="'+it.id+'"><div class="fc-h"><div>'+typeTag(it)+'<h3>'+esc(title(it))+'</h3></div><div class="due'+(late?' late':'')+'">'+(it.filmDate?'Film by '+esc(fmtW(it.filmDate)):'No filming date')+'</div></div>'
-   +(it.location?'<div class="fc-s"><h4>Location / project needed</h4><p>'+esc(it.location)+'</p></div>':'')
-   +(tt?'<div class="fc-s"><h4>Talking points</h4><p class="pre">'+esc(tt)+'</p></div>':'')
-   +'<div class="fc-s"><h4>Shot list</h4><div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'+(it.shotText?'<p class="pre">'+esc(it.shotText)+'</p>':'')+'</div>'
-   +(it.broll?'<div class="fc-s"><h4>B-roll needed</h4><p class="pre">'+esc(it.broll)+'</p></div>':'')
-   +(it.jobsite?'<div class="fc-s"><h4>Jobsite footage needed</h4><p class="pre">'+esc(it.jobsite)+'</p></div>':'')
-   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'">Open details</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
+  const late=it.filmDate&&it.filmDate<today(), L=it.type==='Long Form';
+  const parts=guideParts(it), hook=parts.find(p=>p.hook), cta=parts.find(p=>p.cta);
+  const body=parts.filter(p=>!p.hook&&!p.cta);
+  const blk=(label,inner,cls)=>'<div class="fc-s '+(cls||'')+'"><h4>'+label+'</h4>'+inner+'</div>';
+  return '<article class="fcard card" data-item-id="'+it.id+'">'
+   +'<div class="fc-h"><h3>'+esc(title(it))+'</h3><div class="fc-tags">'+typeTag(it)+(L?'':'<span class="chip sm">'+esc(it.scriptType)+'</span>')+'</div></div>'
+   +(hook?blk(esc(hook.k),'<p class="fc-big">'+esc(hook.v)+'</p>','fc-hook'):'')
+   +(body.length?blk(L?'Outline':'Talking points','<ol class="fc-points">'+body.map(p=>'<li>'+(p.custom?'':'<span class="fp-k">'+esc(p.k)+'</span>')+'<span class="fp-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>'):'')
+   +(cta?blk('CTA','<p class="fc-big">'+esc(cta.v)+'</p>','fc-cta'):'')
+   +blk('Shot list','<div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'+(it.shotText?'<p class="pre">'+esc(it.shotText)+'</p>':''))
+   +(it.broll?blk('B-roll needed','<p class="pre">'+esc(it.broll)+'</p>'):'')
+   +(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')
+   +(it.location?blk('Location / project','<p>'+esc(it.location)+'</p>'):'')
+   +blk('Film date','<span class="due'+(late?' late':'')+'">'+(it.filmDate?esc(fmtW(it.filmDate))+(late?' (past due)':''):'Not set')+'</span>')
+   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
 }
 function viewFilm(){
   const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
@@ -1097,7 +1304,8 @@ function viewTemplates(){
   const tabs=[['reel','Reel'],['long','Long-form video'],['recap','Monthly recap'],['jobsite','Jobsite checklist'],['project','Project to content']];
   let body='';
   if(tab==='reel')body='<section class="card"><div class="card-h"><h2>Reel template</h2><button class="btn primary sm" data-act="tplNew" data-kind="reel">Create Reel from template</button></div><div class="card-b"><p class="muted">Every new Reel starts with these fields, this shot list, and this production checklist.</p><div class="tpl">'
-      +tplList('Script',['Topic','Goal','Audience problem','Main message','Hook','Point 1','Point 2','Point 3','CTA'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div></div></section>';
+      +tplList('Speaking guide',['Script type','Goal','Hook','Talking point 1','Talking point 2','Talking point 3','CTA','Visuals / B-roll'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div>'
+      +'<h3 class="dr-sec" style="margin-top:22px">Script types</h3><p class="muted">Pick one per Reel. The three talking-point fields relabel themselves to match. A full script is optional.</p><div class="st-grid">'+SCRIPT_TYPE_NAMES.map(n=>'<div class="st-i"><h4>'+esc(n)+'</h4><p class="flow">'+SCRIPT_TYPES[n].flow.map(esc).join(' <span>›</span> ')+'</p></div>').join('')+'</div></div></section>';
   if(tab==='long')body='<section class="card"><div class="card-h"><h2>Long-form video template</h2><button class="btn primary sm" data-act="tplNew" data-kind="long">Create long-form video</button></div><div class="card-b"><p class="muted">Long-form videos are source content. Plan the Shorts and Reels you will cut from each one, then create them with one click and keep them linked.</p><div class="tpl">'
       +tplList('Plan',['Working title','Final title','Main question','Target viewer','Audience problem','Main takeaway'])+tplList('Script',['Intro / hook','Section 1','Section 2','Section 3','Section 4','Section 5','Conclusion','CTA'])+tplList('Production',['Shot list','B-roll','Thumbnail idea','Shorts / Reels to create (hook + timestamp for each)'])+'</div></div></section>';
   if(tab==='recap')body='<section class="card"><div class="card-h"><h2>Monthly recap template</h2><button class="btn primary sm" data-act="tplNew" data-kind="recap">Create Monthly Recap</button></div><div class="card-b"><p class="muted">A recurring Reel that leans on visual storytelling and company personality more than education.</p><div class="tpl">'+tplList('Fields',RECAP_FIELDS.map(r=>r[1]))+'</div></div></section>';
@@ -1153,7 +1361,7 @@ function libItems(){
     if(f.status&&it.status!==f.status)return false;if(f.type&&it.type!==f.type)return false;if(f.platform&&!it.platforms.includes(f.platform))return false;
     if(f.pillar&&it.pillar!==f.pillar)return false;if(f.topic&&it.topic!==f.topic)return false;if(f.priority&&it.priority!==f.priority)return false;if(f.month&&monthOf(it)!==f.month)return false;
     if(f.preset==='shorts'&&!(it.type==='Long Form'&&it.status!=='Idea'&&(it.shorts.length<3||it.shorts.some(s=>!s.reelId))))return false;
-    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.mainTopic,it.hook,it.script,it.talking].join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.scriptType,it.mainTopic,it.hook,it.script,it.talking,it.cta].concat(it.points,it.sections,it.secMeta.map(s=>s.title)).join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   }).sort(byPub);
 }
@@ -1236,7 +1444,9 @@ function F(it,path,label,o){
   if(t==='textarea')ctl='<textarea id="'+id+'" data-f="'+path+'" rows="'+(o.rows||3)+'" placeholder="'+esc(o.ph||'')+'">'+esc(v==null?'':v)+'</textarea>';
   else if(t==='select')ctl='<select id="'+id+'" data-f="'+path+'">'+opts(o.opts,v,o.blank)+'</select>';
   else ctl='<input id="'+id+'" type="'+t+'" data-f="'+path+'" value="'+esc(v==null?'':v)+'" placeholder="'+esc(o.ph||'')+'"'+(t==='number'?' min="0" step="any"':'')+'>';
-  return '<div class="fld'+(o.wide?' wide':'')+'"><label for="'+id+'">'+label+'</label>'+ctl+'</div>';
+  const lab='<label for="'+id+'">'+label+'</label>';
+  const top=o.lib?'<div class="lbl-row">'+lab+'<button class="link" type="button" data-act="lib" data-lib="'+o.lib+'" data-field="'+path+'">'+(o.lib==='hook'?'Browse hooks':'Browse CTAs')+'</button></div>':lab;
+  return '<div class="fld'+(o.wide?' wide':'')+'">'+top+ctl+(o.help?'<small class="help">'+o.help+'</small>':'')+'</div>';
 }
 const STAT3=['Not started','In progress','Done'];
 function tabOverview(it){
@@ -1250,18 +1460,113 @@ function tabOverview(it){
    +'<fieldset class="fld"><legend>Platforms</legend><div class="plats">'+PLATFORMS.map(p=>'<label class="chk"><input type="checkbox" data-plat="'+p+'" '+(it.platforms.includes(p)?'checked':'')+'><span>'+p+'</span></label>').join('')+'</div></fieldset>'
    +F(it,'notes','Notes',{t:'textarea',rows:4});
 }
+/* ---------- Scripting 2.0 ---------- */
+function readyInner(it){
+  const miss=scriptMissing(it), i=stIdx(it.status);
+  if(!miss.length)return '<div class="sr-top"><span class="sr-badge ok">Script Ready ✓</span>'
+    +(i<2?'<button class="btn primary sm" data-act="readyToFilm" data-id="'+it.id+'">Move to Ready to Film</button>':'<span class="muted sm">Already at '+esc(it.status)+'</span>')+'</div>';
+  return '<div class="sr-top"><span class="sr-badge">Needs '+miss.length+(miss.length===1?' thing':' things')+'</span></div><ul class="sr-miss">'+miss.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul>';
+}
+function readyChip(it){
+  if(it.type!=='Reel'||stIdx(it.status)>=2)return '';
+  const n=scriptMissing(it).length;
+  return '<span id="dr-ready" class="sr-chip '+(n?'':'ok')+'">'+(n?'Script: '+n+' to go':'Script ready ✓')+'</span>';
+}
+function advBlock(key,label,inner){
+  return '<details class="adv"'+(ui.advOpen[key]?' open':'')+'><summary data-adv="'+key+'">'+label+'</summary><div class="adv-b">'+inner+'</div></details>';
+}
+function scriptExtras(it){
+  return advBlock('script','Full script (optional)','<div class="form-grid">'
+    +F(it,'script','Full Script — Optional',{t:'textarea',rows:8,wide:true,help:'Use this when exact wording matters. Most videos only need a speaking guide.'})
+    +F(it,'talking','Custom talking points (optional)',{t:'textarea',rows:4,wide:true,help:it.type==='Reel'?'Leave blank and the speaking guide builds itself. Anything typed here replaces the three talking points on the Need to Film screen.':'Leave blank and the outline above is used on the Need to Film screen. Anything typed here replaces it.'})+'</div>');
+}
 function tabScript(it){
   let h='';
   if(it.type==='Reel'){
-    h+='<h3 class="dr-sec">Reel template</h3><div class="form-grid">'+F(it,'mainTopic','Topic')+F(it,'goal','Goal')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'mainMessage','Main message',{t:'textarea',rows:2})
-      +F(it,'takeaway','Desired takeaway')+F(it,'offer','Offer connected to content')+F(it,'hook','Hook',{t:'textarea',rows:2,wide:true})+F(it,'points.0','Point 1')+F(it,'points.1','Point 2')+F(it,'points.2','Point 3')+F(it,'cta','CTA')+'</div>';
+    const d=scriptDef(it);
+    h+='<section class="sg-card"><div class="form-grid">'+F(it,'scriptType','Script type',{t:'select',opts:SCRIPT_TYPE_NAMES})+F(it,'goal','Goal',{ph:'What should this video do?'})+'</div>'
+      +'<p class="flow">'+d.flow.map(esc).join(' <span>›</span> ')+'</p>'
+      +'<div class="form-grid">'+F(it,'hook',it.scriptType==='FAQ'?'Hook (the question)':'Hook',{t:'textarea',rows:2,wide:true,lib:'hook',ph:d.hookPh})
+      +[0,1,2].map(i=>F(it,'points.'+i,d.labels[i],{t:'textarea',rows:2,wide:true,ph:d.ph[i]})).join('')
+      +F(it,'cta','CTA',{t:'textarea',rows:2,wide:true,lib:'cta',ph:'What should the viewer do next?'})+'</div>'
+      +'<div class="fld"><label>Visuals / B-roll</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>'
+      +F(it,'broll','B-roll notes',{t:'textarea',rows:2,ph:'Specific shots you need, one per line'})
+      +'<div id="sr-box" class="sr-box">'+readyInner(it)+'</div></section>'
+      +'<section class="sg-prev"><div class="sg-prev-h"><h3>Speaking guide preview</h3><button class="btn ghost sm" data-act="copyAI">Copy AI script prompt</button></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>';
     if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+RECAP_FIELDS.map(r=>F(it,'recap.'+r[0],r[1],{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
-  }else{
-    h+='<h3 class="dr-sec">Long-form video template</h3><div class="form-grid">'+F(it,'finalTitle','Final title',{wide:true})+F(it,'mainQuestion','Main question',{wide:true})+F(it,'targetViewer','Target viewer')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})
-      +F(it,'takeaway','Main takeaway',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content')+F(it,'hook','Intro / hook',{t:'textarea',rows:3,wide:true})
-      +[0,1,2,3,4].map(i=>F(it,'sections.'+i,'Section '+(i+1),{t:'textarea',rows:2})).join('')+F(it,'conclusion','Conclusion',{t:'textarea',rows:2})+F(it,'cta','CTA')+'</div>';
+    h+=advBlock('strategy','Advanced strategy','<div class="form-grid">'+F(it,'mainTopic','Topic')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'mainMessage','Main message',{t:'textarea',rows:2})+F(it,'takeaway','Desired takeaway',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content',{wide:true})+'</div>');
+    return h+scriptExtras(it);
   }
-  return h+'<h3 class="dr-sec">Full script and notes</h3><div class="form-grid">'+F(it,'script','Script',{t:'textarea',rows:8,wide:true})+F(it,'talking','Talking points (shown on the Need to Film screen)',{t:'textarea',rows:4,wide:true})+'</div>';
+  h+='<div class="form-grid">'+F(it,'finalTitle','Final title',{wide:true})+F(it,'mainQuestion','Main question',{wide:true})+F(it,'targetViewer','Target viewer')+F(it,'takeaway','Main takeaway / promise',{t:'textarea',rows:2})+'</div>'
+    +'<div class="form-grid">'+F(it,'hook','Intro / hook',{t:'textarea',rows:2,wide:true,lib:'hook'})+'</div>'
+    +'<h3 class="dr-sec">Outline</h3><p class="muted sm">A few words per point is plenty. You are building a guide to talk from, not a script to read.</p>'
+    +'<div class="secs">'+it.sections.map((s,i)=>{
+      const m=it.secMeta[i]||blankSec(), k=it.shorts.findIndex(x=>x.sectionIdx===i), sh=k>=0?it.shorts[k]:null, linked=sh&&sh.reelId&&getItem(sh.reelId);
+      return '<div class="sec"><div class="sec-h"><span class="sec-n">'+(i+1)+'</span><input data-f="secMeta.'+i+'.title" value="'+esc(m.title)+'" placeholder="Section title, e.g. Posts" aria-label="Section '+(i+1)+' title"></div>'
+        +'<div class="form-grid">'+F(it,'sections.'+i,'Talking points',{t:'textarea',rows:3,ph:'One point per line'})+F(it,'secMeta.'+i+'.visual','Visual / B-roll',{t:'textarea',rows:3,ph:'What should be on screen'})+'</div>'
+        +'<label class="chk"><input type="checkbox" data-act="secReel" data-i="'+i+'" '+(sh?'checked':'')+'><span>Potential Reel</span></label>'
+        +(sh?'<div class="sec-reel"><div class="form-grid">'+F(it,'shorts.'+k+'.hook','Reel / Short hook')+F(it,'shorts.'+k+'.angle','Short idea / angle')+'</div>'
+          +(linked?'<p class="sm">'+pill(linked.status)+' <button class="link-b" data-act="edit" data-id="'+linked.id+'">Open linked Reel</button></p>':'<button class="btn ghost sm" data-act="createShort" data-i="'+k+'">Create Reel</button>')+'</div>':'')
+        +'</div>';
+    }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addSection">Add section</button></div>'
+    +'<div class="form-grid" style="margin-top:14px">'+F(it,'conclusion','Conclusion',{t:'textarea',rows:2})+F(it,'cta','CTA',{t:'textarea',rows:2,lib:'cta'})+'</div>'
+    +shortsBlock(it)
+    +'<section class="sg-prev"><div class="sg-prev-h"><h3>Outline preview</h3></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'
+    +advBlock('strategy','Advanced strategy','<div class="form-grid">'+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content')+'</div>');
+  return h+scriptExtras(it);
+}
+function shortsBlock(it){
+  const planned=it.shorts.filter(s=>nonEmpty(s.hook)).length, made=it.shorts.filter(s=>s.reelId&&getItem(s.reelId)).length;
+  const secOpts=it.sections.map((s,i)=>[String(i),secLabel(it,i)]);
+  return '<section class="shorts-box"><div class="sb-h"><h3>Reels / Shorts from this video</h3><span class="count">'+planned+' planned · '+made+' created</span></div>'
+   +'<p class="muted sm">Aim for 2 to 3 from every long-form video.</p><div class="shorts">'+it.shorts.map((s,i)=>{
+     const linked=s.reelId&&getItem(s.reelId);
+     return '<div class="short"><div class="short-h"><b>Short '+(i+1)+'</b>'+(linked?pill(linked.status)+'<button class="link-b" data-act="edit" data-id="'+linked.id+'">Open Reel</button>':'<span class="muted sm">Not created yet</span><button class="btn ghost sm" data-act="createShort" data-i="'+i+'">Create Reel</button>')
+      +'<button class="icon-btn sm" data-act="rmShort" data-i="'+i+'" aria-label="Remove Short '+(i+1)+'">'+I('x')+'</button></div>'
+      +'<div class="form-grid three">'+F(it,'shorts.'+i+'.hook','Hook')
+      +'<div class="fld"><label for="ss_'+i+'">Source section</label><select id="ss_'+i+'" data-f="shorts.'+i+'.sectionIdx">'+opts(secOpts,String(s.sectionIdx),'None')+'</select></div>'
+      +F(it,'shorts.'+i+'.section','Timestamp / notes')+'</div></div>';
+   }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addShort">Add another Short</button></div></section>';
+}
+function libHtml(){
+  const c=ui.libCtx, L=c.lib==='hook'?HOOK_LIBRARY:CTA_LIBRARY;
+  return '<div class="modal-h"><h3>'+(c.lib==='hook'?'Hook ideas':'CTA ideas')+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p class="muted sm">Tap one to use it.'+(c.lib==='hook'?' Then fill in the blanks (___).':'')+'</p>'
+   +L.map((g,gi)=>'<div class="lib-g"><h4>'+esc(g.cat)+'</h4>'+g.items.map((t,ti)=>'<button class="lib-i" data-act="libPick" data-g="'+gi+'" data-t="'+ti+'">'+esc(t)+'</button>').join('')+'</div>').join('')+'</div>';
+}
+function applyLib(mode){
+  const c=ui.libCtx, it=getItem(c.id);if(!it)return;
+  const cur=gp(it,c.field)||'';
+  sp(it,c.field,mode==='append'&&nonEmpty(cur)?cur.replace(/\s+$/,'')+' '+c.text:c.text);
+  save();closeModal();renderEditor();
+  const ta=$('.drawer [data-f="'+c.field+'"]');
+  if(ta){ta.focus();const v=ta.value,p=v.indexOf('___',mode==='append'?cur.length:0);if(p>=0)ta.setSelectionRange(p,p+3);else ta.setSelectionRange(v.length,v.length);}
+  toast(c.lib==='hook'?'Hook added':'CTA added');
+}
+function liveScript(it){
+  if(!ui.edit.id||ui.edit.id!==it.id)return;
+  const sr=$('#sr-box');if(sr)sr.innerHTML=readyInner(it);
+  const pv=$('#sg-prev');if(pv)pv.innerHTML=guideHtml(guideParts(it));
+  const ch=$('#dr-ready');if(ch){const n=scriptMissing(it).length;ch.className='sr-chip '+(n?'':'ok');ch.textContent=n?'Script: '+n+' to go':'Script ready ✓';}
+}
+function aiPrompt(it){
+  const d=scriptDef(it), co=S.settings.company||'Benchmark Decks', line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
+  const shots=REEL_SHOTS.filter(s=>it.shots[s[0]]).map(s=>s[1]);
+  const extra=[['Audience problem',it.audienceProblem],['Main message',it.mainMessage],['Desired takeaway',it.takeaway],['Offer',it.offer],['Notes',it.notes],['Full script draft',it.script]].filter(x=>nonEmpty(x[1]));
+  return ['You are helping write a short-form video (Reel) speaking guide for '+co+', a deck-building company that builds custom decks and outdoor structures for homeowners in Northern Texas and Southern Oklahoma.','',
+    'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType+' ('+d.flow.join(' > ')+')','Content pillar: '+it.pillar,'Platforms: '+platText(it),'',
+    'WHAT WE HAVE SO FAR',line('Hook',it.hook)].concat(d.labels.map((l,i)=>line(l,it.points[i])),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', '),it.broll].filter(nonEmpty).join('; '))],
+    extra.length?['','FACTS AND CONTEXT FROM '+co.toUpperCase()].concat(extra.map(x=>x[0]+': '+String(x[1]).trim())):[],
+    ['','PLEASE WRITE','1. 5 alternative hooks, one sentence each','2. 3 concise talking points that follow the '+it.scriptType+' structure, labeled: '+d.labels.join(', '),'3. 2 CTA options','4. Suggested B-roll shots','',
+    'RULES','- Do not invent construction facts, materials, measurements, or building methods.','- Do not invent financing terms, prices, rates, or approval details.','- Do not invent warranties or guarantees.',
+    '- Preserve every factual detail supplied above exactly as given. If something is missing, say what to confirm with '+co+' instead of guessing.',
+    '- Write for homeowners, in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
+}
+function copyText(txt){
+  const fallback=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}ta.remove();return ok;};
+  const manual=()=>showModal('<div class="modal-h"><h3>Copy this prompt</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b"><p class="muted sm">Your browser blocked automatic copying. Select all and copy.</p><textarea rows="14" readonly style="width:100%">'+esc(txt)+'</textarea></div>','lg');
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(()=>toast('Prompt copied. Paste it into Claude.'),()=>{fallback()?toast('Prompt copied. Paste it into Claude.'):manual();});
+  else fallback()?toast('Prompt copied. Paste it into Claude.'):manual();
 }
 function tabShoot(it){
   let h='<h3 class="dr-sec">Shot list</h3>';
@@ -1284,10 +1589,7 @@ function tabRepurpose(it){
     h+='<div class="form-grid">'+F(it,'parentId','Long-form source (parent video)',{t:'select',opts:others.filter(i=>i.type==='Long Form').map(i=>[i.id,title(i)]),blank:'None'})+F(it,'repurposedFrom','Repurposed from (section or timestamp)')+'</div>';
     if(it.parentId&&getItem(it.parentId))h+='<p><button class="link-b" data-act="edit" data-id="'+it.parentId+'">Open the long-form source</button></p>';
   }else{
-    h+='<h3 class="dr-sec">Shorts and Reels to create from this video</h3><div class="shorts">'+it.shorts.map((s,i)=>{
-      const linked=s.reelId&&getItem(s.reelId);
-      return '<div class="short"><div class="short-h"><b>Short '+(i+1)+'</b>'+(linked?'<button class="link-b" data-act="edit" data-id="'+s.reelId+'">Open linked Reel</button>':'<button class="btn ghost sm" data-act="createShort" data-i="'+i+'">Create Reel</button>')+'<button class="icon-btn sm" data-act="rmShort" data-i="'+i+'" aria-label="Remove Short '+(i+1)+'">'+I('x')+'</button></div><div class="form-grid">'+F(it,'shorts.'+i+'.hook','Hook')+F(it,'shorts.'+i+'.section','Timestamp / section')+'</div></div>';
-    }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addShort">Add another Short</button></div>';
+    h+=shortsBlock(it);
     const kids=S.items.filter(i=>i.parentId===it.id);
     if(kids.length)h+='<h3 class="dr-sec">Reels made from this video</h3><ul class="mini">'+kids.map(k=>'<li><button data-act="edit" data-id="'+k.id+'"><b>'+esc(title(k))+'</b><span>'+esc(k.status)+(k.publishDate?' · '+fmt(k.publishDate):'')+'</span></button></li>').join('')+'</ul>';
   }
@@ -1305,7 +1607,7 @@ function editorHtml(it){
   const tab=ui.edit.tab, i=stIdx(it.status);
   const body={overview:tabOverview,script:tabScript,shoot:tabShoot,schedule:tabSchedule,repurpose:tabRepurpose,publish:tabPublish}[tab](it);
   return '<div class="scrim" data-act="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-label="Edit video" tabindex="-1" data-item-id="'+it.id+'">'
-   +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+'<button class="icon-btn" data-act="close" aria-label="Close">'+I('x')+'</button></div><input class="dr-title" data-f="title" value="'+esc(it.title)+'" placeholder="'+(it.type==='Long Form'?'Long-form video title':'Reel title')+'" aria-label="Video title"></div>'
+   +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+readyChip(it)+'<button class="icon-btn" data-act="close" aria-label="Close">'+I('x')+'</button></div><input class="dr-title" data-f="title" value="'+esc(it.title)+'" placeholder="'+(it.type==='Long Form'?'Long-form video title':'Reel title')+'" aria-label="Video title"></div>'
    +'<nav class="dr-tabs" role="tablist">'+TABS.map(t=>'<button role="tab" class="'+(tab===t[0]?'on':'')+'" aria-selected="'+(tab===t[0])+'" data-act="tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</nav>'
    +'<div class="dr-b">'+body+'</div>'
    +'<div class="dr-f"><button class="btn danger ghost sm" data-act="del" data-id="'+it.id+'">Delete</button><span class="grow"></span>'
@@ -1337,7 +1639,7 @@ function closeEditor(){
 }
 
 /* ================= modal, toast, confirm ================= */
-function showModal(html){$('#modal-wrap').innerHTML='<div class="scrim show" data-act="modalClose"></div><div class="modal" role="dialog" aria-modal="true">'+html+'</div>';const m=$('#modal-wrap .modal');const f=$('input,select,button.primary',m);f&&f.focus();}
+function showModal(html,cls){$('#modal-wrap').innerHTML='<div class="scrim show" data-act="modalClose"></div><div class="modal'+(cls?' '+cls:'')+'" role="dialog" aria-modal="true">'+html+'</div>';const m=$('#modal-wrap .modal');const f=$('input,select,button.primary',m);f&&f.focus();}
 function closeModal(){$('#modal-wrap').innerHTML='';}
 function askConfirm(msg,label,cb){
   ui.confirmCb=cb;
@@ -1362,7 +1664,7 @@ function go(v){ui.view=v;window.scrollTo(0,0);render();}
 function closeMenu(){$('#addmenu').classList.remove('open');$('#addbtn').setAttribute('aria-expanded','false');}
 function ensureType(it){
   if(it.type==='Long Form'){it.reelKind='';if(!it.shorts.length)for(let i=0;i<3;i++)it.shorts.push({hook:'',section:'',reelId:''});}
-  else if(!it.reelKind)it.reelKind='Standalone';
+  else{if(!it.reelKind)it.reelKind='Standalone';if(!SCRIPT_TYPES[it.scriptType])it.scriptType=inferScriptType(it);}
 }
 function refreshPerf(){const c=$('#perf-charts');if(c)c.innerHTML=perfCharts(perfItems());}
 
@@ -1373,7 +1675,7 @@ const ACTS={
     if(k==='reel')createItem('Reel');else if(k==='long')createItem('Long Form');else if(k==='recap')createRecap();
     else if(k==='idea'){ui.view='ideas';ui.focus='#qa-title';render();}
     else if(k==='project'){ui.tplTab='project';ui.projDraft=blankProj();ui.projResults=false;go('templates');}},
-  edit:a=>openEditor(a.dataset.id),
+  edit:a=>openEditor(a.dataset.id,a.dataset.tab),
   close:()=>closeEditor(),
   tab:a=>{ui.edit.tab=a.dataset.tab;renderEditor();},
   del:a=>{const it=getItem(a.dataset.id);if(!it)return;askConfirm('Delete “'+esc(title(it))+'”? This cannot be undone.','Delete video',()=>{
@@ -1408,12 +1710,50 @@ const ACTS={
   winToggle:a=>{const it=getItem(a.dataset.id);it.winning=!it.winning;save();render();toast(it.winning?'Added to winning content':'Removed from winning content');},
   autoFill:()=>{const it=getItem(ui.edit.id);if(!it.publishDate){toast('Set a publish date first');return;}autoDates(it,S.settings);save();renderEditor();toast('Dates filled in');},
   createShort:a=>{
-    const L=getItem(ui.edit.id),i=+a.dataset.i,s=L.shorts[i];
-    if(!s.hook.trim()){toast('Write a hook for this Short first');return;}
-    const r=newItem('Reel',{title:s.hook,hook:s.hook,reelKind:'Repurposed',parentId:L.id,repurposedFrom:s.section,pillar:L.pillar,topic:L.topic,group:L.group,status:'Scripting',plannedMonth:L.plannedMonth});
+    const L=getItem(ui.edit.id),s=L&&L.shorts[+a.dataset.i];if(!s)return;
+    if(s.reelId&&getItem(s.reelId)){openEditor(s.reelId,'script');return;}
+    if(!nonEmpty(s.hook)){toast('Write a hook for this Short first');const f=$('.drawer [data-f="shorts.'+a.dataset.i+'.hook"]');f&&f.focus();return;}
+    const dup=S.items.find(r=>r.type==='Reel'&&r.parentId===L.id&&r.hook.trim()===s.hook.trim());
+    if(dup){s.reelId=dup.id;save();renderEditor();toast('Linked to the existing Reel with this hook');return;}
+    const si=s.sectionIdx, m=si>=0?(L.secMeta[si]||blankSec()):blankSec(), secName=si>=0?(nonEmpty(m.title)?m.title:'Section '+(si+1)):'';
+    const ctx=['Pulled from the long-form video "'+title(L)+'"'+(secName?', section: '+secName:'')+'.'];
+    if(si>=0&&nonEmpty(L.sections[si]))ctx.push('Section talking points:\n'+L.sections[si].trim());
+    if(nonEmpty(s.angle))ctx.push('Angle: '+s.angle.trim());
+    const r=newItem('Reel',{title:s.hook.trim(),hook:s.hook.trim(),reelKind:'Repurposed',parentId:L.id,repurposedFrom:[secName,s.section].filter(nonEmpty).join(' · '),
+      mainTopic:secName,goal:s.angle||'',broll:m.visual||'',notes:ctx.join('\n\n'),pillar:L.pillar,topic:L.topic,group:L.group,status:'Scripting',plannedMonth:L.plannedMonth});
     S.items.push(r);s.reelId=r.id;save();renderEditor();toast('Reel created and linked');
   },
-  addShort:()=>{const L=getItem(ui.edit.id);L.shorts.push({hook:'',section:'',reelId:''});save();renderEditor();},
+  addShort:()=>{const L=getItem(ui.edit.id);L.shorts.push(blankShort());save();renderEditor();},
+  secReel:a=>{
+    const L=getItem(ui.edit.id),i=+a.dataset.i;if(!L)return;
+    const cur=L.shorts.find(x=>x.sectionIdx===i);
+    if(a.checked){
+      if(!cur){let slot=L.shorts.find(x=>x.sectionIdx<0&&!x.reelId&&!nonEmpty(x.hook));if(!slot){slot=blankShort();L.shorts.push(slot);}slot.sectionIdx=i;}
+      save();renderEditor();const k=L.shorts.findIndex(x=>x.sectionIdx===i),f=$('.drawer [data-f="shorts.'+k+'.hook"]');f&&f.focus();
+    }else if(cur){
+      const blank=!cur.reelId&&!nonEmpty(cur.hook)&&!nonEmpty(cur.angle)&&!nonEmpty(cur.section);
+      if(blank&&L.shorts.length>3)L.shorts.splice(L.shorts.indexOf(cur),1);else cur.sectionIdx=-1;
+      save();renderEditor();if(!blank)toast('Kept in Reels / Shorts from this video');
+    }
+  },
+  addSection:()=>{const L=getItem(ui.edit.id);L.sections.push('');L.secMeta.push(blankSec());save();renderEditor();const f=$('.drawer [data-f="secMeta.'+(L.sections.length-1)+'.title"]');f&&f.focus();},
+  readyToFilm:a=>{
+    const it=getItem(a.dataset.id);if(!it)return;
+    if(!scriptReady(it)){toast('Finish the script first');return;}
+    if(stIdx(it.status)>=2){toast('Already at '+it.status);return;}
+    setStatus(it,'Ready to Film');it.prod.script=true;save();render();renderEditor();toast('Moved to Ready to Film');
+  },
+  lib:a=>{ui.libCtx={lib:a.dataset.lib,field:a.dataset.field,id:ui.edit.id};showModal(libHtml(),'lg');},
+  libPick:a=>{
+    const c=ui.libCtx,L=c.lib==='hook'?HOOK_LIBRARY:CTA_LIBRARY;c.text=L[+a.dataset.g].items[+a.dataset.t];
+    const it=getItem(c.id),cur=it?gp(it,c.field)||'':'';
+    if(!nonEmpty(cur)||cur.trim()===c.text){applyLib('replace');return;}
+    showModal('<div class="modal-h"><h3>Replace your current '+(c.lib==='hook'?'hook':'CTA')+'?</h3></div><div class="modal-b"><div class="cmp"><span class="muted sm">Current</span><p>'+esc(cur)+'</p><span class="muted sm">New</span><p>'+esc(c.text)+'</p></div>'
+      +'<div class="row-gap"><button class="btn primary" data-act="libApply" data-mode="replace">Replace</button><button class="btn ghost" data-act="libApply" data-mode="append">Add after current</button><button class="btn ghost" data-act="libBack">Back to ideas</button></div></div>');
+  },
+  libApply:a=>applyLib(a.dataset.mode),
+  libBack:()=>showModal(libHtml(),'lg'),
+  copyAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiPrompt(it));},
   rmShort:a=>{const L=getItem(ui.edit.id);L.shorts.splice(+a.dataset.i,1);save();renderEditor();},
   planStep:a=>{const k=ui.planMonth;S.plan[k]=S.plan[k]||{};S.plan[k][+a.dataset.i]=a.checked;save();render();},
   slotAssign:a=>{
@@ -1471,6 +1811,7 @@ const ACTS={
 document.addEventListener('click',e=>{
   if($('#addmenu').classList.contains('open')&&!e.target.closest('#addwrap'))closeMenu();
   if(e.target.closest('[data-stop]'))return;
+  const sm=e.target.closest('summary[data-adv]');if(sm){ui.advOpen[sm.dataset.adv]=!sm.parentElement.open;return;}
   const a=e.target.closest('[data-act]');
   if(a&&ACTS[a.dataset.act]){
     if(a.tagName==='INPUT'&&a.type==='checkbox'){ACTS[a.dataset.act](a,e);return;}
@@ -1501,15 +1842,17 @@ document.addEventListener('input',e=>{
   }
   if(el.dataset.f){
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
-    const path=el.dataset.f,v=el.type==='checkbox'?el.checked:el.value;
+    const path=el.dataset.f;let v=el.type==='checkbox'?el.checked:el.value;
+    if(/^shorts\.\d+\.sectionIdx$/.test(path)){v=v===''?-1:+v;sp(it,path,v);save();renderEditor();return;}
     sp(it,path,v);
+    if(path==='scriptType'){save();renderEditor();return;}
     if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
     if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();save();renderEditor();return;}
     if(path==='type'){ensureType(it);it.platforms=defaultPlatforms(it.type);save();renderEditor();return;}
     if(path==='winning'){save();renderEditor();return;}
     if(path==='reelKind'&&v==='Recap'&&!it.recap.month)it.recap.month=monthName(monthOf(it)||ui.month);
     if(path.indexOf('perf.')===0&&ui.view==='performance')refreshPerf();
-    save();
+    save();liveScript(it);
   }
 });
 document.addEventListener('change',e=>{
