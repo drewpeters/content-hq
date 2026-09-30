@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content HQ · Deck content planner</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231F2A28'/%3E%3Crect x='16' y='22' width='16' height='56' rx='3' fill='%23B8742E'/%3E%3Crect x='42' y='22' width='16' height='56' rx='3' fill='%232F6B5B'/%3E%3Crect x='68' y='22' width='16' height='56' rx='3' fill='%23D9DED6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EBEEEA;--surface:#FFFFFF;--surface2:#F5F7F4;--line:#D9DED6;--line2:#C7CEC4;
+  --ink:#1C2422;--ink2:#4B5752;--ink3:#76827C;
+  --side:#1F2A28;--side2:#2A3734;--sideInk:#DCE3DE;--sideInk2:#95A39D;
+  --cedar:#B8742E;--cedarD:#9A5F22;--cedarL:#F3E4D2;
+  --green:#2F6B5B;--greenD:#245446;--greenL:#DCEBE5;
+  --slate:#4F6D86;--slateL:#E0E8EF;
+  --red:#B4483A;--redL:#F6E1DD;--amber:#C99A2E;--amberL:#F6ECD2;
+  --shadow:0 1px 2px rgba(28,36,34,.06),0 4px 14px rgba(28,36,34,.05);
+  --r1:6px;--r2:10px;--r3:16px;
+  --fd:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --fb:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131917;--surface:#1B2320;--surface2:#212B28;--line:#2E3935;--line2:#3B4843;
+    --ink:#E6ECE8;--ink2:#B4C0BA;--ink3:#84928B;
+    --side:#0F1413;--side2:#1B2320;
+    --cedar:#D08A45;--cedarD:#E29C57;--cedarL:#3A2B1C;
+    --green:#56A38C;--greenD:#6DB8A1;--greenL:#1D3530;
+    --slate:#7F9DB6;--slateL:#1F2B36;--red:#D9695A;--redL:#3A1F1B;--amber:#D9AE4A;--amberL:#3A311A;
+    --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131917;--surface:#1B2320;--surface2:#212B28;--line:#2E3935;--line2:#3B4843;
+  --ink:#E6ECE8;--ink2:#B4C0BA;--ink3:#84928B;
+  --side:#0F1413;--side2:#1B2320;
+  --cedar:#D08A45;--cedarD:#E29C57;--cedarL:#3A2B1C;
+  --green:#56A38C;--greenD:#6DB8A1;--greenL:#1D3530;
+  --slate:#7F9DB6;--slateL:#1F2B36;--red:#D9695A;--redL:#3A1F1B;--amber:#D9AE4A;--amberL:#3A311A;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--fb);-webkit-font-smoothing:antialiased}
+body.drawer-open{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0;text-align:left}
+a{color:var(--green)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ic{width:18px;height:18px;flex:none}
+.ic.xs{width:13px;height:13px;vertical-align:-2px}
+:focus-visible{outline:2px solid var(--cedar);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{margin:0;font-weight:600}
+h1{font:600 34px/1.05 var(--fd);letter-spacing:.2px}
+h2{font:600 20px/1.2 var(--fd);letter-spacing:.2px}
+h3{font-size:16px}
+h4{font-size:14px}
+.muted{color:var(--ink3)}.sm{font-size:13px}.pad{padding:14px 18px}
+.grow{flex:1}
+
+/* ---------- shell ---------- */
+#shell{display:flex;min-height:100vh}
+#side{width:236px;flex:none;background:var(--side);color:var(--sideInk);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:18px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
+.brand-mark{display:flex;gap:3px;width:30px;height:30px;padding:5px;background:var(--side2);border-radius:8px}
+.brand-mark i{flex:1;border-radius:2px;background:var(--cedar)}
+.brand-mark i:nth-child(2){background:var(--green)}.brand-mark i:nth-child(3){background:#D9DED6}
+.brand-text{display:flex;flex-direction:column;line-height:1.15}
+.brand-text b{font:600 21px var(--fd);letter-spacing:.3px}
+.brand-text small{color:var(--sideInk2);font-size:12px}
+#nav{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:8px;color:var(--sideInk2);font-size:14px;font-weight:500;position:relative}
+.nav-i:hover{background:var(--side2);color:var(--sideInk)}
+.nav-i.on{background:var(--side2);color:#fff}
+.nav-i.on::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--cedar)}
+.nav-i em{margin-left:auto;font-style:normal;font-size:12px;background:rgba(255,255,255,.1);padding:0 7px;border-radius:10px;color:var(--sideInk)}
+.nav-sep{height:1px;background:rgba(255,255,255,.08);margin:8px 6px}
+.side-foot{padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.store-note{font-size:12px;color:var(--sideInk2);margin:10px 4px 0}
+.store-note.warn{color:#F2B8A8}
+#content{flex:1;min-width:0;display:flex;flex-direction:column}
+#top{display:flex;gap:12px;align-items:center;padding:14px 28px;position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;color:var(--ink3)}
+.search input{border:0;background:none;outline:none;padding:9px 0;width:100%;color:var(--ink)}
+.search:focus-within{border-color:var(--cedar)}
+#addwrap{margin-left:auto;position:relative}
+.menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);box-shadow:0 12px 30px rgba(0,0,0,.14);padding:6px;min-width:220px;z-index:30}
+.menu.open{display:block}
+.menu button{display:block;width:100%;padding:9px 12px;border-radius:7px;font-weight:500}
+.menu button:hover{background:var(--surface2)}
+#main{outline:none}
+.page{padding:26px 28px 60px;max-width:1280px}
+.page.wide{max-width:none}.page.narrow{max-width:820px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid transparent;white-space:nowrap;transition:background .12s,border-color .12s}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn.block{width:100%}
+.btn.accent{background:var(--cedar);color:#fff}.btn.accent:hover{background:var(--cedarD)}
+.btn.primary{background:var(--green);color:#fff}.btn.primary:hover{background:var(--greenD)}
+.btn.ghost{background:var(--surface);border-color:var(--line2);color:var(--ink)}.btn.ghost:hover{border-color:var(--ink3)}
+.btn.ghost-light{border-color:rgba(255,255,255,.18);color:var(--sideInk)}.btn.ghost-light:hover{background:var(--side2)}
+.btn.danger{background:var(--red);color:#fff}
+.btn.danger.ghost{background:none;color:var(--red);border-color:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.file{position:relative}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;color:var(--ink2)}
+.icon-btn:hover{background:var(--surface2);color:var(--ink)}
+.icon-btn.sm{width:26px;height:26px}.icon-btn.sm .ic{width:15px;height:15px}
+.link,.link-b{color:var(--green);font-weight:600;font-size:13px}
+.link-b{font-size:inherit;text-align:left}
+.link:hover,.link-b:hover{text-decoration:underline}
+.row-gap{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+
+/* ---------- page header ---------- */
+.ph{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.sub{margin:6px 0 0;color:var(--ink2)}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mnav{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:14px;color:var(--ink2)}
+.mnav span{min-width:120px;text-align:center}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg.wrap{flex-wrap:wrap;margin-bottom:18px}
+.seg button{padding:6px 13px;border-radius:7px;font-size:13px;font-weight:600;color:var(--ink2)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+label.inline{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2);font-weight:600}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:18px}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.card-h h3{margin-top:6px}
+.card-b{padding:16px 18px}
+.count{font-size:12px;font-weight:600;color:var(--ink3);background:var(--surface2);border:1px solid var(--line);padding:1px 8px;border-radius:10px;font-family:var(--fb)}
+.empty{padding:28px 20px;text-align:center;color:var(--ink3)}
+.empty p{margin:0 0 12px;max-width:440px;margin-inline:auto}
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.cols2.even{grid-template-columns:1fr 1fr}
+.cols2.plan{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+
+/* ---------- dashboard hero ---------- */
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:22px 24px 20px;margin-bottom:18px}
+.hero-h{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.hero-h .mnav{margin-left:-8px;margin-bottom:4px}
+.hero h1{font-size:44px}
+.boards{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;padding:10px;background:repeating-linear-gradient(90deg,var(--surface2) 0 1px,transparent 1px 120px),var(--surface2);border-radius:var(--r2);border:1px solid var(--line)}
+.plank{--c:var(--cedar);--cl:var(--cedarL);position:relative;display:flex;align-items:center;min-height:42px;border-radius:5px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.plank.long{--c:var(--green);--cl:var(--greenL);min-height:52px}
+.plank .meter{position:absolute;inset:0;pointer-events:none}
+.plank .meter i{position:absolute;left:0;top:0;bottom:0;width:var(--fill);background:var(--cl);transition:width .4s ease}
+.plank::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c);z-index:1}
+.plank.done .meter i{background:var(--c);opacity:.22}
+.plank:hover{border-color:var(--c)}
+.pl-body{position:relative;display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:14px;align-items:center;width:100%;padding:0 14px 0 18px}
+.pl-date{font:600 15px var(--fd);color:var(--ink2);letter-spacing:.3px}
+.pl-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plank.long .pl-title{font-size:16px}
+.pl-status{font-size:12px;font-weight:600;color:var(--c)}
+.plank.empty{background:transparent;border-style:dashed;border-color:var(--line2)}
+.plank.empty::before{opacity:.35}
+.plank.empty .pl-title{color:var(--ink3);font-weight:500}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pcard{padding:4px 2px}
+.pc-top{display:flex;justify-content:space-between;align-items:baseline}
+.pc-l{font-weight:600;color:var(--ink2);font-size:14px}
+.pc-n{font:500 16px var(--fd);color:var(--ink3)}.pc-n b{font-size:26px;color:var(--ink);font-weight:600}
+.pbar{height:8px;border-radius:5px;background:var(--surface2);border:1px solid var(--line);overflow:hidden;display:flex;margin:6px 0}
+.pbar i{display:block;height:100%}
+.pbar .p1{background:var(--green)}.pbar .p2{background:var(--cedar);opacity:.6}
+.pc-s{font-size:12px;color:var(--ink3)}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr) 1.4fr 1.4fr;gap:10px;margin-bottom:18px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.tile:hover{border-color:var(--line2)}
+.tn{font:600 30px/1 var(--fd)}.tn.sm{font-size:20px;line-height:1.2}
+.tl{font-size:12.5px;color:var(--ink3);font-weight:500}
+.rail .card-h{padding:12px 16px}
+.mini{list-style:none;margin:0;padding:6px}
+.mini li button{display:flex;flex-direction:column;width:100%;padding:8px 10px;border-radius:7px}
+.mini li button:hover{background:var(--surface2)}
+.mini li b{font-weight:600;font-size:14px;line-height:1.3}
+.mini li span{font-size:12.5px;color:var(--ink3)}
+.mini li.split{display:flex;align-items:center}
+.mini li.split button:first-child{flex:1}
+.mini li.split .icon-btn{width:32px;flex:none;display:grid}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;font-weight:600;color:var(--ink3);padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface2)}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl.clickable tbody tr{cursor:pointer}
+.tbl.clickable tbody tr:hover td{background:var(--surface2)}
+.tbl .t{font-weight:600;min-width:200px}
+.tbl .nw{white-space:nowrap}.tbl .r{text-align:right}.tbl .c{text-align:center}
+.tbl small{display:block;color:var(--ink3);font-size:12px;font-weight:400}
+.late td:first-child{color:var(--red)}
+.late-tag{font-size:11px;font-weight:600;background:var(--redL);color:var(--red);padding:1px 6px;border-radius:5px}
+.tbl.perf td{padding:6px 8px}
+.cellin{width:88px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface2)}
+.cellin:focus{border-color:var(--cedar);outline:none;background:var(--surface)}
+.star{color:var(--amber);margin-right:6px}.star .ic{width:14px;height:14px;fill:currentColor;vertical-align:-2px}
+.star-btn.on{color:var(--amber)}.star-btn.on .ic{fill:currentColor}
+
+/* ---------- pills, tags, chips ---------- */
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.pill.st1{background:var(--slateL);color:var(--slate);border-color:transparent}
+.pill.st2{background:var(--amberL);color:var(--amber);border-color:transparent}
+.pill.st3{background:var(--cedarL);color:var(--cedarD);border-color:transparent}
+.pill.st4{background:var(--cedarL);color:var(--cedarD);border-color:transparent}
+.pill.st5,.pill.st6{background:var(--greenL);color:var(--greenD);border-color:transparent}
+.pill.st7{background:var(--green);color:#fff;border-color:transparent}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.2px}
+.tag.reel{background:var(--cedarL);color:var(--cedarD)}
+.tag.long{background:var(--greenL);color:var(--greenD)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;align-items:center}
+.chip{display:inline-block;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);font-weight:500}
+button.chip:hover{border-color:var(--ink3)}
+.chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip.sm{font-size:12px;padding:1px 8px;border-color:var(--line)}
+.chip.soft{background:var(--surface2)}
+.sumline{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;font-size:14px}
+
+/* ---------- calendar ---------- */
+.cal-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-left:auto;font-size:12.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.dot.reel{background:var(--cedar)}.dot.long{background:var(--green)}.dot.film{background:var(--slate)}.dot.edit{background:var(--amber)}.dot.script{background:var(--ink3)}.dot.plan{background:var(--line2)}
+.cal-scroll{overflow-x:auto}
+.cal{min-width:760px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface2);border-bottom:1px solid var(--line)}
+.cal-dow span{padding:8px 10px;font-size:12px;font-weight:600;color:var(--ink3)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(118px,auto)}
+.cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0}
+.cell:nth-child(7n){border-right:0}
+.cell:hover{background:var(--surface2)}
+.cell.out{background:var(--surface2)}.cell.out .dnum{color:var(--ink3);opacity:.6}
+.dnum{font:600 15px var(--fd);color:var(--ink2);padding:0 3px}
+.cell.today .dnum{background:var(--cedar);color:#fff;border-radius:5px;align-self:flex-start;padding:0 7px}
+.cchip{display:block;font-size:12px;line-height:1.3;padding:3px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;border-left:3px solid;width:100%}
+.cchip.reel{background:var(--cedarL);border-color:var(--cedar);color:var(--ink)}
+.cchip.long{background:var(--greenL);border-color:var(--green);color:var(--ink);font-weight:600}
+.cchip.film{background:var(--slateL);border-color:var(--slate);color:var(--ink2)}
+.cchip.edit{background:var(--amberL);border-color:var(--amber);color:var(--ink2)}
+.cchip.script,.cchip.plan{background:var(--surface2);border-color:var(--ink3);color:var(--ink2)}
+.cchip.done{opacity:.5;text-decoration:line-through}
+.more{font-size:12px;color:var(--ink3);padding:0 4px}
+.daylist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.daylist li{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center}
+.daylist .cchip{width:auto}
+
+/* ---------- kanban ---------- */
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:272px;gap:12px;overflow-x:auto;padding-bottom:14px;align-items:start}
+.kcol{background:var(--surface2);border:1px solid var(--line);border-radius:var(--r2);display:flex;flex-direction:column;max-height:calc(100vh - 210px);transition:border-color .12s,background .12s}
+.kcol.over{border-color:var(--cedar);background:var(--cedarL)}
+.kcol-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 8px}
+.kcol-h h3{font:600 17px var(--fd);letter-spacing:.3px}
+.kcol-b{padding:4px 8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:80px}
+.kempty{font-size:13px;color:var(--ink3);text-align:center;border:1px dashed var(--line2);border-radius:8px;padding:16px;margin:0}
+.kcard{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--cedar);border-radius:8px;padding:10px 12px;cursor:grab;box-shadow:var(--shadow)}
+.kcard.is-long{border-left-color:var(--green)}
+.kcard:hover{border-color:var(--line2)}
+.kcard.dragging{opacity:.45}
+.kc-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.kc-date{font-size:12px;color:var(--ink3);font-weight:500}
+.kcard h4{font-size:14px;line-height:1.3;margin-bottom:6px}
+.kc-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--ink3)}
+.kc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
+
+/* ---------- idea bank ---------- */
+.qa{padding:12px}
+.qa-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qa-row input,.qa-row select{padding:9px 12px;border:1px solid var(--line2);border-radius:8px;background:var(--surface)}
+.qa-row label.grow input{width:100%}
+.qa-row label.grow{min-width:240px}
+.grp{margin-bottom:24px}
+.grp h2{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
+.idea{background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);display:flex;flex-direction:column;justify-content:space-between;padding:4px 4px 12px}
+.idea:hover{border-color:var(--line2)}
+.idea>.btn{margin:0 12px;align-self:flex-start}
+.idea-main{display:grid;grid-template-columns:10px 1fr;gap:4px 10px;padding:10px 10px 10px 12px;align-items:start}
+.prio{width:8px;height:8px;border-radius:50%;margin-top:7px;background:var(--line2)}
+.prio.p-High{background:var(--cedar)}.prio.p-Medium{background:var(--amber)}
+.idea-t{font-weight:600;line-height:1.35}
+.idea-m{grid-column:2;display:flex;flex-wrap:wrap;gap:5px}
+.idea-n{grid-column:2;font-size:13px;color:var(--ink3);line-height:1.4}
+
+/* ---------- this month / lists ---------- */
+.mlist{list-style:none;margin:0;padding:4px 0}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow-t{flex:1;display:flex;flex-direction:column;min-width:0}
+.mrow-t b{font-weight:600}
+.mrow-t span{font-size:12.5px;color:var(--ink3)}
+.mrow.done .mrow-t b{text-decoration:line-through;color:var(--ink3)}
+.chk{display:inline-flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:14px;line-height:1.35}
+.chk input{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:0;flex:none;border:1.5px solid var(--line2);border-radius:5px;background:var(--surface);display:grid;place-items:center;cursor:pointer;margin-top:1px}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:'';width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.chk input:disabled{cursor:default}
+.chk.sm{font-size:13px;color:var(--ink2);margin-left:6px}
+.chk.big{font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);align-items:center}
+.chk.big input{width:22px;height:22px}
+.chk.big:has(input:checked){background:var(--greenL);border-color:transparent}
+
+/* ---------- need to film ---------- */
+.fcard{padding:18px 20px}
+.fc-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.fc-h h3{font:600 22px/1.15 var(--fd);margin-top:6px}
+.due{font-weight:600;font-size:13px;background:var(--slateL);color:var(--slate);padding:4px 10px;border-radius:6px;white-space:nowrap}
+.due.late{background:var(--redL);color:var(--red)}
+.fc-s{padding:10px 0;border-top:1px solid var(--line)}
+.fc-s h4{font-size:12.5px;color:var(--ink3);font-weight:600;margin-bottom:6px}
+.fc-s p{margin:0}
+.pre{white-space:pre-line}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 16px;margin-bottom:10px}
+.fc-f{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+h2.sect{margin:26px 0 12px}
+
+/* ---------- filters, forms ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+.filters label{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:600;color:var(--ink3)}
+select,input[type=text],input[type=date],input[type=month],input[type=number],input[type=url],input:not([type]),textarea{padding:8px 10px;border:1px solid var(--line2);border-radius:7px;background:var(--surface);color:var(--ink);font-size:14px;min-width:0}
+textarea{resize:vertical;line-height:1.45;width:100%}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--cedar);box-shadow:0 0 0 3px var(--cedarL)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin-bottom:12px}
+.form-grid.two{grid-template-columns:1fr 1fr}
+.form-grid.three{grid-template-columns:repeat(3,1fr)}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0;border:0;padding:0;margin:0 0 4px}
+.fld.wide{grid-column:1/-1}
+.fld label,.fld legend{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.fld input:not([type=checkbox]),.fld select,.fld textarea{width:100%}
+.plats{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:6px}
+
+/* ---------- performance ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.kpis div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);padding:12px 16px;display:flex;flex-direction:column}
+.kpis b{font:600 28px/1.1 var(--fd)}
+.kpis span{font-size:12.5px;color:var(--ink3)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:0 18px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.brow{display:grid;grid-template-columns:130px 1fr 64px;gap:10px;align-items:center;font-size:13px}
+.bl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink2)}
+.bt{height:12px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bt i{display:block;height:100%;background:var(--green);border-radius:4px}
+.bv{text-align:right;font-weight:600}
+.colchart{display:flex;gap:10px;align-items:flex-end;height:170px;padding-top:18px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;min-width:0}
+.col i{width:100%;max-width:46px;background:var(--cedar);border-radius:4px 4px 0 0}
+.cv{font-size:11.5px;font-weight:600;color:var(--ink2)}
+.cl{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.win-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0 18px}
+.dl{display:grid;grid-template-columns:100px 1fr;gap:6px 12px;margin:0 0 14px;font-size:14px}
+.dl dt{color:var(--ink3);font-weight:600;font-size:12.5px}
+.dl dd{margin:0}
+
+/* ---------- templates ---------- */
+.tpl{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:10px}
+.tpl-col h4{font:600 17px var(--fd);margin-bottom:6px}
+.tpl-col ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink2);line-height:1.8}
+.tpl-col ul.tpl-check{list-style:none;padding:0}
+.tpl-col ul.tpl-check li::before{content:'';display:inline-block;width:12px;height:12px;border:1.5px solid var(--line2);border-radius:3px;margin-right:9px;vertical-align:-1px}
+.js-h{font:600 20px var(--fd);margin:20px 0 10px}
+.js-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.sug{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-top:20px}
+.sug-i{border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;background:var(--surface2)}
+.sug-i h4{margin-bottom:4px;font-size:14.5px}
+.sug-i p{margin:0 0 8px;font-size:13px;color:var(--ink2)}
+.sug-i .btn{align-self:flex-start}
+.pillars{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.pillars h4{font:600 18px var(--fd)}
+.pillars p{margin:4px 0 0;font-size:13.5px}
+
+/* ---------- plan ---------- */
+.steps{list-style:none;padding:0;margin:14px 0 8px;display:flex;flex-direction:column}
+.steps li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:0}
+.steps li em{font-style:normal;font-size:12px;color:var(--ink3);white-space:nowrap}
+.steps li.done .chk span{color:var(--ink3)}
+.slots{list-style:none;padding:0;margin:12px 0 0}
+.slot{display:grid;grid-template-columns:96px 120px 1fr;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.slot:last-child{border-bottom:0}
+.slot-d{font:600 15px var(--fd);color:var(--ink2)}
+.slot-k{font-size:12px;font-weight:600}
+.slot-k.reel{color:var(--cedarD)}.slot-k.long{color:var(--greenD)}
+.slot-c{min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.slot-pick{display:flex;gap:6px;flex-wrap:wrap;width:100%}
+.slot-pick select{flex:1;min-width:150px;font-size:13px;padding:6px 8px}
+.plan-mini .card-b .btn{margin-top:4px}
+.plan-mini p{margin:6px 0}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,20,19,.4);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(720px,100vw);background:var(--surface);z-index:41;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.18);transform:translateX(30px);opacity:0;transition:transform .2s ease,opacity .2s ease;outline:none}
+.drawer.open{transform:none;opacity:1}
+.drawer.still{transition:none}
+.dr-h{padding:16px 22px 10px;border-bottom:1px solid var(--line)}
+.dr-top{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.dr-top .icon-btn{margin-left:auto}
+.dr-title{width:100%;border:0!important;box-shadow:none!important;padding:2px 0!important;font:600 28px/1.15 var(--fd)!important;background:none!important;letter-spacing:.2px}
+.dr-tabs{display:flex;gap:2px;padding:0 16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.dr-tabs button{padding:11px 10px;font-size:13.5px;font-weight:600;color:var(--ink3);border-bottom:2px solid transparent;white-space:nowrap}
+.dr-tabs button.on{color:var(--ink);border-bottom-color:var(--cedar)}
+.dr-b{flex:1;overflow-y:auto;padding:18px 22px 30px}
+.dr-sec{font:600 19px var(--fd);margin:18px 0 10px;letter-spacing:.2px}
+.dr-sec:first-child{margin-top:0}
+.dr-f{display:flex;gap:8px;align-items:center;padding:12px 22px;border-top:1px solid var(--line);background:var(--surface2)}
+.shorts{display:flex;flex-direction:column;gap:10px}
+.short{border:1px solid var(--line);border-radius:var(--r2);padding:10px 12px 0;background:var(--surface2)}
+.short-h{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.short-h b{margin-right:auto}
+
+/* ---------- modal, toast ---------- */
+.scrim.show{z-index:50}
+.modal{position:fixed;z-index:51;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:var(--surface);border-radius:var(--r3);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 6px}
+.modal-h h3{font:600 22px var(--fd)}
+.modal-b{padding:6px 20px 20px}
+.modal-b .fld{margin-bottom:12px}
+.modal-b p{margin:0 0 12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:9px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:all .2s;z-index:60}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .tiles{grid-template-columns:repeat(5,1fr)}
+  .tile.wide{grid-column:span 5}
+  .tiles .tile.wide+.tile.wide{grid-column:span 5}
+}
+@media (max-width:1024px){
+  .cols2,.cols2.plan{grid-template-columns:1fr}
+  .tpl{grid-template-columns:1fr 1fr}
+}
+@media (max-width:820px){
+  #shell{flex-direction:column}
+  #side{width:auto;height:auto;position:sticky;top:0;z-index:25;padding:8px 10px;flex-direction:row;align-items:center;gap:8px}
+  .brand{padding:0 4px}
+  .brand-text small{display:none}
+  #nav{flex-direction:row;overflow-x:auto;gap:2px;scrollbar-width:none}
+  #nav::-webkit-scrollbar{display:none}
+  .nav-i{white-space:nowrap;padding:8px 10px;font-size:13px}
+  .nav-i.on::before{display:none}
+  .nav-i .ic{display:none}
+  .nav-sep{display:none}
+  .side-foot{display:none}
+  #top{top:54px;padding:10px 14px}
+  .page{padding:18px 14px 50px}
+  h1{font-size:28px}.hero h1{font-size:34px}
+  .hero{padding:16px}
+  .pcards{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(3,1fr)}
+  .tile.wide,.tiles .tile.wide+.tile.wide{grid-column:span 3}
+  .cols2.even{grid-template-columns:1fr}
+  .pl-body{grid-template-columns:60px minmax(0,1fr);gap:4px 10px;padding:6px 10px 6px 14px}
+  .pl-status{grid-column:2}
+  .form-grid,.form-grid.two,.form-grid.three{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .tpl{grid-template-columns:1fr}
+  .slot{grid-template-columns:1fr 1fr}
+  .slot-c{grid-column:1/-1}
+  .fc-h{flex-direction:column}
+  .fc-f .btn{flex:1}
+  .shots{grid-template-columns:1fr 1fr}
+  .dr-h,.dr-b,.dr-f{padding-left:16px;padding-right:16px}
+  .search{max-width:none}
+}
+@media (max-width:480px){
+  .shots{grid-template-columns:1fr}
+  .chk.big{font-size:16px;padding:13px 14px}
+  #addbtn{padding:9px 12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+</style>
+</head>
+<body>
+<div id="shell">
+  <aside id="side">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand-text"><b>Content HQ</b><small id="brandSub">Deck content planner</small></span>
+    </div>
+    <nav id="nav" aria-label="Main"></nav>
+    <div class="side-foot">
+      <button class="btn ghost-light block" data-act="planGo" data-next="1">Plan next month</button>
+      <p id="storeNote" class="store-note"></p>
+    </div>
+  </aside>
+  <div id="content">
+    <header id="top">
+      <label class="search"><span class="sr">Search all content</span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="q" type="search" placeholder="Search all content" autocomplete="off">
+      </label>
+      <div id="addwrap">
+        <button class="btn accent" data-act="addmenu" aria-haspopup="true" aria-expanded="false" id="addbtn">+ Add Content</button>
+        <div id="addmenu" class="menu" role="menu">
+          <button role="menuitem" data-act="add" data-kind="reel">Create Reel</button>
+          <button role="menuitem" data-act="add" data-kind="long">Create Long-Form Video</button>
+          <button role="menuitem" data-act="add" data-kind="idea">Add Idea</button>
+          <button role="menuitem" data-act="add" data-kind="recap">Add Monthly Recap</button>
+          <button role="menuitem" data-act="add" data-kind="project">Add Project</button>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+</div>
+<div id="drawer-wrap"></div>
+<div id="modal-wrap"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+'use strict';
+
+/* ================= constants ================= */
+const LS_KEY='contentHQ.deck.v1';
+const STATUSES=['Idea','Scripting','Ready to Film','Filming','Editing','Ready to Post','Scheduled','Posted'];
+const PRIORITIES=['High','Medium','Low'];
+const PLATFORMS=['YouTube','YouTube Shorts','Instagram','Facebook'];
+const PLAT_SHORT={'YouTube':'YouTube','YouTube Shorts':'Shorts','Instagram':'Instagram','Facebook':'Facebook'};
+const TOPICS=['Construction','Materials','Payments','Buying Process','Company','Deck Options','Maintenance','Roofs','Pool Decks','FAQs','Customer Pain Points'];
+const GROUPS=['Buying / Sales','Construction','Materials','Products / Options','Company / Trust'];
+const GROUP_FOR={'Payments':'Buying / Sales','Buying Process':'Buying / Sales','Customer Pain Points':'Buying / Sales','Construction':'Construction','Materials':'Materials','Maintenance':'Materials','Deck Options':'Products / Options','Roofs':'Products / Options','Pool Decks':'Products / Options','Company':'Company / Trust','FAQs':'Company / Trust'};
+const groupFor=t=>GROUP_FOR[t]||'Company / Trust';
+const PILLARS=[
+ {name:'Projects',purpose:'Show craftsmanship and finished work.',ex:['Finished deck walkthrough','Before and after','Construction progress','Project reveal','Customer project story']},
+ {name:'Education',purpose:'Teach homeowners about decks.',ex:['Composite vs treated wood','Maintenance','Deck lifespan','Materials','Fasteners','Construction methods']},
+ {name:'Problems',purpose:'Help homeowners recognize problems. Keep it helpful, not fear-based.',ex:['Rot','Improper framing','Unsafe stairs','Loose railing','Poor drainage','Bad construction']},
+ {name:'Design',purpose:'Help homeowners imagine their future deck.',ex:['Railings','Roof styles','Skirting','Stairs','Pergolas','Lighting','Gates','Ramps']},
+ {name:'Trust',purpose:'Make customers more comfortable buying from the company.',ex:['Meet the team','Buying process','Warranty','Why the company started','Customer experience','FAQs']},
+ {name:'Payments',purpose:'Explain ways customers can pay.',ex:['Cash','Rent-to-own','Traditional financing / HFS','Payment comparisons']},
+ {name:'Local',purpose:'Content relevant to customers in North Texas and Southern Oklahoma.',ex:['Texas heat','Storms','Weather','Deck maintenance in this climate','Outdoor living']}
+];
+const PILLAR_NAMES=PILLARS.map(p=>p.name);
+const REEL_SHOTS=[['talking','Talking head'],['wide','Wide deck footage'],['detail','Detail shots'],['before','Before footage'],['after','After footage'],['construction','Construction B-roll'],['product','Product / material close-up'],['other','Other']];
+const PROD_STEPS=[['script','Script finished'],['filmed','Filmed'],['uploaded','Footage uploaded'],['edited','Edited'],['captions','Captions added'],['cover','Cover / thumbnail finished'],['caption','Caption written'],['scheduled','Scheduled'],['posted','Posted']];
+const JOBSITE=[
+ {g:'Before',items:['Wide shot of house','Existing deck / patio','Problem areas','Backyard context','Before walkthrough']},
+ {g:'During',items:['Demolition','Footings','Posts','Beams','Joists','Framing','Deck boards','Railings','Steps','Crew working','Material close-ups','Interesting construction detail']},
+ {g:'After',items:['Wide hero shot','Front angle','Side angle','View from house','Decking close-up','Railings','Steps','Roof / pergola','Add-ons','Vertical walkthrough','Horizontal walkthrough','Before / after comparison','Customer reaction if available']}
+];
+const RECAP_FIELDS=[['month','Month'],['projects','Projects completed'],['bestClips','Best finished deck clips'],['team','Team footage'],['construction','Construction footage'],['beforeAfter','Before / afters'],['funny','Funny / human moments'],['customer','Customer moments'],['bestProject','Best project of the month'],['cta','CTA']];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const RHYTHM=[{w:0,dow:2,kind:'Reel'},{w:0,dow:4,kind:'Long Form'},{w:1,dow:2,kind:'Reel'},{w:1,dow:5,kind:'Reel'},{w:2,dow:2,kind:'Reel'},{w:2,dow:4,kind:'Long Form'},{w:3,dow:2,kind:'Reel'},{w:3,dow:5,kind:'Recap'}];
+
+const ICONS={
+ home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+ calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+ columns:'<path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/>',
+ bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+ list:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+ camera:'<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+ check:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+ chart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+ layout:'<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+ sliders:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+ database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',
+ star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+ x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+ left:'<polyline points="15 18 9 12 15 6"/>',
+ right:'<polyline points="9 18 15 12 9 6"/>',
+ ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+ plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'
+};
+
+/* ================= helpers ================= */
+const $=(s,r)=> (r||document).querySelector(s);
+const $$=(s,r)=> Array.from((r||document).querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const I=(n,c)=>'<svg class="ic '+(c||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[n]||'')+'</svg>';
+const pad=n=>String(n).padStart(2,'0');
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const today=()=>ds(new Date());
+const addDays=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d);};
+const mk=s=>s?String(s).slice(0,7):'';
+const addMonths=(k,n)=>{const a=k.split('-').map(Number);return ds(new Date(a[0],a[1]-1+n,1)).slice(0,7);};
+const monthName=k=>MONTHS[+k.slice(5,7)-1];
+const monthLabel=k=>k?monthName(k)+' '+k.slice(0,4):'';
+const fmt=s=>{if(!s)return '';const a=s.split('-').map(Number);return MON3[a[1]-1]+' '+a[2];};
+const fmtW=s=>s?DOW[pd(s).getDay()]+', '+fmt(s):'';
+const gp=(o,p)=>p.split('.').reduce((a,k)=>a==null?a:a[k],o);
+const sp=(o,p,v)=>{const ks=p.split('.');let a=o;for(let i=0;i<ks.length-1;i++){if(a[ks[i]]==null)a[ks[i]]={};a=a[ks[i]];}a[ks[ks.length-1]]=v;};
+const num=v=>{const n=parseFloat(v);return isNaN(n)?0:n;};
+const nf=n=>Math.round(n).toLocaleString('en-US');
+let _c=0;
+const uid=()=>'i'+Date.now().toString(36)+(++_c).toString(36)+Math.random().toString(36).slice(2,5);
+const prioRank={High:0,Medium:1,Low:2};
+const stIdx=s=>STATUSES.indexOf(s);
+
+function rhythmDates(key){
+  const y=+key.slice(0,4), m=+key.slice(5,7)-1;
+  const first=new Date(y,m,1), last=new Date(y,m+1,0).getDate();
+  const lastS=key+'-'+pad(last), firstS=key+'-01';
+  let mon=1+((8-first.getDay())%7);
+  const build=mo=>RHYTHM.map(r=>{const d=new Date(y,m,mo+r.w*7+(r.dow-1));return Object.assign({},r,{date:ds(d)});});
+  let out=build(mon);
+  if(out[7].date>lastS){mon-=7;out=build(mon);}
+  return out.map(r=>Object.assign({},r,{date:r.date<firstS?firstS:(r.date>lastS?lastS:r.date)}));
+}
+
+/* ================= data model ================= */
+function defaultPlatforms(type){return type==='Long Form'?['YouTube','Facebook']:['YouTube Shorts','Instagram','Facebook'];}
+function newItem(type,o){
+  type=type||'Reel';
+  const base={
+    id:uid(),title:'',workingTitle:'',type:type,reelKind:type==='Reel'?'Standalone':'',
+    pillar:'Education',topic:'Construction',group:'Construction',status:'Scripting',priority:'Medium',notes:'',ideaFormat:'',roadmap:0,
+    plannedMonth:'',planDate:'',scriptDate:'',filmDate:'',editDate:'',publishDate:'',
+    platforms:defaultPlatforms(type),
+    mainTopic:'',audienceProblem:'',mainMessage:'',takeaway:'',cta:'',offer:'',
+    hook:'',script:'',talking:'',shotText:'',broll:'',jobsite:'',location:'',
+    thumbNeeded:true,thumbStatus:'Not started',captionNeeded:true,captionStatus:'Not started',
+    goal:'',points:['','',''],
+    finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],conclusion:'',thumbIdea:'',
+    recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
+    shots:{},prod:{},
+    shorts:type==='Long Form'?[{hook:'',section:'',reelId:''},{hook:'',section:'',reelId:''},{hook:'',section:'',reelId:''}]:[],
+    parentId:'',repurposedFrom:'',relatedId:'',
+    publishedLink:'',publishedDate:'',
+    perf:{views:'',likes:'',comments:'',shares:'',saves:'',watchHours:'',avgDuration:'',leads:'',learnings:''},
+    winning:false,winWhy:'',winReuse:'',
+    created:Date.now()+_c
+  };
+  return Object.assign(base,o||{});
+}
+function normalize(it){
+  const base=newItem(it.type||'Reel');
+  const m=Object.assign({},base,it);
+  ['perf','recap','shots','prod'].forEach(k=>{m[k]=Object.assign({},base[k],it[k]||{});});
+  if(!Array.isArray(m.points))m.points=['','',''];
+  while(m.points.length<3)m.points.push('');
+  if(!Array.isArray(m.sections))m.sections=['','','','',''];
+  while(m.sections.length<5)m.sections.push('');
+  if(!Array.isArray(m.shorts))m.shorts=[];
+  if(!Array.isArray(m.platforms))m.platforms=defaultPlatforms(m.type);
+  return m;
+}
+function autoDates(it,st,min){
+  if(!it.publishDate)return;
+  const o=st.offsets, lo=min||today();
+  const cl=d=>d<lo?lo:d;
+  it.filmDate=cl(addDays(it.publishDate,-o.film));
+  it.editDate=cl(addDays(it.publishDate,-o.edit));
+  if(it.editDate<it.filmDate)it.editDate=it.filmDate;
+  it.scriptDate=cl(addDays(it.filmDate,-o.script));
+  it.planDate=cl(addDays(it.scriptDate,-o.plan));
+}
+
+/* ================= starter content ================= */
+const IDEAS=[
+ ['Intro to who we are and why we started','Trust','Company','Company / Trust','Both','High',''],
+ ['What our payment options are and the benefits of each','Payments','Payments','Buying / Sales','Both','High','Cover cash, Rent-to-Own, and traditional financing (HFS).'],
+ ['Composite vs treated wood','Education','Materials','Materials','Both','High',''],
+ ['How to stain a deck and perform deck upkeep','Education','Maintenance','Materials','Both','Medium',''],
+ ['How our decks are built (the framing) and why the construction helps them last','Education','Construction','Construction','Long Form','High',''],
+ ['Full buying-process video series for the website, built to earn customer trust','Trust','Buying Process','Buying / Sales','Long Form','High','Series idea: one video per step of the buying process.'],
+ ['What our roofing is and how it is framed','Education','Roofs','Construction','Both','Medium',''],
+ ['Overview of all deck types and deck options','Design','Deck Options','Products / Options','Long Form','Medium',''],
+ ['Railing options and the pros and cons of each','Design','Deck Options','Materials','Both','Medium',''],
+ ['How Rent-to-Own works, and how Rent-to-Own decks are constructed','Payments','Payments','Buying / Sales','Long Form','High',''],
+ ['Paying cash, and how permanent decks are built','Payments','Payments','Buying / Sales','Long Form','Medium',''],
+ ['HFS / traditional financing: the benefits and how to apply','Payments','Payments','Buying / Sales','Both','Medium',''],
+ ['Why we are easy to work with','Trust','Company','Company / Trust','Reel','Medium',''],
+ ['All add-on options','Design','Deck Options','Products / Options','Long Form','Medium','Extra steps, ramps, removing railings, stain, skirting, gates, paint, screening, upgrade to 6x6 posts, butyl tape / joist tape.'],
+ ['Roof options: single slope, A-frame, and pergola','Design','Roofs','Products / Options','Both','Medium',''],
+ ['How our steps are built and what makes the construction method different','Education','Construction','Construction','Reel','Medium',''],
+ ['Pool decks, and how Rent-to-Own construction differs from permanent / cash construction','Education','Pool Decks','Products / Options','Long Form','Medium',''],
+ ["Meet the team and explain each person's job",'Trust','Company','Company / Trust','Both','Medium','Could be interview / handheld-microphone style.'],
+ ['What stains and paints we use and why','Education','Materials','Materials','Reel','Medium',''],
+ ['What screws / fasteners we use and why','Education','Construction','Construction','Reel','Medium',''],
+ ['Explanation of the 2-year warranty','Trust','Company','Company / Trust','Reel','High',''],
+ ['Demo of the 3D deck configurator and how easy it is to submit a quote request','Trust','Buying Process','Buying / Sales','Reel','High',''],
+ ['Commonly asked customer questions and answers','Trust','FAQs','Company / Trust','Both','Medium',''],
+ ['Customer pain-point videos with calls to action','Problems','Customer Pain Points','Buying / Sales','Reel','Medium','Keep it helpful, not fear-based. End with a clear CTA.'],
+ ['Monthly recap','Trust','Company','Company / Trust','Reel','Low','Recurring Reel format. See the Monthly Recap template.']
+];
+
+/* [title, pillar, topic] — slot order: L = long form, R = reels (5 + recap) */
+const ROADMAP=[
+ {theme:'Introduction & trust',
+  L:[['Who We Are & Why We Started','Trust','Company'],['The Complete Deck Buying Process','Trust','Buying Process']],
+  R:[['Who Is Benchmark Decks?','Trust','Company'],['The Easiest Way to Get a Deck Quote / 3D Configurator','Trust','Buying Process'],["Why We're Easy to Work With",'Trust','Company'],['Meet the Team','Trust','Company'],['Common Deck Question','Trust','FAQs']],
+  rep:[[0,0],[4,1]]},
+ {theme:'How we build decks',
+  L:[['How We Build Our Decks: Full Framing Breakdown','Education','Construction'],['Composite vs Treated Wood','Education','Materials']],
+  R:[['Why Our Framing Is Built This Way','Education','Construction'],['Why Someone Might Choose 6x6 Posts','Education','Construction'],['Composite vs Treated Wood in 60 Seconds','Education','Materials'],['What Screws / Fasteners We Use','Education','Construction'],['How Our Steps Are Built','Education','Construction']],
+  rep:[[0,0],[2,1]]},
+ {theme:'Payment options',
+  L:[['Every Way You Can Pay for a Deck','Payments','Payments'],['Rent-to-Own Decks: Everything You Need to Know','Payments','Payments']],
+  R:[['Our 3 Payment Options','Payments','Payments'],['No-Credit-Check Rent-to-Own','Payments','Payments'],['How HFS Financing Works','Payments','Payments'],['Rent-to-Own vs Permanent Deck Construction','Education','Construction'],['Payment Pain-Point Video','Problems','Customer Pain Points']],
+  rep:[[0,0],[3,1]]},
+ {theme:'Customize your deck',
+  L:[['Every Deck Option We Offer','Design','Deck Options'],['Covered Decks: Single Slope vs A-Frame vs Pergola','Design','Roofs']],
+  R:[['Our 3 Roof Options','Design','Roofs'],['Deck Railing Options','Design','Deck Options'],['5 Upgrades You Can Add to Your Deck','Design','Deck Options'],['What Is Joist Tape?','Education','Construction'],['One Upgrade Homeowners Forget About','Design','Deck Options']],
+  rep:[[0,1],[1,0]]},
+ {theme:'Deck maintenance',
+  L:[['How to Maintain a Wood Deck','Education','Maintenance'],['How We Protect Our Decks and Help Them Last','Education','Construction']],
+  R:[['How Often Should You Stain a Deck?','Education','Maintenance'],['What Stain We Use and Why','Education','Materials'],['Common Deck Maintenance Mistake','Problems','Maintenance'],['What Joist Tape Does','Education','Construction'],['Our 2-Year Warranty Explained','Trust','Company']],
+  rep:[[0,0],[1,1]]},
+ {theme:'Specialty decks & FAQ',
+  L:[['Everything You Need to Know About Pool Decks','Education','Pool Decks'],['Deck FAQ: Answering Our Most Common Questions','Trust','FAQs']],
+  R:[['Can You Build Around an Existing Pool?','Design','Pool Decks'],['Permanent vs Rent-to-Own Pool Deck Construction','Education','Pool Decks'],['Do You Need a Site Visit to Get Started?','Trust','FAQs'],['How Long Does a Deck Take to Build?','Trust','FAQs'],['FAQ of the Month','Trust','FAQs']],
+  rep:[[0,0],[4,1]]}
+];
+
+function seed(){
+  const st={v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},
+    settings:{reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks',offsets:{film:7,edit:2,script:3,plan:3}}};
+  IDEAS.forEach(r=>{
+    st.items.push(newItem(r[4]==='Long Form'?'Long Form':'Reel',{title:r[0],pillar:r[1],topic:r[2],group:r[3],ideaFormat:r[4],priority:r[5],notes:r[6],status:'Idea',
+      reelKind:r[0]==='Monthly recap'?'Recap':(r[4]==='Long Form'?'':'Standalone')}));
+  });
+  const t=today(), startKey=mk(addDays(t,7)), minD=addDays(t,1);
+  const order=[['R',0],['L',0],['R',1],['R',2],['R',3],['L',1],['R',4],['C',0]];
+  ROADMAP.forEach((m,mi)=>{
+    const key=addMonths(startKey,mi), slots=rhythmDates(key);
+    st.roadmapThemes[key]=m.theme;
+    const longs=[],reels=[];
+    order.forEach((o,si)=>{
+      const k=o[0], i=o[1], date=slots[si].date;
+      const common={plannedMonth:key,publishDate:date,roadmap:mi+1,status:mi===0?'Scripting':'Idea',notes:'Six-month roadmap: '+m.theme+'.'};
+      let it;
+      if(k==='L'){const a=m.L[i];it=newItem('Long Form',Object.assign({title:a[0],pillar:a[1],topic:a[2],group:groupFor(a[2])},common));longs[i]=it;}
+      else if(k==='R'){const a=m.R[i];it=newItem('Reel',Object.assign({title:a[0],pillar:a[1],topic:a[2],group:groupFor(a[2])},common));reels[i]=it;}
+      else{it=newItem('Reel',Object.assign({title:monthName(key)+' Monthly Recap',pillar:'Trust',topic:'Company',group:'Company / Trust',reelKind:'Recap',priority:'Medium'},common));it.recap.month=monthName(key);}
+      if(mi===0)autoDates(it,st.settings,minD);
+      st.items.push(it);
+    });
+    m.rep.forEach(r=>{
+      const reel=reels[r[0]], lg=longs[r[1]];
+      reel.reelKind='Repurposed';reel.parentId=lg.id;
+      const slot=lg.shorts.find(s=>!s.reelId);
+      if(slot){slot.hook=reel.title;slot.reelId=reel.id;}
+    });
+  });
+  // a little worked example so the first two videos are ready to film
+  const first=st.items.find(i=>i.title==='Who Is Benchmark Decks?'&&i.roadmap===1);
+  const firstL=st.items.find(i=>i.title==='Who We Are & Why We Started'&&i.roadmap===1);
+  if(first){Object.assign(first,{status:'Ready to Film',mainTopic:'Who Benchmark Decks is',goal:'Introduce the company to homeowners in Northern Texas and Southern Oklahoma.',
+    audienceProblem:"Homeowners don't know who we are or whether they can trust a deck builder they just found online.",
+    mainMessage:'We build custom decks and outdoor structures, and we make the process easy.',points:['Who we are and where we build','What we build','Why homeowners trust us'],
+    cta:'Request a quote with our 3D configurator.',talking:'Who we are and where we build (Northern Texas & Southern Oklahoma)\nWhat we build\nWhy homeowners trust us\nCTA: request a quote with the 3D configurator',
+    broll:'Crew working, finished deck wide shot, materials close-up',jobsite:'Wide hero shot of a finished deck',location:'Any active jobsite or finished project'});}
+  if(firstL){Object.assign(firstL,{status:'Ready to Film',mainQuestion:'Who is Benchmark Decks, and why should I trust them with my deck?',
+    targetViewer:'Homeowners in Northern Texas and Southern Oklahoma who are thinking about a deck',audienceProblem:"They don't know the company yet and aren't sure what the process looks like.",
+    takeaway:"We're a builder you can understand, trust, and work with easily.",sections:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'],
+    cta:'Use the 3D configurator to request a quote.',broll:'Jobsite footage, finished decks, team at work',location:'Finished project or active jobsite'});}
+  return st;
+}
+
+/* ================= state ================= */
+let S=null, memOnly=false, saveT=null;
+function storageOk(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
+function load(){
+  try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){return fixState(o);}}}catch(e){}
+  return null;
+}
+function fixState(o){
+  const st=Object.assign({v:1,projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}}},o);
+  st.settings=Object.assign({reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks'},o.settings||{});
+  st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},(o.settings||{}).offsets||{});
+  st.items=o.items.map(normalize);
+  return st;
+}
+function save(now){
+  if(saveT){clearTimeout(saveT);saveT=null;}
+  const go=()=>{saveT=null;try{localStorage.setItem(LS_KEY,JSON.stringify(S));memOnly=false;}catch(e){memOnly=true;}updateStoreNote();};
+  if(now)go();else saveT=setTimeout(go,250);
+}
+const getItem=id=>S.items.find(i=>i.id===id);
+const monthOf=it=>it.plannedMonth||mk(it.publishDate)||'';
+const itemsIn=k=>S.items.filter(i=>monthOf(i)===k);
+const byPub=(a,b)=>(a.publishDate||'9999').localeCompare(b.publishDate||'9999')||(a.created-b.created);
+const title=it=>it.title||it.workingTitle||(it.type==='Long Form'?'Untitled long-form video':'Untitled Reel');
+const platText=it=>(it.platforms||[]).map(p=>PLAT_SHORT[p]).join(' / ')||'No platform';
+const pill=st=>'<span class="pill st'+stIdx(st)+'">'+esc(st)+'</span>';
+const typeTag=it=>'<span class="tag '+(it.type==='Long Form'?'long':'reel')+'">'+(it.type==='Long Form'?'Long Form':'Reel')+'</span>';
+
+/* ================= ui state ================= */
+function blankProj(){return {name:'',city:'',deckType:'',materials:'',features:'',challenges:'',goal:''};}
+const ui={
+  view:'dashboard',month:'',calMonth:'',calMode:'content',planMonth:'',pipeMonth:'',q:'',
+  ideaTopic:'All',ideaRoadmap:false,lib:{},perf:{type:'',platform:'',pillar:'',month:''},perfTab:'overview',
+  tplTab:'reel',pub:{type:'',pillar:'',platform:''},projDraft:blankProj(),projResults:false,
+  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null
+};
+function focusMonthDefault(){
+  const cur=mk(today());
+  for(let i=0;i<7;i++){const k=addMonths(cur,i);if(itemsIn(k).length)return k;}
+  return cur;
+}
+
+/* ================= shared view bits ================= */
+const NAV=[['dashboard','Dashboard','home'],['calendar','Content Calendar','calendar'],['pipeline','Production Pipeline','columns'],['ideas','Idea Bank','bulb'],['month','This Month','list'],['film','Need to Film','camera'],['published','Published Content','check'],['performance','Performance','chart'],['templates','Templates','layout'],['settings','Settings','sliders']];
+function navHtml(){
+  const badge={ideas:S.items.filter(i=>i.status==='Idea'&&!i.roadmap).length,film:S.items.filter(i=>i.status==='Ready to Film').length};
+  return NAV.map(n=>'<button class="nav-i '+(ui.view===n[0]?'on':'')+'" data-act="nav" data-view="'+n[0]+'">'+I(n[2])+'<span>'+n[1]+'</span>'+(badge[n[0]]?'<em>'+badge[n[0]]+'</em>':'')+'</button>').join('')
+   +'<div class="nav-sep"></div><button class="nav-i '+(ui.view==='library'?'on':'')+'" data-act="nav" data-view="library">'+I('database')+'<span>All content</span></button>';
+}
+function head(h,sub,actions){return '<div class="ph"><div><h1>'+h+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div>'+(actions?'<div class="ph-actions">'+actions+'</div>':'')+'</div>';}
+function monthNav(target,key){
+  return '<div class="mnav"><button class="icon-btn" data-act="mnav" data-target="'+target+'" data-dir="-1" aria-label="Previous month">'+I('left')+'</button><span>'+esc(monthLabel(key))+'</span><button class="icon-btn" data-act="mnav" data-target="'+target+'" data-dir="1" aria-label="Next month">'+I('right')+'</button></div>';
+}
+function empty(msg,btn){return '<div class="empty"><p>'+msg+'</p>'+(btn||'')+'</div>';}
+function opts(list,sel,blank){
+  return (blank!=null?'<option value="">'+esc(blank)+'</option>':'')+list.map(x=>{const v=Array.isArray(x)?x[0]:x, l=Array.isArray(x)?x[1]:x;return '<option value="'+esc(v)+'" '+(v===sel?'selected':'')+'>'+esc(l)+'</option>';}).join('');
+}
+function itemMonths(){return Array.from(new Set(S.items.map(monthOf).filter(Boolean))).sort();}
+
+/* ================= dashboard ================= */
+function plank(it){
+  const idx=stIdx(it.status), pct=Math.max(8,Math.round(idx/7*100));
+  return '<button class="plank '+(it.type==='Long Form'?'long':'reel')+(idx===7?' done':'')+'" data-act="edit" data-id="'+it.id+'" style="--fill:'+pct+'%">'
+   +'<span class="meter"><i></i></span><span class="pl-body"><span class="pl-date">'+(fmt(it.publishDate)||'No date yet')+'</span><span class="pl-title">'+esc(title(it))+'</span><span class="pl-status">'+esc(it.status)+'</span></span></button>';
+}
+function plankEmpty(kind,key){
+  return '<button class="plank empty '+kind+'" data-act="planGo" data-month="'+key+'"><span class="meter"><i></i></span><span class="pl-body"><span class="pl-date">Open slot</span><span class="pl-title">'+(kind==='long'?'Long-form video':'Reel')+' still to plan</span><span class="pl-status">Plan it</span></span></button>';
+}
+function prog(label,list,target){
+  const d=list.filter(i=>i.status==='Posted').length, r=list.filter(i=>i.status==='Scheduled'||i.status==='Ready to Post').length;
+  const p1=Math.min(100,d/target*100), p2=Math.min(100-p1,r/target*100);
+  return '<div class="pcard"><div class="pc-top"><span class="pc-l">'+label+'</span><span class="pc-n"><b>'+d+'</b> / '+target+'</span></div><div class="pbar" role="img" aria-label="'+d+' of '+target+' completed"><i class="p1" style="width:'+p1+'%"></i><i class="p2" style="width:'+p2+'%"></i></div><div class="pc-s">completed'+(r?' · '+r+' lined up to post':'')+'</div></div>';
+}
+function tile(n,label,view){return '<button class="tile" data-act="nav" data-view="'+view+'"><span class="tn">'+n+'</span><span class="tl">'+label+'</span></button>';}
+
+function viewDashboard(){
+  const key=ui.month, t=today(), its=itemsIn(key).sort(byPub);
+  const reels=its.filter(i=>i.type==='Reel'), longs=its.filter(i=>i.type==='Long Form');
+  const T=S.settings, nR=T.reelTarget, nL=T.longTarget;
+  const cnt=s=>its.filter(i=>i.status===s).length;
+  const posted=cnt('Posted');
+  const planks=its.map(plank).join('')
+    +Array(Math.max(0,nR-reels.length)).fill(0).map(()=>plankEmpty('reel',key)).join('')
+    +Array(Math.max(0,nL-longs.length)).fill(0).map(()=>plankEmpty('long',key)).join('');
+  const filmDates=S.items.filter(i=>i.filmDate&&i.filmDate>=t&&['Scripting','Ready to Film','Filming'].includes(i.status)).map(i=>i.filmDate).sort();
+  const nextFilm=filmDates[0], nFilmCount=filmDates.filter(d=>d===nextFilm).length;
+  const pubs=S.items.filter(i=>i.status!=='Posted'&&i.publishDate&&i.publishDate>=t).map(i=>i.publishDate).sort();
+  const nextPub=pubs[0];
+  const up=S.items.filter(i=>i.status!=='Posted'&&i.publishDate&&i.publishDate>=addDays(t,-14)).sort(byPub).slice(0,8);
+  const rtf=S.items.filter(i=>i.status==='Ready to Film').sort((a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')).slice(0,4);
+  const nextIdeas=S.items.filter(i=>i.status==='Idea'&&!i.roadmap).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]||a.created-b.created).slice(0,4);
+  const nextPlan=addMonths(mk(t),1), steps=planSteps(nextPlan), stepsDone=steps.filter(s=>s.done).length;
+  return '<div class="page">'
+   +'<section class="hero"><div class="hero-h"><div>'+monthNav('dash',key)+'<h1>'+esc(monthName(key))+' content</h1>'
+   +'<p class="sub">'+(its.length?its.length+' videos planned · '+posted+' posted':'Nothing planned for this month yet')+'</p></div>'
+   +'<div class="ph-actions"><button class="btn primary" data-act="planGo" data-month="'+addMonths(key,1)+'">Plan next month</button></div></div>'
+   +'<div class="boards">'+planks+'</div>'
+   +'<div class="pcards">'+prog('Reels',reels,nR)+prog('Long form',longs,nL)+prog('Total videos',its,nR+nL)+'</div></section>'
+   +'<section class="tiles">'
+   +tile(cnt('Scheduled'),'Scheduled this month','pipeline')+tile(cnt('Editing'),'Editing','pipeline')+tile(cnt('Ready to Film'),'Ready to film','film')+tile(cnt('Ready to Post'),'Ready to post','pipeline')+tile(posted,'Posted','published')
+   +'<button class="tile wide" data-act="nav" data-view="calendar"><span class="tn sm">'+(nextFilm?esc(fmtW(nextFilm)):'Not set')+'</span><span class="tl">Next filming day'+(nextFilm?' · '+nFilmCount+(nFilmCount===1?' video':' videos'):'')+'</span></button>'
+   +'<button class="tile wide" data-act="nav" data-view="calendar"><span class="tn sm">'+(nextPub?esc(fmtW(nextPub)):'Not set')+'</span><span class="tl">Next publish date</span></button>'
+   +'</section>'
+   +'<div class="cols2"><section class="card"><div class="card-h"><h2>Coming up</h2><button class="link" data-act="nav" data-view="calendar">Open calendar</button></div>'
+   +(up.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Publish date</th><th>Video title</th><th>Content type</th><th>Content pillar</th><th>Platform</th><th>Status</th></tr></thead><tbody>'
+     +up.map(i=>'<tr data-act="edit" data-id="'+i.id+'" class="'+(i.publishDate<t?'late':'')+'"><td class="nw">'+fmt(i.publishDate)+(i.publishDate<t?' <span class="late-tag">late</span>':'')+'</td><td class="t">'+esc(title(i))+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(platText(i))+'</td><td>'+pill(i.status)+'</td></tr>').join('')
+     +'</tbody></table></div>':empty('No upcoming videos have a publish date yet.','<button class="btn primary sm" data-act="planGo" data-month="'+key+'">Plan this month</button>'))
+   +'</section><aside class="rail">'
+   +'<section class="card"><div class="card-h"><h2>Ready to film</h2><button class="link" data-act="nav" data-view="film">Open</button></div>'
+   +(rtf.length?'<ul class="mini">'+rtf.map(i=>'<li><button data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.filmDate?'Film by '+fmt(i.filmDate):'No filming date')+'</span></button></li>').join('')+'</ul>':empty('Nothing is waiting to be filmed.'))
+   +'</section>'
+   +'<section class="card"><div class="card-h"><h2>What to make next</h2><button class="link" data-act="nav" data-view="ideas">Idea Bank</button></div>'
+   +(nextIdeas.length?'<ul class="mini">'+nextIdeas.map(i=>'<li><button data-act="schedule" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+esc(i.ideaFormat||i.type)+' · '+esc(i.priority)+' priority · Schedule</span></button></li>').join('')+'</ul>':empty('Your Idea Bank is empty.'))
+   +'</section>'
+   +'<section class="card plan-mini"><div class="card-h"><h2>Plan '+esc(monthName(nextPlan))+'</h2></div><div class="card-b"><div class="pbar"><i class="p1" style="width:'+(stepsDone/8*100)+'%"></i></div><p class="muted">'+stepsDone+' of 8 planning steps done</p><button class="btn ghost sm" data-act="planGo" data-month="'+nextPlan+'">Open checklist</button></div></section>'
+   +'</aside></div></div>';
+}
+
+/* ================= calendar ================= */
+const EV_LABEL={film:'Filming',edit:'Edit due',script:'Script due',plan:'Planning day',reel:'Reel',long:'Long form'};
+function eventsFor(mode){
+  const ev={};
+  const add=(d,e)=>{if(d)(ev[d]=ev[d]||[]).push(e);};
+  S.items.forEach(it=>{
+    const x=stIdx(it.status);
+    add(it.publishDate,{k:it.type==='Long Form'?'long':'reel',it:it,done:x===7});
+    add(it.filmDate,{k:'film',it:it,done:x>=4});
+    add(it.editDate,{k:'edit',it:it,done:x>=5});
+    if(mode==='prod'){add(it.scriptDate,{k:'script',it:it,done:x>=2});add(it.planDate,{k:'plan',it:it,done:x>=1});}
+  });
+  return ev;
+}
+function viewCalendar(){
+  const key=ui.calMonth, t=today(), ev=eventsFor(ui.calMode);
+  const first=pd(key+'-01'), lead=(first.getDay()+6)%7, daysIn=new Date(first.getFullYear(),first.getMonth()+1,0).getDate();
+  const rows=Math.ceil((lead+daysIn)/7), start=new Date(first);start.setDate(1-lead);
+  let cells='';
+  for(let i=0;i<rows*7;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);const s=ds(d), out=mk(s)!==key;
+    const evs=ev[s]||[], chips=[];
+    evs.filter(e=>e.k==='reel'||e.k==='long').forEach(e=>chips.push('<button class="cchip '+e.k+(e.done?' done':'')+'" data-act="edit" data-id="'+e.it.id+'" title="'+esc(title(e.it))+'">'+esc(title(e.it))+'</button>'));
+    ['film','edit','script','plan'].forEach(k=>{
+      const g=evs.filter(e=>e.k===k);
+      if(g.length)chips.push('<span class="cchip '+k+(g.every(e=>e.done)?' done':'')+'">'+EV_LABEL[k]+' · '+(g.length>1?g.length+' videos':esc(title(g[0].it)))+'</span>');
+    });
+    const shown=chips.slice(0,4), more=chips.length-shown.length;
+    cells+='<div class="cell'+(out?' out':'')+(s===t?' today':'')+'" data-act="day" data-date="'+s+'"><span class="dnum">'+d.getDate()+'</span>'+shown.join('')+(more>0?'<span class="more">+'+more+' more</span>':'')+'</div>';
+  }
+  const legend=[['reel','Reel publish'],['long','Long-form publish'],['film','Filming day'],['edit','Editing deadline']].concat(ui.calMode==='prod'?[['script','Script deadline'],['plan','Planning day']]:[]);
+  return '<div class="page">'+head('Content Calendar','Publish dates, filming days, and editing deadlines in one place.',
+    '<div class="seg"><button class="'+(ui.calMode==='content'?'on':'')+'" data-act="calMode" data-mode="content">Content</button><button class="'+(ui.calMode==='prod'?'on':'')+'" data-act="calMode" data-mode="prod">Production</button></div>')
+   +'<div class="cal-bar">'+monthNav('cal',key)+'<button class="btn ghost sm" data-act="calToday">Today</button><div class="legend">'+legend.map(l=>'<span><i class="dot '+l[0]+'"></i>'+l[1]+'</span>').join('')+'</div></div>'
+   +'<div class="cal-scroll"><div class="cal"><div class="cal-dow">'+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>'<span>'+d+'</span>').join('')+'</div><div class="cal-grid" style="--rows:'+rows+'">'+cells+'</div></div></div></div>';
+}
+function dayModal(date){
+  const evs=(eventsFor('prod')[date]||[]);
+  const body=evs.length?'<ul class="daylist">'+evs.map(e=>'<li><span class="cchip '+e.k+'">'+EV_LABEL[e.k]+'</span><button class="link-b" data-act="edit" data-id="'+e.it.id+'">'+esc(title(e.it))+'</button>'+pill(e.it.status)+'</li>').join('')+'</ul>':'<p class="muted">Nothing scheduled on this day.</p>';
+  showModal('<div class="modal-h"><h3>'+esc(fmtW(date))+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'+body
+   +'<div class="row-gap"><button class="btn primary sm" data-act="newOnDay" data-kind="reel" data-date="'+date+'">New Reel on this day</button><button class="btn ghost sm" data-act="newOnDay" data-kind="long" data-date="'+date+'">New long-form on this day</button></div></div>');
+}
+
+/* ================= pipeline ================= */
+function kcard(it){
+  const i=stIdx(it.status);
+  return '<article class="kcard '+(it.type==='Long Form'?'is-long':'is-reel')+'" draggable="true" data-act="edit" data-id="'+it.id+'">'
+   +'<div class="kc-top">'+typeTag(it)+'<span class="kc-date">'+(it.publishDate?'Posts '+fmt(it.publishDate):'No publish date')+'</span></div>'
+   +'<h4>'+esc(title(it))+'</h4>'
+   +'<div class="kc-meta"><span class="chip sm">'+esc(it.pillar)+'</span><span>'+esc(platText(it))+'</span></div>'
+   +'<div class="kc-foot"><span>'+(it.filmDate?'Film '+fmt(it.filmDate):'Filming date not set')+'</span>'+(i<7?'<button class="icon-btn sm" data-act="advance" data-id="'+it.id+'" title="Move to '+STATUSES[i+1]+'" aria-label="Move to '+STATUSES[i+1]+'">'+I('right')+'</button>':'')+'</div></article>';
+}
+function viewPipeline(){
+  const f=ui.pipeMonth;
+  const list=S.items.filter(i=>f==='all'||(f==='none'?!monthOf(i):monthOf(i)===f)).sort(byPub);
+  const months=itemsIn(ui.month).length||true;
+  const mOpts=[['all','All months'],['none','Unscheduled']].concat(itemMonths().map(k=>[k,monthLabel(k)]));
+  return '<div class="page wide">'+head('Production Pipeline','Drag a card to a new column, or tap the arrow to move it one step.',
+    '<label class="inline">Show <select data-ui="pipeMonth">'+opts(mOpts,f)+'</select></label>')
+   +'<div class="kanban">'+STATUSES.map(s=>{
+      const c=list.filter(i=>i.status===s);
+      return '<section class="kcol" data-status="'+s+'"><header class="kcol-h"><h3>'+s+'</h3><span class="count">'+c.length+'</span></header><div class="kcol-b">'+(c.map(kcard).join('')||'<p class="kempty">Drop a card here</p>')+'</div></section>';
+    }).join('')+'</div></div>';
+}
+
+/* ================= idea bank ================= */
+function viewIdeas(){
+  let list=S.items.filter(i=>i.status==='Idea'&&(ui.ideaRoadmap||!i.roadmap));
+  if(ui.ideaTopic!=='All')list=list.filter(i=>i.topic===ui.ideaTopic);
+  const groups=GROUPS.map(g=>({g:g,items:list.filter(i=>i.group===g).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]||a.created-b.created)})).filter(x=>x.items.length);
+  const other=list.filter(i=>!GROUPS.includes(i.group));
+  if(other.length)groups.push({g:'Other',items:other});
+  return '<div class="page">'+head('Idea Bank','Every idea lives here until you schedule it.')
+   +'<form class="qa card" data-form="addIdea" autocomplete="off"><div class="qa-row"><label class="grow"><span class="sr">Idea</span><input id="qa-title" placeholder="Type a video idea and press Enter"></label>'
+   +'<select id="qa-pillar" aria-label="Content pillar">'+opts(PILLAR_NAMES,'Education')+'</select>'
+   +'<select id="qa-format" aria-label="Works best as">'+opts(['Reel','Long Form','Both'],'Reel')+'</select>'
+   +'<select id="qa-topic" aria-label="Topic">'+opts(TOPICS,'Construction')+'</select>'
+   +'<select id="qa-prio" aria-label="Priority">'+opts(PRIORITIES,'Medium')+'</select>'
+   +'<button class="btn primary" type="submit">Add idea</button></div></form>'
+   +'<div class="chips" role="group" aria-label="Filter by topic">'+['All'].concat(TOPICS).map(t=>'<button class="chip '+(ui.ideaTopic===t?'on':'')+'" data-act="ideaTopic" data-topic="'+esc(t)+'">'+esc(t)+'</button>').join('')
+   +'<label class="chk sm"><input type="checkbox" data-ui="ideaRoadmap" '+(ui.ideaRoadmap?'checked':'')+'><span>Include six-month roadmap items</span></label></div>'
+   +(groups.length?groups.map(x=>'<section class="grp"><h2>'+esc(x.g)+' <span class="count">'+x.items.length+'</span></h2><div class="ideas">'
+      +x.items.map(i=>'<article class="idea"><button class="idea-main" data-act="edit" data-id="'+i.id+'"><span class="prio p-'+i.priority+'" title="'+i.priority+' priority"></span><span class="idea-t">'+esc(title(i))+'</span><span class="idea-m"><span class="chip sm">'+esc(i.pillar)+'</span><span class="chip sm">'+esc(i.topic)+'</span><span class="chip sm soft">'+esc(i.ideaFormat||i.type)+'</span>'+(i.roadmap?'<span class="chip sm soft">Roadmap, month '+i.roadmap+'</span>':'')+'</span>'+(i.notes?'<span class="idea-n">'+esc(i.notes)+'</span>':'')+'</button><button class="btn ghost sm" data-act="schedule" data-id="'+i.id+'">Schedule</button></article>').join('')
+      +'</div></section>').join(''):empty('No ideas match this filter.'))
+   +'</div>';
+}
+function nextOpenSlot(kind){
+  const cur=mk(today()), t=today();
+  for(let m=0;m<8;m++){
+    const k=addMonths(cur,m), sl=rhythmDates(k).filter(s=>kind==='Long Form'?s.kind==='Long Form':s.kind!=='Long Form');
+    for(const s of sl){if(s.date>=t&&!S.items.some(i=>i.publishDate===s.date&&(kind==='Long Form'?i.type==='Long Form':i.type==='Reel')))return s.date;}
+  }
+  return addDays(t,7);
+}
+function scheduleModal(id){
+  const it=getItem(id);if(!it)return;
+  const kind=it.ideaFormat==='Long Form'||(it.ideaFormat===''&&it.type==='Long Form')?'Long Form':'Reel';
+  showModal('<div class="modal-h"><h3>Schedule this idea</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b" data-sched="'+id+'">'
+   +'<p class="muted">'+esc(title(it))+'</p>'
+   +'<div class="fld"><label for="sc-type">Content type</label><select id="sc-type">'+opts(['Reel','Long Form'],kind)+'</select></div>'
+   +'<div class="fld"><label for="sc-date">Publish date</label><input id="sc-date" type="date" value="'+nextOpenSlot(kind)+'"></div>'
+   +'<label class="chk"><input id="sc-auto" type="checkbox" checked><span>Fill in script, filming, and editing dates automatically</span></label>'
+   +'<div class="row-gap"><button class="btn primary" data-act="doSchedule" data-id="'+id+'">Move to Scripting</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
+}
+
+/* ================= this month ================= */
+function viewMonth(){
+  const key=ui.month, its=itemsIn(key).sort(byPub);
+  const longs=its.filter(i=>i.type==='Long Form'), reels=its.filter(i=>i.type==='Reel');
+  const row=i=>'<li class="mrow '+(i.status==='Posted'?'done':'')+'"><label class="chk"><input type="checkbox" data-act="toggleDone" data-id="'+i.id+'" '+(i.status==='Posted'?'checked':'')+' aria-label="Posted: '+esc(title(i))+'"><span></span></label>'
+    +'<button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'</li>';
+  const summary=STATUSES.map(s=>({s:s,n:its.filter(i=>i.status===s).length})).filter(x=>x.n);
+  return '<div class="page">'+head('This Month','The whole month on one screen. Tick a video when it is posted.',monthNav('dash',key))
+   +(its.length?'<div class="sumline">'+summary.map(x=>'<span>'+pill(x.s)+' <b>'+x.n+'</b></span>').join('')+'</div>'
+   +'<div class="cols2 even"><section class="card"><div class="card-h"><h2>Long form</h2><span class="count">'+longs.length+' of '+S.settings.longTarget+'</span></div><ul class="mlist">'+(longs.map(row).join('')||'<li class="muted pad">No long-form videos yet.</li>')+'</ul></section>'
+   +'<section class="card"><div class="card-h"><h2>Reels</h2><span class="count">'+reels.length+' of '+S.settings.reelTarget+'</span></div><ul class="mlist">'+(reels.map(row).join('')||'<li class="muted pad">No Reels yet.</li>')+'</ul></section></div>'
+   :empty('Nothing is scheduled for '+esc(monthLabel(key))+' yet.','<button class="btn primary" data-act="planGo" data-month="'+key+'">Plan this month</button>'))+'</div>';
+}
+
+/* ================= need to film ================= */
+function talkingText(it){
+  if(it.talking.trim())return it.talking;
+  const L=it.type==='Long Form';
+  return [it.hook&&((L?'Intro / hook: ':'Hook: ')+it.hook)]
+    .concat(L?(it.sections||[]).map((s,i)=>s&&('Section '+(i+1)+': '+s)):(it.points||[]).map((p,i)=>p&&('Point '+(i+1)+': '+p)))
+    .concat([L&&it.conclusion&&('Conclusion: '+it.conclusion),it.cta&&('CTA: '+it.cta)]).filter(Boolean).join('\n');
+}
+function fcard(it){
+  const late=it.filmDate&&it.filmDate<today();
+  const tt=talkingText(it);
+  return '<article class="fcard card" data-item-id="'+it.id+'"><div class="fc-h"><div>'+typeTag(it)+'<h3>'+esc(title(it))+'</h3></div><div class="due'+(late?' late':'')+'">'+(it.filmDate?'Film by '+esc(fmtW(it.filmDate)):'No filming date')+'</div></div>'
+   +(it.location?'<div class="fc-s"><h4>Location / project needed</h4><p>'+esc(it.location)+'</p></div>':'')
+   +(tt?'<div class="fc-s"><h4>Talking points</h4><p class="pre">'+esc(tt)+'</p></div>':'')
+   +'<div class="fc-s"><h4>Shot list</h4><div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'+(it.shotText?'<p class="pre">'+esc(it.shotText)+'</p>':'')+'</div>'
+   +(it.broll?'<div class="fc-s"><h4>B-roll needed</h4><p class="pre">'+esc(it.broll)+'</p></div>':'')
+   +(it.jobsite?'<div class="fc-s"><h4>Jobsite footage needed</h4><p class="pre">'+esc(it.jobsite)+'</p></div>':'')
+   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'">Open details</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
+}
+function viewFilm(){
+  const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
+  const rtf=S.items.filter(i=>i.status==='Ready to Film').sort(srt), now=S.items.filter(i=>i.status==='Filming').sort(srt);
+  return '<div class="page narrow">'+head('Need to Film',rtf.length?rtf.length+(rtf.length===1?' video is':' videos are')+' ready to film.':'Nothing is marked Ready to Film.','<button class="btn ghost" data-act="tplGo" data-tab="jobsite">Jobsite checklist</button>')
+   +(rtf.length?rtf.map(fcard).join(''):empty('Move a video to the Ready to Film column and it will show up here with its talking points and shot list.','<button class="btn primary sm" data-act="nav" data-view="pipeline">Open pipeline</button>'))
+   +(now.length?'<h2 class="sect">Filming now</h2>'+now.map(fcard).join(''):'')+'</div>';
+}
+
+/* ================= published ================= */
+function viewPublished(){
+  const f=ui.pub;
+  const posted=S.items.filter(i=>i.status==='Posted'&&(!f.type||i.type===f.type)&&(!f.pillar||i.pillar===f.pillar)&&(!f.platform||i.platforms.includes(f.platform))).sort((a,b)=>(b.publishedDate||b.publishDate||'').localeCompare(a.publishedDate||a.publishDate||''));
+  const waiting=S.items.filter(i=>i.status==='Scheduled'||i.status==='Ready to Post').sort(byPub);
+  return '<div class="page">'+head('Published Content','Everything that is live, with links and quick results.')
+   +(waiting.length?'<section class="card"><div class="card-h"><h2>Waiting to go live</h2><span class="count">'+waiting.length+'</span></div><ul class="mlist">'+waiting.map(i=>'<li class="mrow"><button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'<button class="btn primary sm" data-act="markPosted" data-id="'+i.id+'">Mark posted</button></li>').join('')+'</ul></section>':'')
+   +'<div class="filters"><label>Type<select data-ui="pub.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Pillar<select data-ui="pub.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Platform<select data-ui="pub.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label></div>'
+   +'<section class="card">'+(posted.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Posted</th><th>Video</th><th>Type</th><th>Pillar</th><th>Platform</th><th class="r">Views</th><th class="r">Leads</th><th>Link</th></tr></thead><tbody>'
+     +posted.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="nw">'+fmt(i.publishedDate||i.publishDate)+'</td><td class="t">'+(i.winning?'<span class="star" title="Winning content">'+I('star')+'</span>':'')+esc(title(i))+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(platText(i))+'</td><td class="r">'+(i.perf.views!==''?nf(num(i.perf.views)):'–')+'</td><td class="r">'+(i.perf.leads!==''?nf(num(i.perf.leads)):'–')+'</td><td>'+(i.publishedLink?'<a href="'+esc(i.publishedLink)+'" target="_blank" rel="noopener" data-stop>Open '+I('ext','xs')+'</a>':'–')+'</td></tr>').join('')
+     +'</tbody></table></div>':empty('Posted videos will appear here. Use Mark posted on a video when it goes live.'))+'</section></div>';
+}
+
+/* ================= performance ================= */
+function perfItems(){
+  const f=ui.perf;
+  return S.items.filter(i=>i.status==='Posted'&&(!f.type||i.type===f.type)&&(!f.platform||i.platforms.includes(f.platform))&&(!f.pillar||i.pillar===f.pillar)&&(!f.month||mk(i.publishedDate||i.publishDate)===f.month));
+}
+function bars(rows,suffix){
+  if(!rows.length)return '<p class="muted">Not enough data yet.</p>';
+  const max=Math.max(1,...rows.map(r=>r.v));
+  return '<div class="bars">'+rows.map(r=>'<div class="brow"><span class="bl" title="'+esc(r.l)+'">'+esc(r.l)+'</span><span class="bt"><i style="width:'+(r.v/max*100)+'%"></i></span><span class="bv">'+nf(r.v)+(suffix||'')+'</span></div>').join('')+'</div>';
+}
+function group(items,fn){const m={};items.forEach(i=>{const k=fn(i);(m[k]=m[k]||[]).push(i);});return m;}
+const sum=(a,f)=>a.reduce((t,i)=>t+num(f(i)),0);
+function perfCharts(items){
+  const withViews=items.filter(i=>i.perf.views!=='');
+  if(!withViews.length)return empty('Add views to your posted videos in the table below and the charts will fill in.');
+  const byM=group(items,i=>mk(i.publishedDate||i.publishDate)), months=Object.keys(byM).sort();
+  const mrows=months.map(k=>({l:MON3[+k.slice(5,7)-1]+' '+k.slice(2,4),v:sum(byM[k],i=>i.perf.views)}));
+  const maxM=Math.max(1,...mrows.map(r=>r.v));
+  const byP=group(items,i=>i.pillar), prow=Object.keys(byP).map(k=>({l:k,v:sum(byP[k],i=>i.perf.views)/byP[k].length})).sort((a,b)=>b.v-a.v);
+  const fmtG=group(items,i=>i.type), frow=Object.keys(fmtG).map(k=>({l:k+' ('+fmtG[k].length+')',v:sum(fmtG[k],i=>i.perf.views)/fmtG[k].length}));
+  const top=items.slice().sort((a,b)=>num(b.perf.views)-num(a.perf.views)).filter(i=>num(i.perf.views)>0).slice(0,5).map(i=>({l:title(i),v:num(i.perf.views)}));
+  const leads=items.slice().sort((a,b)=>num(b.perf.leads)-num(a.perf.leads)).filter(i=>num(i.perf.leads)>0).slice(0,5).map(i=>({l:title(i),v:num(i.perf.leads)}));
+  const byT=group(items,i=>i.topic), trow=Object.keys(byT).map(k=>({l:k,v:sum(byT[k],i=>i.perf.views)/byT[k].length})).sort((a,b)=>b.v-a.v).slice(0,6);
+  const totalViews=sum(items,i=>i.perf.views), totalLeads=sum(items,i=>i.perf.leads);
+  return '<div class="kpis"><div><b>'+nf(totalViews)+'</b><span>Total views</span></div><div><b>'+nf(totalViews/Math.max(1,withViews.length))+'</b><span>Average views per video</span></div><div><b>'+nf(totalLeads)+'</b><span>Leads generated</span></div><div><b>'+items.length+'</b><span>Videos in this view</span></div></div>'
+   +'<div class="chart-grid"><section class="card"><div class="card-h"><h2>Views by month</h2></div><div class="card-b"><div class="colchart">'+mrows.map(r=>'<div class="col"><span class="cv">'+nf(r.v)+'</span><i style="height:'+Math.max(3,r.v/maxM*100)+'%"></i><span class="cl">'+esc(r.l)+'</span></div>').join('')+'</div></div></section>'
+   +'<section class="card"><div class="card-h"><h2>Average views by content pillar</h2></div><div class="card-b">'+bars(prow)+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Reels vs long form (average views)</h2></div><div class="card-b">'+bars(frow)+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Top-performing videos</h2></div><div class="card-b">'+bars(top)+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Leads generated by content</h2></div><div class="card-b">'+(leads.length?bars(leads):'<p class="muted">Add leads to a video to see it here.</p>')+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Most successful topics (average views)</h2></div><div class="card-b">'+bars(trow)+'</div></section></div>';
+}
+function viewPerformance(){
+  const f=ui.perf, items=perfItems();
+  const tabs='<div class="seg"><button class="'+(ui.perfTab==='overview'?'on':'')+'" data-act="perfTab" data-tab="overview">Overview</button><button class="'+(ui.perfTab==='winning'?'on':'')+'" data-act="perfTab" data-tab="winning">Winning content</button></div>';
+  if(ui.perfTab==='winning'){
+    const w=S.items.filter(i=>i.winning);
+    return '<div class="page">'+head('Winning Content','A library of the posts that worked, and why.',tabs)
+     +(w.length?'<div class="win-grid">'+w.map(i=>'<article class="card win" data-item-id="'+i.id+'"><div class="card-h"><div>'+typeTag(i)+'<h3>'+esc(title(i))+'</h3></div><button class="icon-btn" data-act="winToggle" data-id="'+i.id+'" title="Remove from winning content" aria-label="Remove from winning content">'+I('x')+'</button></div><div class="card-b">'
+       +'<dl class="dl"><dt>Hook</dt><dd>'+(esc(i.hook)||'<span class="muted">Not written</span>')+'</dd><dt>Topic</dt><dd>'+esc(i.topic)+' · '+esc(i.pillar)+'</dd><dt>Format</dt><dd>'+esc(i.type)+'</dd><dt>Platform</dt><dd>'+esc(platText(i))+'</dd><dt>Views</dt><dd>'+(i.perf.views!==''?nf(num(i.perf.views)):'–')+'</dd><dt>Watch time</dt><dd>'+(i.perf.watchHours!==''?esc(i.perf.watchHours)+' hrs':'–')+'</dd></dl>'
+       +'<div class="fld"><label>Why we think it worked</label><textarea rows="3" data-f="winWhy">'+esc(i.winWhy)+'</textarea></div><div class="fld"><label>What could be reused</label><textarea rows="3" data-f="winReuse">'+esc(i.winReuse)+'</textarea></div></div></article>').join('')+'</div>'
+     :empty('Star a posted video in the Performance table, or mark it on the Publish & results tab, and it will collect here.'))+'</div>';
+  }
+  const months=Array.from(new Set(S.items.filter(i=>i.status==='Posted').map(i=>mk(i.publishedDate||i.publishDate)).filter(Boolean))).sort();
+  return '<div class="page wide">'+head('Performance','Keep it simple: look for patterns, then make more of what works.',tabs)
+   +'<div class="filters"><label>Type<select data-ui="perf.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Platform<select data-ui="perf.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label><label>Pillar<select data-ui="perf.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Month<select data-ui="perf.month">'+opts(months.map(k=>[k,monthLabel(k)]),f.month,'All')+'</select></label></div>'
+   +'<div id="perf-charts">'+perfCharts(items)+'</div>'
+   +'<section class="card"><div class="card-h"><h2>Results for posted videos</h2></div>'
+   +(items.length?'<div class="table-wrap"><table class="tbl perf"><thead><tr><th>Video</th><th>Views</th><th>Watch time (hrs)</th><th>Avg view duration</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Leads</th><th>Winning</th></tr></thead><tbody>'
+     +items.map(i=>'<tr data-item-id="'+i.id+'"><td class="t"><button class="link-b" data-act="edit" data-id="'+i.id+'">'+esc(title(i))+'</button><small>'+esc(i.type)+' · '+esc(platText(i))+'</small></td>'
+       +['views','watchHours','avgDuration','likes','comments','shares','saves','leads'].map(k=>'<td><input class="cellin" '+(k==='avgDuration'?'type="text" placeholder="0:45"':'type="number" min="0" step="any"')+' data-f="perf.'+k+'" value="'+esc(i.perf[k])+'" aria-label="'+k+' for '+esc(title(i))+'"></td>').join('')
+       +'<td class="c"><button class="icon-btn star-btn '+(i.winning?'on':'')+'" data-act="winToggle" data-id="'+i.id+'" aria-pressed="'+(i.winning?'true':'false')+'" aria-label="Winning content">'+I('star')+'</button></td></tr>').join('')
+     +'</tbody></table></div>':empty('No posted videos match these filters yet.'))+'</section></div>';
+}
+
+/* ================= templates ================= */
+function tplList(title_,arr,check){return '<div class="tpl-col"><h4>'+title_+'</h4><ul class="'+(check?'tpl-check':'')+'">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';}
+function viewTemplates(){
+  const tab=ui.tplTab;
+  const tabs=[['reel','Reel'],['long','Long-form video'],['recap','Monthly recap'],['jobsite','Jobsite checklist'],['project','Project to content']];
+  let body='';
+  if(tab==='reel')body='<section class="card"><div class="card-h"><h2>Reel template</h2><button class="btn primary sm" data-act="tplNew" data-kind="reel">Create Reel from template</button></div><div class="card-b"><p class="muted">Every new Reel starts with these fields, this shot list, and this production checklist.</p><div class="tpl">'
+      +tplList('Script',['Topic','Goal','Audience problem','Main message','Hook','Point 1','Point 2','Point 3','CTA'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div></div></section>';
+  if(tab==='long')body='<section class="card"><div class="card-h"><h2>Long-form video template</h2><button class="btn primary sm" data-act="tplNew" data-kind="long">Create long-form video</button></div><div class="card-b"><p class="muted">Long-form videos are source content. Plan the Shorts and Reels you will cut from each one, then create them with one click and keep them linked.</p><div class="tpl">'
+      +tplList('Plan',['Working title','Final title','Main question','Target viewer','Audience problem','Main takeaway'])+tplList('Script',['Intro / hook','Section 1','Section 2','Section 3','Section 4','Section 5','Conclusion','CTA'])+tplList('Production',['Shot list','B-roll','Thumbnail idea','Shorts / Reels to create (hook + timestamp for each)'])+'</div></div></section>';
+  if(tab==='recap')body='<section class="card"><div class="card-h"><h2>Monthly recap template</h2><button class="btn primary sm" data-act="tplNew" data-kind="recap">Create Monthly Recap</button></div><div class="card-b"><p class="muted">A recurring Reel that leans on visual storytelling and company personality more than education.</p><div class="tpl">'+tplList('Fields',RECAP_FIELDS.map(r=>r[1]))+'</div></div></section>';
+  if(tab==='jobsite'){
+    const c=S.jobsite.checks, total=JOBSITE.reduce((n,g)=>n+g.items.length,0), done=Object.values(c).filter(Boolean).length;
+    body='<section class="card"><div class="card-h"><h2>Jobsite content capture</h2><button class="btn ghost sm" data-act="jsReset">Clear checks</button></div><div class="card-b"><div class="fld"><label for="js-proj">Project or address</label><input id="js-proj" data-s="jobsite.project" value="'+esc(S.jobsite.project)+'" placeholder="Which job are you filming?"></div>'
+      +'<div class="pbar"><i class="p1" style="width:'+(done/total*100)+'%"></i></div><p class="muted">'+done+' of '+total+' shots captured</p>'
+      +JOBSITE.map(g=>'<h3 class="js-h">'+g.g+'</h3><div class="js-list">'+g.items.map((x,n)=>'<label class="chk big"><input type="checkbox" data-s="jobsite.checks.'+g.g+'_'+n+'" '+(c[g.g+'_'+n]?'checked':'')+'><span>'+esc(x)+'</span></label>').join('')+'</div>').join('')+'</div></section>';
+  }
+  if(tab==='project')body=projectTab();
+  return '<div class="page">'+head('Templates','Reusable starting points, so every video begins with a plan.')+'<div class="seg wrap">'+tabs.map(t=>'<button class="'+(tab===t[0]?'on':'')+'" data-act="tplTab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</div>'+body+'</div>';
+}
+const PROJECT_IDEAS=[
+ ['Before video','Reel','Projects','Deck Options',false],['Construction progress Reel','Reel','Projects','Construction',false],['Framing explanation','Reel','Education','Construction',false],['Material explanation','Reel','Education','Materials',false],
+ ['Design-feature Reel','Reel','Design','Deck Options',false],['Finished reveal','Reel','Projects','Deck Options',false],['Before-and-after Reel','Reel','Projects','Deck Options',false],['Customer testimonial','Reel','Trust','Company',false],
+ ['Photo carousel',null],['Project walkthrough','Long Form','Projects','Deck Options',false],['Why we designed it this way','Reel','Design','Deck Options',false],['FAQ inspired by the project','Reel','Trust','FAQs',false],['Website portfolio entry',null],['Clips for the Monthly Recap',null]
+];
+function suggestions(p){
+  const n=p.name||'this project', c=p.city?' in '+p.city:'', dt=p.deckType||'deck', mats=p.materials?' using '+p.materials:'', feat=p.features||'the standout features', ch=p.challenges||'the biggest challenge on this job', g=p.goal||'what the customer wanted';
+  const T=[
+   ['Before: '+n+c,'Show the existing space and the problems the homeowner wanted solved.'],
+   ['Building '+n+': construction progress','Show the build coming together from footings to boards.'],
+   ['How we framed '+n,'Explain the framing'+mats+' and why it helps the '+dt+' last.'],
+   ['The materials on '+n,'Close-ups and a quick explanation of '+(p.materials||'the materials we used')+'.'],
+   ['Design details on '+n,'Feature '+feat+'.'],
+   ['Reveal: '+n+c,'Hero shots of the finished '+dt+'.'],
+   ['Before and after: '+n,'Side-by-side of the same angle, before and after.'],
+   ['Customer story: '+n+c,'Ask the customer about '+g+' and how it turned out.'],
+   ['Photo carousel: '+n,'Best finished photos, in order. Not a video.'],
+   ['Walkthrough: '+n+c,'Vertical and horizontal walkthroughs of the finished '+dt+'.'],
+   ['Why we designed '+n+' this way','Connect the design to '+g+'.'],
+   ['Question from '+n+': '+ch,'Turn '+ch+' into a question homeowners actually ask.'],
+   ['Portfolio page: '+n,'Add photos, a short description, and the city to the website. Not a video.'],
+   ['Recap clips from '+n,'Save the best clips for this month\'s Monthly Recap. Not a separate video.']
+  ];
+  return PROJECT_IDEAS.map((x,i)=>({title:T[i][0],note:T[i][1],fmt:x[1],pillar:x[2],topic:x[3],label:x[0]}));
+}
+function projectTab(){
+  const d=ui.projDraft, f=(k,l,ph,ta)=>'<div class="fld"><label for="pj-'+k+'">'+l+'</label>'+(ta?'<textarea id="pj-'+k+'" rows="2" data-ui="projDraft.'+k+'" placeholder="'+ph+'">'+esc(d[k])+'</textarea>':'<input id="pj-'+k+'" data-ui="projDraft.'+k+'" value="'+esc(d[k])+'" placeholder="'+ph+'">')+'</div>';
+  const sug=ui.projResults?suggestions(d):[];
+  return '<section class="card"><div class="card-h"><h2>Generate content from a project</h2></div><div class="card-b"><p class="muted">One finished deck can become more than a dozen pieces of content. Enter the project and get a starting list.</p>'
+   +'<div class="form-grid">'+f('name','Project name','The Henderson deck')+f('city','City','Burleson')+f('deckType','Deck type','Covered composite deck')+f('materials','Materials','Composite boards, treated framing')+f('features','Features','Pergola, lighting, wide steps',true)+f('challenges','Interesting challenges','Sloped backyard',true)+f('goal','Customer goal','A shaded place to host family',true)+'</div>'
+   +'<div class="row-gap"><button class="btn primary" data-act="projSuggest">Suggest content</button><button class="btn ghost" data-act="projSave">Save project</button></div>'
+   +(sug.length?'<div class="sug">'+sug.map((s,i)=>'<article class="sug-i"><div><h4>'+esc(s.title)+'</h4><p>'+esc(s.note)+'</p><span class="chip sm soft">'+esc(s.label)+'</span></div>'+(s.fmt?'<button class="btn ghost sm" data-act="sugAdd" data-i="'+i+'">Add to Idea Bank</button>':'')+'</article>').join('')+'</div><div class="row-gap"><button class="btn ghost" data-act="sugAll">Add all videos to Idea Bank</button></div>':'')
+   +'</div></section>'
+   +(S.projects.length?'<section class="card"><div class="card-h"><h2>Saved projects</h2></div><ul class="mini">'+S.projects.map(p=>'<li class="split"><button data-act="projLoad" data-id="'+p.id+'"><b>'+esc(p.name||'Untitled project')+'</b><span>'+esc([p.city,p.deckType].filter(Boolean).join(' · '))+'</span></button><button class="icon-btn" data-act="projDel" data-id="'+p.id+'" aria-label="Delete project">'+I('x')+'</button></li>').join('')+'</ul></section>':'');
+}
+
+/* ================= library (all content) ================= */
+function libItems(){
+  const f=ui.lib, q=ui.q.trim().toLowerCase();
+  return S.items.filter(it=>{
+    if(f.status&&it.status!==f.status)return false;if(f.type&&it.type!==f.type)return false;if(f.platform&&!it.platforms.includes(f.platform))return false;
+    if(f.pillar&&it.pillar!==f.pillar)return false;if(f.topic&&it.topic!==f.topic)return false;if(f.priority&&it.priority!==f.priority)return false;if(f.month&&monthOf(it)!==f.month)return false;
+    if(f.preset==='shorts'&&!(it.type==='Long Form'&&it.status!=='Idea'&&(it.shorts.length<3||it.shorts.some(s=>!s.reelId))))return false;
+    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.mainTopic,it.hook,it.script,it.talking].join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  }).sort(byPub);
+}
+function viewLibrary(){
+  const f=ui.lib, list=libItems();
+  const presets=[['film','What do I need to film?'],['posting','What is posting this month?'],['payments','Payment videos already made'],['ideas','Videos that are still ideas'],['shorts','Long-form videos to turn into Shorts']];
+  return '<div class="page wide">'+head('All content','One library, every video. Filter it any way you like.')
+   +'<div class="chips">'+presets.map(p=>'<button class="chip" data-act="preset" data-p="'+p[0]+'">'+p[1]+'</button>').join('')+'</div>'
+   +'<div class="filters"><label>Month<select data-ui="lib.month">'+opts(itemMonths().map(k=>[k,monthLabel(k)]),f.month,'All')+'</select></label><label>Status<select data-ui="lib.status">'+opts(STATUSES,f.status,'All')+'</select></label><label>Type<select data-ui="lib.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label>'
+   +'<label>Platform<select data-ui="lib.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label><label>Pillar<select data-ui="lib.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Topic<select data-ui="lib.topic">'+opts(TOPICS,f.topic,'All')+'</select></label><label>Priority<select data-ui="lib.priority">'+opts(PRIORITIES,f.priority,'All')+'</select></label>'
+   +'<button class="btn ghost sm" data-act="clearLib">Clear filters</button></div>'
+   +'<p class="muted">'+list.length+' of '+S.items.length+' videos'+(ui.q?' matching “'+esc(ui.q)+'”':'')+'</p>'
+   +'<section class="card">'+(list.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Video</th><th>Type</th><th>Pillar</th><th>Topic</th><th>Status</th><th>Priority</th><th>Platform</th><th>Month</th><th>Publish</th></tr></thead><tbody>'
+     +list.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="t">'+(i.winning?'<span class="star">'+I('star')+'</span>':'')+esc(title(i))+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(i.topic)+'</td><td>'+pill(i.status)+'</td><td>'+esc(i.priority)+'</td><td>'+esc(platText(i))+'</td><td class="nw">'+esc(monthOf(i)?monthLabel(monthOf(i)):'–')+'</td><td class="nw">'+(fmt(i.publishDate)||'–')+'</td></tr>').join('')
+     +'</tbody></table></div>':empty('No videos match. Try clearing a filter.'))+'</section></div>';
+}
+
+/* ================= plan next month ================= */
+function planSteps(key){
+  const its=itemsIn(key), man=S.plan[key]||{};
+  const longs=its.filter(i=>i.type==='Long Form'), reels=its.filter(i=>i.type==='Reel');
+  const rec=reels.filter(i=>i.reelKind==='Recap'), st=reels.filter(i=>i.reelKind==='Standalone'), rp=reels.filter(i=>i.reelKind==='Repurposed');
+  const dated=its.filter(i=>i.publishDate), filmed=its.filter(i=>i.filmDate);
+  const shots=its.filter(i=>i.shotText||Object.values(i.shots||{}).some(Boolean));
+  const n=its.length||8;
+  return [
+   {t:'Choose 2 long-form topics',auto:longs.length>=2,hint:longs.length+' of 2'},
+   {t:'Choose 3 standalone Reel topics',auto:st.length>=3,hint:st.length+' of 3'},
+   {t:'Identify 2 Reel clips or adaptations that can come from the long-form videos',auto:rp.length>=2,hint:rp.length+' of 2'},
+   {t:'Add the Monthly Recap',auto:rec.length>=1,hint:rec.length?'Added':'Not added yet'},
+   {t:'Assign all 8 publish dates',auto:its.length>=8&&dated.length>=8,hint:dated.length+' of 8'},
+   {t:'Assign filming dates',auto:its.length>0&&filmed.length===its.length,hint:filmed.length+' of '+n},
+   {t:'Create the filming shot list',auto:its.length>0&&shots.length===its.length,hint:shots.length+' of '+n},
+   {t:'Begin collecting jobsite B-roll throughout the month',auto:false,hint:'Tick this when you start'}
+  ].map((s,i)=>Object.assign(s,{manual:!!man[i],done:s.auto||!!man[i]}));
+}
+function viewPlan(){
+  const key=ui.planMonth, its=itemsIn(key).sort(byPub), steps=planSteps(key), done=steps.filter(s=>s.done).length;
+  const slots=rhythmDates(key);
+  const ideasFor=kind=>S.items.filter(i=>i.status==='Idea'&&!i.publishDate&&(kind==='Long Form'?(i.ideaFormat==='Long Form'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Long Form')):(i.ideaFormat==='Reel'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Reel'))));
+  const slotRows=slots.map((s,si)=>{
+    const match=its.find(x=>x.publishDate===s.date&&(s.kind==='Long Form'?x.type==='Long Form':x.type==='Reel'));
+    const label=s.kind==='Long Form'?'Long-form video':(s.kind==='Recap'?'Monthly Recap':'Reel');
+    let cell;
+    if(match)cell='<button class="link-b" data-act="edit" data-id="'+match.id+'">'+esc(title(match))+'</button> '+pill(match.status);
+    else if(s.kind==='Recap')cell='<span class="muted">Open</span> <button class="btn ghost sm" data-act="slotNew" data-kind="recap" data-date="'+s.date+'">Add Monthly Recap</button>';
+    else cell='<span class="slot-pick"><select aria-label="Pick an idea for '+esc(fmtW(s.date))+'">'+opts(ideasFor(s.kind).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]).map(i=>[i.id,i.title]),'','Choose from Idea Bank')+'</select><button class="btn ghost sm" data-act="slotAssign" data-date="'+s.date+'" data-kind="'+s.kind+'">Assign</button><button class="btn ghost sm" data-act="slotNew" data-kind="'+(s.kind==='Long Form'?'long':'reel')+'" data-date="'+s.date+'">New</button></span>';
+    return '<li class="slot"><span class="slot-d">'+esc(fmtW(s.date))+'</span><span class="slot-k '+(s.kind==='Long Form'?'long':'reel')+'">'+label+'</span><span class="slot-c">'+cell+'</span></li>';
+  }).join('');
+  const pubs=its.filter(i=>i.publishDate).map(i=>i.publishDate).sort();
+  if(!ui.planFilm.a||ui.planFilm.key!==key){const t=today();const a=pubs.length?addDays(pubs[0],-8):t, b=pubs.length?addDays(pubs[Math.floor(pubs.length/2)],-8):t;ui.planFilm={a:a<t?t:a,b:b<t?t:b,key:key};}
+  const themes=S.roadmapThemes||{}, rmKeys=Object.keys(themes).sort();
+  return '<div class="page">'+head('Plan Next Month','Finish this at the end of each month so the next one never starts from zero.',monthNav('plan',key))
+   +'<div class="cols2 plan"><div><section class="card"><div class="card-h"><h2>'+esc(monthLabel(key))+' checklist</h2><span class="count">'+done+' of 8</span></div><div class="card-b"><div class="pbar"><i class="p1" style="width:'+(done/8*100)+'%"></i></div>'
+   +'<ul class="steps">'+steps.map((s,i)=>'<li class="'+(s.done?'done':'')+'"><label class="chk"><input type="checkbox" data-act="planStep" data-i="'+i+'" '+(s.done?'checked':'')+(s.auto?' disabled':'')+'><span>'+esc(s.t)+'</span></label><em>'+esc(s.hint)+'</em></li>').join('')+'</ul><p class="muted sm">Steps 1 to 7 check themselves as you fill in the month.</p></div></section>'
+   +'<section class="card"><div class="card-h"><h2>Assign filming dates</h2></div><div class="card-b"><p class="muted">Batch filming keeps you ahead. Pick two filming days and the first half of the month goes to the first, the rest to the second. Script and editing deadlines are filled in around them.</p><div class="form-grid two"><div class="fld"><label for="pf-a">First filming day</label><input id="pf-a" type="date" data-ui="planFilm.a" value="'+ui.planFilm.a+'"></div><div class="fld"><label for="pf-b">Second filming day</label><input id="pf-b" type="date" data-ui="planFilm.b" value="'+ui.planFilm.b+'"></div></div><button class="btn primary sm" data-act="assignFilm" '+(its.length?'':'disabled')+'>Assign filming dates</button></div></section></div>'
+   +'<div><section class="card"><div class="card-h"><h2>Publishing slots</h2></div><div class="card-b"><p class="muted">Default rhythm: Reels on Tuesdays and Fridays, long form on Thursdays, a recap at the end. Change any date on the video itself.</p><ul class="slots">'+slotRows+'</ul></div></section>'
+   +(rmKeys.length?'<section class="card"><div class="card-h"><h2>Six-month roadmap</h2></div><ul class="mini">'+rmKeys.map(k=>{const n=itemsIn(k).length;return '<li class="split"><button data-act="planGo" data-month="'+k+'"><b>'+esc(monthLabel(k))+': '+esc(themes[k])+'</b><span>'+n+' videos planned</span></button></li>';}).join('')+'</ul></section>':'')
+   +'</div></div></div>';
+}
+
+/* ================= settings ================= */
+function viewSettings(){
+  const T=S.settings;
+  return '<div class="page narrow">'+head('Settings','Targets, dates, and backups.')
+   +'<section class="card"><div class="card-h"><h2>Monthly targets</h2></div><div class="card-b form-grid two"><div class="fld"><label for="st-r">Reels per month</label><input id="st-r" type="number" min="0" data-s="settings.reelTarget" value="'+T.reelTarget+'"></div><div class="fld"><label for="st-l">Long-form videos per month</label><input id="st-l" type="number" min="0" data-s="settings.longTarget" value="'+T.longTarget+'"></div><div class="fld"><label for="st-c">Company name</label><input id="st-c" data-s="settings.company" value="'+esc(T.company)+'"></div><div class="fld"><label for="st-t">Theme</label><select id="st-t" data-s="settings.theme">'+opts([['auto','Match my device'],['light','Light'],['dark','Dark']],T.theme)+'</select></div></div></section>'
+   +'<section class="card"><div class="card-h"><h2>Default lead times</h2></div><div class="card-b"><p class="muted">Used when dates are filled in automatically. All of them count back from the publish date.</p><div class="form-grid two"><div class="fld"><label for="of-f">Filming, days before publish</label><input id="of-f" type="number" min="0" data-s="settings.offsets.film" value="'+T.offsets.film+'"></div><div class="fld"><label for="of-e">Editing deadline, days before publish</label><input id="of-e" type="number" min="0" data-s="settings.offsets.edit" value="'+T.offsets.edit+'"></div><div class="fld"><label for="of-s">Script deadline, days before filming</label><input id="of-s" type="number" min="0" data-s="settings.offsets.script" value="'+T.offsets.script+'"></div><div class="fld"><label for="of-p">Planning day, days before script</label><input id="of-p" type="number" min="0" data-s="settings.offsets.plan" value="'+T.offsets.plan+'"></div></div></div></section>'
+   +'<section class="card"><div class="card-h"><h2>Content pillars</h2></div><div class="card-b pillars">'+PILLARS.map(p=>'<div><h4>'+p.name+'</h4><p>'+esc(p.purpose)+'</p><p class="muted sm">'+esc(p.ex.join(', '))+'</p></div>').join('')+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Backup and restore</h2></div><div class="card-b"><p class="muted">Your content is saved in this browser only. Export a backup now and then, and use it to move the dashboard to another computer.</p><div class="row-gap"><button class="btn primary" data-act="export">Export backup</button><label class="btn ghost file">Import backup<input type="file" accept="application/json,.json" data-import hidden></label><button class="btn danger" data-act="reset">Reset to starter content</button></div></div></section></div>';
+}
+
+const VIEWS={dashboard:viewDashboard,calendar:viewCalendar,pipeline:viewPipeline,ideas:viewIdeas,month:viewMonth,film:viewFilm,published:viewPublished,performance:viewPerformance,templates:viewTemplates,settings:viewSettings,library:viewLibrary,plan:viewPlan};
+
+/* ================= editor (drawer) ================= */
+const TABS=[['overview','Overview'],['script','Script'],['shoot','Shoot & edit'],['schedule','Schedule'],['repurpose','Repurpose'],['publish','Publish & results']];
+function F(it,path,label,o){
+  o=o||{};const v=gp(it,path),id='f_'+path.replace(/\./g,'_'),t=o.t||'text';
+  if(t==='check')return '<label class="chk"><input type="checkbox" data-f="'+path+'" '+(v?'checked':'')+'><span>'+label+'</span></label>';
+  let ctl;
+  if(t==='textarea')ctl='<textarea id="'+id+'" data-f="'+path+'" rows="'+(o.rows||3)+'" placeholder="'+esc(o.ph||'')+'">'+esc(v==null?'':v)+'</textarea>';
+  else if(t==='select')ctl='<select id="'+id+'" data-f="'+path+'">'+opts(o.opts,v,o.blank)+'</select>';
+  else ctl='<input id="'+id+'" type="'+t+'" data-f="'+path+'" value="'+esc(v==null?'':v)+'" placeholder="'+esc(o.ph||'')+'"'+(t==='number'?' min="0" step="any"':'')+'>';
+  return '<div class="fld'+(o.wide?' wide':'')+'"><label for="'+id+'">'+label+'</label>'+ctl+'</div>';
+}
+const STAT3=['Not started','In progress','Done'];
+function tabOverview(it){
+  const isIdea=it.status==='Idea';
+  return '<div class="form-grid">'+F(it,'workingTitle','Internal working title')
+   +F(it,'type','Content type',{t:'select',opts:['Reel','Long Form']})
+   +(it.type==='Reel'?F(it,'reelKind','Reel kind',{t:'select',opts:['Standalone','Repurposed','Recap']}):'')
+   +F(it,'status','Status',{t:'select',opts:STATUSES})+F(it,'priority','Priority',{t:'select',opts:PRIORITIES})
+   +F(it,'pillar','Content pillar',{t:'select',opts:PILLAR_NAMES})+F(it,'topic','Topic category',{t:'select',opts:TOPICS})+F(it,'group','Idea Bank group',{t:'select',opts:GROUPS})
+   +(isIdea?F(it,'ideaFormat','Works best as',{t:'select',opts:['Reel','Long Form','Both'],blank:'Not sure yet'}):'')+'</div>'
+   +'<fieldset class="fld"><legend>Platforms</legend><div class="plats">'+PLATFORMS.map(p=>'<label class="chk"><input type="checkbox" data-plat="'+p+'" '+(it.platforms.includes(p)?'checked':'')+'><span>'+p+'</span></label>').join('')+'</div></fieldset>'
+   +F(it,'notes','Notes',{t:'textarea',rows:4});
+}
+function tabScript(it){
+  let h='';
+  if(it.type==='Reel'){
+    h+='<h3 class="dr-sec">Reel template</h3><div class="form-grid">'+F(it,'mainTopic','Topic')+F(it,'goal','Goal')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'mainMessage','Main message',{t:'textarea',rows:2})
+      +F(it,'takeaway','Desired takeaway')+F(it,'offer','Offer connected to content')+F(it,'hook','Hook',{t:'textarea',rows:2,wide:true})+F(it,'points.0','Point 1')+F(it,'points.1','Point 2')+F(it,'points.2','Point 3')+F(it,'cta','CTA')+'</div>';
+    if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+RECAP_FIELDS.map(r=>F(it,'recap.'+r[0],r[1],{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
+  }else{
+    h+='<h3 class="dr-sec">Long-form video template</h3><div class="form-grid">'+F(it,'finalTitle','Final title',{wide:true})+F(it,'mainQuestion','Main question',{wide:true})+F(it,'targetViewer','Target viewer')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})
+      +F(it,'takeaway','Main takeaway',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content')+F(it,'hook','Intro / hook',{t:'textarea',rows:3,wide:true})
+      +[0,1,2,3,4].map(i=>F(it,'sections.'+i,'Section '+(i+1),{t:'textarea',rows:2})).join('')+F(it,'conclusion','Conclusion',{t:'textarea',rows:2})+F(it,'cta','CTA')+'</div>';
+  }
+  return h+'<h3 class="dr-sec">Full script and notes</h3><div class="form-grid">'+F(it,'script','Script',{t:'textarea',rows:8,wide:true})+F(it,'talking','Talking points (shown on the Need to Film screen)',{t:'textarea',rows:4,wide:true})+'</div>';
+}
+function tabShoot(it){
+  let h='<h3 class="dr-sec">Shot list</h3>';
+  if(it.type==='Reel')h+='<div class="shots">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div>';
+  h+='<div class="form-grid">'+F(it,'shotText',it.type==='Reel'?'Other shot notes':'Shot list',{t:'textarea',rows:3,wide:true})+F(it,'broll','B-roll needed',{t:'textarea',rows:3})+F(it,'jobsite','Jobsite footage needed',{t:'textarea',rows:3})+F(it,'location','Location / project needed',{wide:true})+'</div>';
+  h+='<h3 class="dr-sec">Thumbnail and caption</h3><div class="form-grid">'+F(it,'thumbNeeded','Thumbnail needed',{t:'check'})+F(it,'thumbStatus','Thumbnail status',{t:'select',opts:STAT3})
+    +(it.type==='Long Form'?F(it,'thumbIdea','Thumbnail idea',{t:'textarea',rows:2,wide:true}):'')
+    +F(it,'captionNeeded','Caption needed',{t:'check'})+F(it,'captionStatus','Caption status',{t:'select',opts:STAT3})+'</div>';
+  h+='<h3 class="dr-sec">Production checklist</h3><div class="shots">'+PROD_STEPS.map(s=>F(it,'prod.'+s[0],s[1],{t:'check'})).join('')+'</div>';
+  return h;
+}
+function tabSchedule(it){
+  return '<div class="form-grid">'+F(it,'planDate','Planning day',{t:'date'})+F(it,'scriptDate','Script deadline',{t:'date'})+F(it,'filmDate','Filming date',{t:'date'})+F(it,'editDate','Editing deadline',{t:'date'})+F(it,'publishDate','Publish date',{t:'date'})+F(it,'plannedMonth','Planned month',{t:'month'})+'</div>'
+   +'<div class="row-gap"><button class="btn ghost sm" data-act="autoFill">Fill other dates from the publish date</button></div><p class="muted sm">Lead times come from Settings. Dates that would land in the past are set to today.</p>';
+}
+function tabRepurpose(it){
+  const others=S.items.filter(i=>i.id!==it.id);
+  let h='';
+  if(it.type==='Reel'){
+    h+='<div class="form-grid">'+F(it,'parentId','Long-form source (parent video)',{t:'select',opts:others.filter(i=>i.type==='Long Form').map(i=>[i.id,title(i)]),blank:'None'})+F(it,'repurposedFrom','Repurposed from (section or timestamp)')+'</div>';
+    if(it.parentId&&getItem(it.parentId))h+='<p><button class="link-b" data-act="edit" data-id="'+it.parentId+'">Open the long-form source</button></p>';
+  }else{
+    h+='<h3 class="dr-sec">Shorts and Reels to create from this video</h3><div class="shorts">'+it.shorts.map((s,i)=>{
+      const linked=s.reelId&&getItem(s.reelId);
+      return '<div class="short"><div class="short-h"><b>Short '+(i+1)+'</b>'+(linked?'<button class="link-b" data-act="edit" data-id="'+s.reelId+'">Open linked Reel</button>':'<button class="btn ghost sm" data-act="createShort" data-i="'+i+'">Create Reel</button>')+'<button class="icon-btn sm" data-act="rmShort" data-i="'+i+'" aria-label="Remove Short '+(i+1)+'">'+I('x')+'</button></div><div class="form-grid">'+F(it,'shorts.'+i+'.hook','Hook')+F(it,'shorts.'+i+'.section','Timestamp / section')+'</div></div>';
+    }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addShort">Add another Short</button></div>';
+    const kids=S.items.filter(i=>i.parentId===it.id);
+    if(kids.length)h+='<h3 class="dr-sec">Reels made from this video</h3><ul class="mini">'+kids.map(k=>'<li><button data-act="edit" data-id="'+k.id+'"><b>'+esc(title(k))+'</b><span>'+esc(k.status)+(k.publishDate?' · '+fmt(k.publishDate):'')+'</span></button></li>').join('')+'</ul>';
+  }
+  h+='<div class="form-grid">'+F(it,'relatedId','Related Reel / video',{t:'select',opts:others.map(i=>[i.id,title(i)]),blank:'None'})+'</div>';
+  return h;
+}
+function tabPublish(it){
+  return '<div class="form-grid">'+F(it,'publishedLink','Published link',{t:'url',ph:'https://'})+F(it,'publishedDate','Published date',{t:'date'})+'</div>'
+   +'<h3 class="dr-sec">Results</h3><div class="form-grid three">'+F(it,'perf.views','Views',{t:'number'})+F(it,'perf.watchHours','Watch time (hours)',{t:'number'})+F(it,'perf.avgDuration','Average view duration',{ph:'0:45'})+F(it,'perf.likes','Likes',{t:'number'})+F(it,'perf.comments','Comments',{t:'number'})+F(it,'perf.shares','Shares',{t:'number'})+F(it,'perf.saves','Saves',{t:'number'})+F(it,'perf.leads','Leads generated',{t:'number'})+'</div>'
+   +F(it,'perf.learnings','Notes / learnings',{t:'textarea',rows:3})
+   +'<h3 class="dr-sec">Winning content</h3>'+F(it,'winning','This is winning content',{t:'check'})
+   +(it.winning?'<div class="form-grid">'+F(it,'winWhy','Why we think it worked',{t:'textarea',rows:3})+F(it,'winReuse','What could be reused',{t:'textarea',rows:3})+'</div>':'');
+}
+function editorHtml(it){
+  const tab=ui.edit.tab, i=stIdx(it.status);
+  const body={overview:tabOverview,script:tabScript,shoot:tabShoot,schedule:tabSchedule,repurpose:tabRepurpose,publish:tabPublish}[tab](it);
+  return '<div class="scrim" data-act="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-label="Edit video" tabindex="-1" data-item-id="'+it.id+'">'
+   +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+'<button class="icon-btn" data-act="close" aria-label="Close">'+I('x')+'</button></div><input class="dr-title" data-f="title" value="'+esc(it.title)+'" placeholder="'+(it.type==='Long Form'?'Long-form video title':'Reel title')+'" aria-label="Video title"></div>'
+   +'<nav class="dr-tabs" role="tablist">'+TABS.map(t=>'<button role="tab" class="'+(tab===t[0]?'on':'')+'" aria-selected="'+(tab===t[0])+'" data-act="tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</nav>'
+   +'<div class="dr-b">'+body+'</div>'
+   +'<div class="dr-f"><button class="btn danger ghost sm" data-act="del" data-id="'+it.id+'">Delete</button><span class="grow"></span>'
+   +(it.status!=='Posted'?'<button class="btn ghost sm" data-act="markPosted" data-id="'+it.id+'">Mark posted</button>':'')
+   +(i<7?'<button class="btn primary sm" data-act="advance" data-id="'+it.id+'">Move to '+STATUSES[i+1]+'</button>':'')+'</div></div>';
+}
+function renderEditor(first){
+  const w=$('#drawer-wrap'), it=getItem(ui.edit.id);
+  if(!it){w.innerHTML='';document.body.classList.remove('drawer-open');return;}
+  const old=$('.dr-b',w), st=old?old.scrollTop:0;
+  w.innerHTML=editorHtml(it);
+  const b=$('.dr-b',w);if(b&&!first)b.scrollTop=st;
+  document.body.classList.add('drawer-open');
+  const d=$('.drawer',w);
+  if(first)requestAnimationFrame(()=>{d.classList.add('open');if(!it.title){const t=$('.dr-title',w);t&&t.focus();}else d.focus();});
+  else d.classList.add('open','still');
+}
+function discardIfEmpty(nextId){
+  const id=ui.newId;if(!id||id===nextId)return;
+  const it=getItem(id);
+  if(it&&!it.title.trim()&&!it.workingTitle.trim())S.items=S.items.filter(i=>i.id!==id);
+  ui.newId=null;
+}
+function openEditor(id,tab){discardIfEmpty(id);ui.edit={id:id,tab:tab||'overview'};renderEditor(!$('.drawer'));}
+function closeEditor(){
+  discardIfEmpty(null);
+  ui.edit={id:null,tab:'overview'};$('#drawer-wrap').innerHTML='';document.body.classList.remove('drawer-open');
+  save();render();
+}
+
+/* ================= modal, toast, confirm ================= */
+function showModal(html){$('#modal-wrap').innerHTML='<div class="scrim show" data-act="modalClose"></div><div class="modal" role="dialog" aria-modal="true">'+html+'</div>';const m=$('#modal-wrap .modal');const f=$('input,select,button.primary',m);f&&f.focus();}
+function closeModal(){$('#modal-wrap').innerHTML='';}
+function askConfirm(msg,label,cb){
+  ui.confirmCb=cb;
+  showModal('<div class="modal-h"><h3>Are you sure?</h3></div><div class="modal-b"><p>'+msg+'</p><div class="row-gap"><button class="btn danger" data-act="confirmYes">'+esc(label)+'</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
+}
+let toastT=null;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
+
+/* ================= actions ================= */
+function setStatus(it,s){it.status=s;if(s==='Posted'&&!it.publishedDate)it.publishedDate=today();}
+function createItem(type,o){
+  const it=newItem(type,Object.assign({status:'Scripting'},o||{}));
+  if(it.publishDate){it.plannedMonth=mk(it.publishDate);autoDates(it,S.settings);}
+  S.items.push(it);ui.newId=it.id;save();openEditor(it.id,'overview');return it;
+}
+function createRecap(date){
+  const key=date?mk(date):ui.month;
+  const it=createItem('Reel',{reelKind:'Recap',title:monthName(key)+' Monthly Recap',pillar:'Trust',topic:'Company',group:'Company / Trust',publishDate:date||'',plannedMonth:key});
+  it.recap.month=monthName(key);save();return it;
+}
+function go(v){ui.view=v;window.scrollTo(0,0);render();}
+function closeMenu(){$('#addmenu').classList.remove('open');$('#addbtn').setAttribute('aria-expanded','false');}
+function ensureType(it){
+  if(it.type==='Long Form'){it.reelKind='';if(!it.shorts.length)for(let i=0;i<3;i++)it.shorts.push({hook:'',section:'',reelId:''});}
+  else if(!it.reelKind)it.reelKind='Standalone';
+}
+function refreshPerf(){const c=$('#perf-charts');if(c)c.innerHTML=perfCharts(perfItems());}
+
+const ACTS={
+  nav:a=>go(a.dataset.view),
+  addmenu:()=>{const m=$('#addmenu'),o=m.classList.toggle('open');$('#addbtn').setAttribute('aria-expanded',String(o));},
+  add:a=>{closeMenu();const k=a.dataset.kind;
+    if(k==='reel')createItem('Reel');else if(k==='long')createItem('Long Form');else if(k==='recap')createRecap();
+    else if(k==='idea'){ui.view='ideas';ui.focus='#qa-title';render();}
+    else if(k==='project'){ui.tplTab='project';ui.projDraft=blankProj();ui.projResults=false;go('templates');}},
+  edit:a=>openEditor(a.dataset.id),
+  close:()=>closeEditor(),
+  tab:a=>{ui.edit.tab=a.dataset.tab;renderEditor();},
+  del:a=>{const it=getItem(a.dataset.id);if(!it)return;askConfirm('Delete “'+esc(title(it))+'”? This cannot be undone.','Delete video',()=>{
+    const id=it.id;S.items=S.items.filter(i=>i.id!==id);
+    S.items.forEach(i=>{if(i.parentId===id)i.parentId='';if(i.relatedId===id)i.relatedId='';i.shorts.forEach(s=>{if(s.reelId===id)s.reelId='';});});
+    ui.newId=null;ui.edit={id:null,tab:'overview'};$('#drawer-wrap').innerHTML='';document.body.classList.remove('drawer-open');save(true);render();toast('Deleted');});},
+  markPosted:a=>{const it=getItem(a.dataset.id);if(!it)return;setStatus(it,'Posted');it.prod.posted=true;save();render();if(ui.edit.id)renderEditor();toast('Marked posted');},
+  advance:a=>{const it=getItem(a.dataset.id);if(!it)return;const i=stIdx(it.status);if(i<7){setStatus(it,STATUSES[i+1]);save();render();if(ui.edit.id)renderEditor();toast('Moved to '+it.status);}},
+  startFilming:a=>{const it=getItem(a.dataset.id);setStatus(it,'Filming');save();render();toast('Moved to Filming');},
+  doneFilming:a=>{const it=getItem(a.dataset.id);setStatus(it,'Editing');it.prod.filmed=true;save();render();toast('Moved to Editing');},
+  toggleDone:a=>{const it=getItem(a.dataset.id);if(!it)return;if(a.checked){setStatus(it,'Posted');toast('Marked posted');}else{it.status='Ready to Post';}save();render();},
+  mnav:a=>{const d=+a.dataset.dir,t=a.dataset.target;if(t==='dash')ui.month=addMonths(ui.month,d);else if(t==='cal')ui.calMonth=addMonths(ui.calMonth,d);else ui.planMonth=addMonths(ui.planMonth,d);render();},
+  calToday:()=>{ui.calMonth=mk(today());render();},
+  calMode:a=>{ui.calMode=a.dataset.mode;render();},
+  day:a=>dayModal(a.dataset.date),
+  newOnDay:a=>{closeModal();createItem(a.dataset.kind==='long'?'Long Form':'Reel',{publishDate:a.dataset.date});},
+  planGo:a=>{ui.planMonth=a.dataset.month||addMonths(mk(today()),1);go('plan');},
+  tplGo:a=>{ui.tplTab=a.dataset.tab;go('templates');},
+  tplTab:a=>{ui.tplTab=a.dataset.tab;render();},
+  tplNew:a=>{const k=a.dataset.kind;if(k==='reel')createItem('Reel');else if(k==='long')createItem('Long Form');else createRecap();},
+  perfTab:a=>{ui.perfTab=a.dataset.tab;render();},
+  ideaTopic:a=>{ui.ideaTopic=a.dataset.topic;render();},
+  schedule:a=>scheduleModal(a.dataset.id),
+  doSchedule:a=>{
+    const it=getItem(a.dataset.id),box=a.closest('[data-sched]');if(!it)return;
+    const type=$('#sc-type',box).value,date=$('#sc-date',box).value,auto=$('#sc-auto',box).checked;
+    it.type=type;ensureType(it);if(type==='Reel'&&it.reelKind==='')it.reelKind='Standalone';
+    it.platforms=defaultPlatforms(type);it.status='Scripting';
+    if(date){it.publishDate=date;it.plannedMonth=mk(date);if(auto)autoDates(it,S.settings);}
+    save();closeModal();render();toast('Moved to Scripting'+(date?', posting '+fmt(date):''));
+  },
+  winToggle:a=>{const it=getItem(a.dataset.id);it.winning=!it.winning;save();render();toast(it.winning?'Added to winning content':'Removed from winning content');},
+  autoFill:()=>{const it=getItem(ui.edit.id);if(!it.publishDate){toast('Set a publish date first');return;}autoDates(it,S.settings);save();renderEditor();toast('Dates filled in');},
+  createShort:a=>{
+    const L=getItem(ui.edit.id),i=+a.dataset.i,s=L.shorts[i];
+    if(!s.hook.trim()){toast('Write a hook for this Short first');return;}
+    const r=newItem('Reel',{title:s.hook,hook:s.hook,reelKind:'Repurposed',parentId:L.id,repurposedFrom:s.section,pillar:L.pillar,topic:L.topic,group:L.group,status:'Scripting',plannedMonth:L.plannedMonth});
+    S.items.push(r);s.reelId=r.id;save();renderEditor();toast('Reel created and linked');
+  },
+  addShort:()=>{const L=getItem(ui.edit.id);L.shorts.push({hook:'',section:'',reelId:''});save();renderEditor();},
+  rmShort:a=>{const L=getItem(ui.edit.id);L.shorts.splice(+a.dataset.i,1);save();renderEditor();},
+  planStep:a=>{const k=ui.planMonth;S.plan[k]=S.plan[k]||{};S.plan[k][+a.dataset.i]=a.checked;save();render();},
+  slotAssign:a=>{
+    const id=a.parentElement.querySelector('select').value;if(!id){toast('Pick an idea first');return;}
+    const it=getItem(id),kind=a.dataset.kind,date=a.dataset.date;
+    it.type=kind==='Long Form'?'Long Form':'Reel';ensureType(it);it.publishDate=date;it.plannedMonth=mk(date);it.status='Scripting';it.platforms=defaultPlatforms(it.type);autoDates(it,S.settings);
+    save();render();toast('Scheduled for '+fmt(date));
+  },
+  slotNew:a=>{if(a.dataset.kind==='recap')createRecap(a.dataset.date);else createItem(a.dataset.kind==='long'?'Long Form':'Reel',{publishDate:a.dataset.date});},
+  assignFilm:()=>{
+    const its=itemsIn(ui.planMonth).filter(i=>i.publishDate).sort(byPub),A=ui.planFilm.a,B=ui.planFilm.b;
+    if(!its.length)return;if(!A||!B){toast('Pick both filming days first');return;}
+    const half=Math.ceil(its.length/2),o=S.settings.offsets,lo=today(),cl=d=>d<lo?lo:d;
+    its.forEach((it,i)=>{it.filmDate=i<half?A:B;it.editDate=cl(addDays(it.publishDate,-o.edit));if(it.editDate<it.filmDate)it.editDate=it.filmDate;it.scriptDate=cl(addDays(it.filmDate,-o.script));it.planDate=cl(addDays(it.scriptDate,-o.plan));});
+    save();render();toast('Filming dates assigned');
+  },
+  projSuggest:()=>{ui.projResults=true;render();},
+  projSave:()=>{
+    const d=ui.projDraft;if(!d.name.trim()){toast('Add a project name first');return;}
+    if(d.id){const p=S.projects.find(x=>x.id===d.id);if(p)Object.assign(p,d);else S.projects.push(Object.assign({},d));}
+    else{d.id=uid();S.projects.push(Object.assign({},d));}
+    save();render();toast('Project saved');
+  },
+  projLoad:a=>{const p=S.projects.find(x=>x.id===a.dataset.id);if(!p)return;ui.projDraft=Object.assign(blankProj(),p);ui.projResults=true;render();window.scrollTo(0,0);},
+  projDel:a=>{S.projects=S.projects.filter(p=>p.id!==a.dataset.id);save();render();},
+  sugAdd:a=>{
+    const d=ui.projDraft,s=suggestions(d)[+a.dataset.i];if(!s||!s.fmt)return;
+    S.items.push(newItem(s.fmt,{status:'Idea',title:s.title,pillar:s.pillar,topic:s.topic,group:groupFor(s.topic),ideaFormat:s.fmt,notes:s.note,location:[d.name,d.city].filter(Boolean).join(', ')}));
+    save();toast('Added to Idea Bank');
+  },
+  sugAll:()=>{
+    const d=ui.projDraft;let n=0;
+    suggestions(d).forEach(s=>{if(s.fmt){S.items.push(newItem(s.fmt,{status:'Idea',title:s.title,pillar:s.pillar,topic:s.topic,group:groupFor(s.topic),ideaFormat:s.fmt,notes:s.note,location:[d.name,d.city].filter(Boolean).join(', ')}));n++;}});
+    save();toast(n+' ideas added to the Idea Bank');
+  },
+  jsReset:()=>{S.jobsite.checks={};save();render();},
+  preset:a=>{
+    const p=a.dataset.p;ui.q='';const q=$('#q');if(q)q.value='';
+    ui.lib=p==='film'?{status:'Ready to Film'}:p==='posting'?{month:ui.month}:p==='payments'?{pillar:'Payments',status:'Posted'}:p==='ideas'?{status:'Idea'}:{type:'Long Form',preset:'shorts'};
+    render();
+  },
+  clearLib:()=>{ui.lib={};ui.q='';const q=$('#q');if(q)q.value='';render();},
+  export:()=>{
+    save(true);
+    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='content-hq-backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('Backup downloaded');
+  },
+  reset:()=>askConfirm('This replaces everything in the dashboard with the starter content. Export a backup first if you want to keep your work.','Reset everything',()=>{S=seed();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;save(true);applyTheme();render();toast('Starter content restored');}),
+  confirmYes:()=>{const cb=ui.confirmCb;ui.confirmCb=null;closeModal();cb&&cb();},
+  modalClose:()=>closeModal()
+};
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+  if($('#addmenu').classList.contains('open')&&!e.target.closest('#addwrap'))closeMenu();
+  if(e.target.closest('[data-stop]'))return;
+  const a=e.target.closest('[data-act]');
+  if(a&&ACTS[a.dataset.act]){
+    if(a.tagName==='INPUT'&&a.type==='checkbox'){ACTS[a.dataset.act](a,e);return;}
+    ACTS[a.dataset.act](a,e);
+  }
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='q'){ui.q=el.value;if(ui.view!=='library')ui.view='library';render();return;}
+  if(el.dataset.plat){
+    const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
+    const p=el.dataset.plat,has=it.platforms.includes(p);
+    if(el.checked&&!has)it.platforms.push(p);if(!el.checked&&has)it.platforms=it.platforms.filter(x=>x!==p);
+    save();return;
+  }
+  if(el.dataset.ui){
+    sp(ui,el.dataset.ui,el.type==='checkbox'?el.checked:el.value);
+    if(el.tagName==='SELECT'||el.type==='checkbox'||el.type==='date')render();
+    return;
+  }
+  if(el.dataset.s){
+    const v=el.type==='checkbox'?el.checked:(el.type==='number'?Math.max(0,num(el.value)):el.value);
+    sp(S,el.dataset.s,v);
+    if(el.dataset.s==='settings.theme')applyTheme();
+    if(el.dataset.s==='settings.company')applyTheme();
+    if(el.dataset.s.indexOf('jobsite.checks')===0)render();
+    save();return;
+  }
+  if(el.dataset.f){
+    const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
+    const path=el.dataset.f,v=el.type==='checkbox'?el.checked:el.value;
+    sp(it,path,v);
+    if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
+    if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();save();renderEditor();return;}
+    if(path==='type'){ensureType(it);it.platforms=defaultPlatforms(it.type);save();renderEditor();return;}
+    if(path==='winning'){save();renderEditor();return;}
+    if(path==='reelKind'&&v==='Recap'&&!it.recap.month)it.recap.month=monthName(monthOf(it)||ui.month);
+    if(path.indexOf('perf.')===0&&ui.view==='performance')refreshPerf();
+    save();
+  }
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.matches&&el.matches('input[data-import]')){
+    const f=el.files&&el.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.items))throw new Error('bad');S=fixState(o);save(true);applyTheme();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;render();toast('Backup restored');}catch(err){toast('That file is not a Content HQ backup');}};
+    r.readAsText(f);el.value='';
+  }
+});
+document.addEventListener('submit',e=>{
+  const f=e.target.closest('[data-form="addIdea"]');if(!f)return;
+  e.preventDefault();
+  const t=$('#qa-title').value.trim();if(!t){toast('Type the idea first');$('#qa-title').focus();return;}
+  const fm=$('#qa-format').value,topic=$('#qa-topic').value;
+  S.items.push(newItem(fm==='Long Form'?'Long Form':'Reel',{title:t,status:'Idea',pillar:$('#qa-pillar').value,ideaFormat:fm,topic:topic,group:groupFor(topic),priority:$('#qa-prio').value,reelKind:fm==='Long Form'?'':'Standalone'}));
+  save();ui.focus='#qa-title';render();toast('Idea added');
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if($('#modal-wrap .modal'))closeModal();
+    else if($('#addmenu').classList.contains('open'))closeMenu();
+    else if(ui.edit.id)closeEditor();
+  }
+});
+/* drag and drop for the pipeline */
+document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.kcard');if(!c)return;e.dataTransfer.setData('text/plain',c.dataset.id);e.dataTransfer.effectAllowed='move';c.classList.add('dragging');});
+document.addEventListener('dragend',()=>{$$('.kcard.dragging').forEach(c=>c.classList.remove('dragging'));$$('.kcol.over').forEach(c=>c.classList.remove('over'));});
+document.addEventListener('dragover',e=>{const c=e.target.closest&&e.target.closest('.kcol');if(c){e.preventDefault();c.classList.add('over');}});
+document.addEventListener('dragleave',e=>{const c=e.target.closest&&e.target.closest('.kcol');if(c&&!c.contains(e.relatedTarget))c.classList.remove('over');});
+document.addEventListener('drop',e=>{
+  const c=e.target.closest&&e.target.closest('.kcol');if(!c)return;e.preventDefault();
+  const id=e.dataTransfer.getData('text/plain'),it=getItem(id);if(!it)return;
+  const s=c.dataset.status;if(it.status!==s){setStatus(it,s);save();render();toast('Moved to '+s);}else render();
+});
+
+/* ================= render + init ================= */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',S.settings.theme||'auto');
+  const b=$('#brandSub');if(b)b.textContent=S.settings.company||'Deck content planner';
+}
+function updateStoreNote(){const n=$('#storeNote');if(n)n.textContent=memOnly?'Saving is off in this browser. Export a backup before you leave.':'Saved in this browser.';n&&n.classList.toggle('warn',memOnly);}
+function render(){
+  const kb=$('.kanban'),sl=kb?kb.scrollLeft:0;
+  $('#nav').innerHTML=navHtml();
+  $('#main').innerHTML=VIEWS[ui.view]();
+  const kb2=$('.kanban');if(kb2)kb2.scrollLeft=sl;
+  if(ui.focus){const f=$(ui.focus);if(f)f.focus();ui.focus=null;}
+  const q=$('#q');if(q&&q.value!==ui.q)q.value=ui.q;
+}
+function init(){
+  memOnly=!storageOk();
+  S=load()||seed();
+  save(true);
+  applyTheme();
+  ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;ui.planMonth=addMonths(mk(today()),1);
+  render();updateStoreNote();
+}
+init();
+window.__hq={get S(){return S;},ui:ui,render:render,ACTS:ACTS,VIEWS:VIEWS,openEditor:openEditor};
+})();
+
+</script>
+</body>
+</html>
