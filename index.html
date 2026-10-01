@@ -138,6 +138,7 @@ label.inline{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--
 .empty p{margin:0 0 12px;max-width:440px;margin-inline:auto}
 .cols2{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
 .cols2.even{grid-template-columns:1fr 1fr}
+.cols2>*,.cols2.plan>*{min-width:0}
 .cols2.plan{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
 
 /* ---------- dashboard hero ---------- */
@@ -440,7 +441,8 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--cedar);b
   #side{width:auto;height:auto;position:sticky;top:0;z-index:25;padding:8px 10px;flex-direction:row;align-items:center;gap:8px}
   .brand{padding:0 4px}
   .brand-text small{display:none}
-  #nav{flex-direction:row;overflow-x:auto;gap:2px;scrollbar-width:none}
+  #nav{flex-direction:row;overflow-x:auto;gap:2px;scrollbar-width:none;min-width:0;flex:1}
+  #side{max-width:100vw}
   #nav::-webkit-scrollbar{display:none}
   .nav-i{white-space:nowrap;padding:8px 10px;font-size:13px}
   .nav-i.on::before{display:none}
@@ -547,6 +549,35 @@ details.adv[open] summary::before{transform:rotate(45deg)}
   .fc-big{font-size:19px}.fp-v{font-size:18px}
   .shots.compact{grid-template-columns:1fr 1fr}
   .sec-h input{font-size:16px}
+}
+
+/* ---------- Caption system ---------- */
+.lbl-btns{display:inline-flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+.cc{font-size:11.5px;color:var(--ink3);text-align:right}
+.form-grid>.wide,.form-grid>p.wide{grid-column:1/-1;margin:0}
+.cap-ready{margin:0 0 14px}
+.post-line{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink2)}
+.post-line .ok{color:var(--greenD);font-weight:600}
+.cap-tip{margin:-8px 0 12px}
+.cap-text{white-space:pre-wrap;word-wrap:break-word;font-size:14.5px;line-height:1.5;background:var(--surface2);border:1px solid var(--line);border-radius:var(--r1);padding:12px 14px;max-height:360px;overflow:auto}
+#cap-prev .cc{margin:4px 0 0}
+.cover-prev{margin:-2px 0 12px;padding:8px 12px;border-radius:var(--r1);background:var(--surface2);font-size:13.5px}
+.cover-prev ul{margin:0;padding-left:18px}
+.sg-card .fld{margin-bottom:10px}
+@media (max-width:820px){
+  .lbl-row{flex-wrap:wrap}
+  .sg-prev-h .seg{width:100%}
+  .sg-prev-h .seg button{flex:1;text-align:center}
+  .sg-prev .row-gap .btn{flex:1}
+}
+@media (max-width:820px){
+  .dr-title{font-size:23px!important}
+  .dr-f{flex-wrap:wrap;gap:6px}
+  .dr-f .grow{display:none}
+  .dr-f .btn{flex:1 1 auto}
+  .dr-f .btn.danger{flex:0 0 auto}
+  .fld>label:only-child,.fld>label:first-child:empty{display:none}
+  .sg-card .form-grid .fld>label:first-child:not([for]){display:none}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
@@ -670,6 +701,37 @@ const scriptDef=it=>SCRIPT_TYPES[it.scriptType]||SCRIPT_TYPES.Educational;
 const blankShort=()=>({hook:'',section:'',reelId:'',angle:'',sectionIdx:-1});
 const blankSec=()=>({title:'',visual:''});
 
+/* ---------- Caption system configuration ---------- */
+const CAPTION_STYLES={
+ 'Educational':{flow:['Hook','Explanation','Takeaways','CTA'],tip:'Open with the hook, explain the topic in a sentence or two, add a useful takeaway, end with the CTA.'},
+ 'FAQ':{flow:['Question','Direct answer','Short explanation','CTA'],tip:'Ask the question, answer it plainly, explain briefly, end with the CTA.'},
+ 'Comparison':{flow:['Option A vs B','Difference','Who each fits','CTA'],tip:'Frame the choice, name the main difference, say when each makes sense, end with the CTA.'},
+ 'Project Showcase':{flow:['Result','Customer goal','Build','Feature','CTA'],tip:'Open on the result, share the customer goal, what was built, one standout feature, then the CTA.'},
+ 'Promotional':{flow:['Pain point','Solution','Offer / option','CTA'],tip:'Name the problem, show the option that solves it, explain how it helps, end with the CTA.'},
+ 'Company / Trust':{flow:['Statement','How we work','Proof','CTA'],tip:'Make a clear statement about the company, show how you work, back it up, end with the CTA.'},
+ 'Process':{flow:['What happens','Steps','Why it matters','CTA'],tip:'Say what happens, list the steps, explain why it matters, end with the CTA.'},
+ 'Short & Simple':{flow:['1–2 sentences','CTA'],tip:'Best for visual Reels. One or two sentences, then the CTA.'}
+};
+const CAPTION_STYLE_NAMES=Object.keys(CAPTION_STYLES);
+const CAPTION_FROM_SCRIPT={'Educational':'Educational','FAQ':'FAQ','Comparison':'Comparison','Process':'Process','Problem / Solution':'Educational','Project Showcase':'Project Showcase','Trust / Company':'Company / Trust','Promotional':'Promotional'};
+const CAPTION_OPENINGS=[
+ {cat:'Educational',items:["Here's something most homeowners don't think about when planning a deck.",'One part of a deck that often gets overlooked is ___.',"Here's why ___ matters when building a deck."]},
+ {cat:'FAQ',items:['One question we get all the time is ___.','A common question we hear is ___.',"Wondering whether ___? Here's the answer."]},
+ {cat:'Comparison',items:["If you're deciding between ___ and ___, here's what you need to know.",'___ or ___? Both can make sense depending on the project.']},
+ {cat:'Project',items:["Here's a look at one of our latest builds.",'Another backyard transformed.',"Here's how this project came together."]},
+ {cat:'Promotional',items:['If ___ is stopping you from moving forward with a deck, this may help.','There are multiple ways to get started on a deck project.']},
+ {cat:'Company / trust',items:["Here's a little more about how we work.",'We want the deck-buying process to feel simple.',"Here's what customers can expect when working with us."]}
+];
+const HASHTAG_GROUPS={
+ 'General Deck':'#DeckBuilder #DeckDesign #DeckConstruction #OutdoorLiving',
+ 'Texas / Oklahoma':'#TexasDeckBuilder #NorthTexas #OklahomaDeckBuilder #OutdoorLiving',
+ 'Construction':'#DeckFraming #DeckBuilding #Construction',
+ 'Outdoor Living':'#OutdoorLiving #BackyardLiving #BackyardIdeas #PatioIdeas',
+ 'Project Showcase':'#DeckInspiration #BackyardTransformation #OutdoorLiving'
+};
+const HASHTAG_GROUP_NAMES=Object.keys(HASHTAG_GROUPS).concat(['Custom']);
+const captionStyleFor=it=>CAPTION_FROM_SCRIPT[it.scriptType]||(it.reelKind==='Recap'?'Project Showcase':'Educational');
+
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -743,6 +805,9 @@ function newItem(type,o){
     mainTopic:'',audienceProblem:'',mainMessage:'',takeaway:'',cta:'',offer:'',
     scriptType:'',hook:'',script:'',talking:'',shotText:'',broll:'',jobsite:'',location:'',
     thumbNeeded:true,thumbStatus:'Not started',captionNeeded:true,captionStatus:'Not started',
+    captionStyle:'',captionHook:'',captionBody:'',captionCTA:'',socialCaption:'',socialManual:false,shortsDescription:'',
+    ytSummary:'',ytCover:true,ytCTA:'',ytDescription:'',ytManual:false,ytLinks:{website:'',quote:'',related:'',other:''},
+    hashtagGroup:'General Deck',includeHashtags:false,customHashtags:'',
     goal:'',points:['','',''],
     finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],secMeta:[blankSec(),blankSec(),blankSec(),blankSec(),blankSec()],conclusion:'',thumbIdea:'',
     recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
@@ -756,12 +821,13 @@ function newItem(type,o){
   };
   const out=Object.assign(base,o||{});
   if(!out.scriptType&&out.type==='Reel')out.scriptType=inferScriptType(out);
+  if(!out.captionStyle&&out.type==='Reel')out.captionStyle=captionStyleFor(out);
   return out;
 }
 function normalize(it){
   const base=newItem(it.type||'Reel');
   const m=Object.assign({},base,it);
-  ['perf','recap','shots','prod'].forEach(k=>{m[k]=Object.assign({},base[k],it[k]||{});});
+  ['perf','recap','shots','prod','ytLinks'].forEach(k=>{m[k]=Object.assign({},base[k],it[k]||{});});
   if(!Array.isArray(m.points))m.points=['','',''];
   while(m.points.length<3)m.points.push('');
   if(!Array.isArray(m.sections))m.sections=['','','','',''];
@@ -773,6 +839,9 @@ function normalize(it){
   while(m.secMeta.length<m.sections.length)m.secMeta.push(blankSec());
   m.secMeta=m.secMeta.map(s=>Object.assign(blankSec(),s||{}));
   if(it.scriptType==null||(m.type==='Reel'&&!SCRIPT_TYPES[m.scriptType]))m.scriptType=m.type==='Reel'?inferScriptType(m):'';
+  // Caption system: older items get a caption style that follows their script type
+  if(it.captionStyle==null||!CAPTION_STYLES[m.captionStyle])m.captionStyle=m.type==='Reel'?captionStyleFor(m):'';
+  if(!HASHTAG_GROUP_NAMES.includes(m.hashtagGroup))m.hashtagGroup='General Deck';
   if(!Array.isArray(m.platforms))m.platforms=defaultPlatforms(m.type);
   return m;
 }
@@ -846,7 +915,7 @@ const ROADMAP=[
 
 function seed(){
   const st={v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},
-    settings:{reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks',offsets:{film:7,edit:2,script:3,plan:3}}};
+    settings:{reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks',offsets:{film:7,edit:2,script:3,plan:3},hashtags:Object.assign({},HASHTAG_GROUPS),website:'',quoteUrl:''}};
   IDEAS.forEach(r=>{
     st.items.push(newItem(r[4]==='Long Form'?'Long Form':'Reel',{title:r[0],pillar:r[1],topic:r[2],group:r[3],ideaFormat:r[4],priority:r[5],notes:r[6],status:'Idea',
       reelKind:r[0]==='Monthly recap'?'Recap':(r[4]==='Long Form'?'':'Standalone')}));
@@ -886,7 +955,7 @@ function seed(){
     targetViewer:'Homeowners in Northern Texas and Southern Oklahoma who are thinking about a deck',audienceProblem:"They don't know the company yet and aren't sure what the process looks like.",
     takeaway:"We're a builder you can understand, trust, and work with easily.",hook:"Before you trust anyone to build your deck, you should know who they are.",sections:['','','','',''],secMeta:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'].map(t=>({title:t,visual:''})),
     cta:'Use the 3D configurator to request a quote.',broll:'Jobsite footage, finished decks, team at work',location:'Finished project or active jobsite'});}
-  applyExamples(st);st.examplesV2=true;
+  applyExamples(st);st.examplesV2=true;applyCaptionExamples(st);st.examplesCap=true;
   return st;
 }
 
@@ -918,6 +987,24 @@ function applyExamples(st){
   }
 }
 
+/* Caption worked examples. Same rule as above: only blank fields on matching roadmap videos. */
+function applyCaptionExamples(st){
+  const find=t=>st.items.find(i=>i.roadmap&&i.title.toLowerCase()===t.toLowerCase());
+  const c=find('Composite vs Treated Wood in 60 Seconds');
+  if(c&&!String(c.socialCaption).trim()&&!String(c.captionHook).trim()&&!String(c.captionBody).trim()){
+    c.captionStyle='Comparison';c.captionHook='Composite or treated wood?';
+    c.captionBody='Both can be great deck materials, but they fit different homeowners.\n\nTreated lumber typically gives you a lower upfront cost, while composite is popular with homeowners who want less ongoing maintenance.\n\nThe right choice depends on your budget, the look you want, and how much maintenance you\'re comfortable with.';
+    c.captionCTA="If you're not sure which one makes sense for your deck, send us your project and we'll walk you through both.";
+    c.socialCaption=[c.captionHook,c.captionBody,c.captionCTA].join('\n\n');c.socialManual=false;
+    if(!String(c.shortsDescription).trim())c.shortsDescription="Composite vs treated wood decking: here's one of the biggest differences to consider before choosing your deck material.";
+  }
+  const L=find('How We Build Our Decks: Full Framing Breakdown');
+  if(L&&!String(L.ytDescription).trim()&&!String(L.ytSummary).trim()){
+    L.ytSummary="In this video, we're taking you underneath one of our decks to show how the framing is put together and explain why each part matters.\n\nMost of what determines how a deck performs happens before the deck boards ever go down.";
+    if(!String(L.ytCTA).trim())L.ytCTA="If you're planning a deck project, you can start through our website.";
+  }
+}
+
 /* ================= state ================= */
 let S=null, memOnly=false, saveT=null;
 function storageOk(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
@@ -929,8 +1016,11 @@ function fixState(o){
   const st=Object.assign({v:1,projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}}},o);
   st.settings=Object.assign({reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks'},o.settings||{});
   st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},(o.settings||{}).offsets||{});
+  st.settings.hashtags=Object.assign({},HASHTAG_GROUPS,(o.settings||{}).hashtags||{});
+  if(st.settings.website==null)st.settings.website='';if(st.settings.quoteUrl==null)st.settings.quoteUrl='';
   st.items=o.items.map(normalize);
   if(!st.examplesV2){applyExamples(st);st.examplesV2=true;}
+  if(!st.examplesCap){applyCaptionExamples(st);st.examplesCap=true;}
   return st;
 }
 function save(now){
@@ -953,7 +1043,7 @@ const ui={
   view:'dashboard',month:'',calMonth:'',calMode:'content',planMonth:'',pipeMonth:'',q:'',
   ideaTopic:'All',ideaRoadmap:false,lib:{},perf:{type:'',platform:'',pillar:'',month:''},perfTab:'overview',
   tplTab:'reel',pub:{type:'',pillar:'',platform:''},projDraft:blankProj(),projResults:false,
-  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null
+  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null,capTab:'social'
 };
 function focusMonthDefault(){
   const cur=mk(today());
@@ -1088,6 +1178,7 @@ function kcard(it){
    +'<h4>'+esc(title(it))+'</h4>'
    +'<div class="kc-meta"><span class="chip sm">'+esc(it.pillar)+'</span><span>'+esc(platText(it))+'</span></div>'
    +(it.type==='Reel'&&i<2&&scriptReady(it)?'<div class="kc-ready">Script ready ✓</div>':'')
+   +(i===4&&!postMissing(it).length?'<div class="kc-ready">Ready to post ✓</div>':'')
    +'<div class="kc-foot"><span>'+(it.filmDate?'Film '+fmt(it.filmDate):'Filming date not set')+'</span>'+(i<7?'<button class="icon-btn sm" data-act="advance" data-id="'+it.id+'" title="Move to '+STATUSES[i+1]+'" aria-label="Move to '+STATUSES[i+1]+'">'+I('right')+'</button>':'')+'</div></article>';
 }
 function viewPipeline(){
@@ -1157,7 +1248,6 @@ function viewMonth(){
    :empty('Nothing is scheduled for '+esc(monthLabel(key))+' yet.','<button class="btn primary" data-act="planGo" data-month="'+key+'">Plan this month</button>'))+'</div>';
 }
 
-/* ================= need to film ================= */
 /* ---------- Scripting 2.0: speaking guide + readiness ---------- */
 const nonEmpty=v=>String(v==null?'':v).trim()!=='';
 const secLabel=(it,i)=>{const t=(it.secMeta[i]||{}).title;return 'Section '+(i+1)+(nonEmpty(t)?': '+t:'');};
@@ -1203,6 +1293,81 @@ function guideHtml(parts){
   return '<ol class="sg">'+parts.map(p=>'<li class="'+(p.hook?'is-hook':p.cta?'is-cta':'')+'">'+(p.k?'<span class="sg-k">'+esc(p.k)+'</span>':'')+'<span class="sg-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>';
 }
 
+/* ---------- Caption system ---------- */
+const capSentence=s=>{s=String(s==null?'':s).trim().replace(/^["“”']+|["“”']+$/g,'').trim();if(!s)return '';s=s[0].toUpperCase()+s.slice(1);return /[.!?…:]$/.test(s)?s:s+'.';};
+const noEnd=s=>String(s==null?'':s).trim().replace(/^["“”']+|["“”']+$/g,'').replace(/[.!?]+$/,'').trim();
+const lowerFirst=s=>/^[A-Z][a-z]/.test(s||'')?s[0].toLowerCase()+s.slice(1):(s||'');
+const titleLc=s=>String(s||'').split(' ').map(w=>/^[A-Z][a-z']+$/.test(w)?w.toLowerCase():w).join(' ');
+const firstSentence=s=>{s=String(s||'').trim();const m=s.match(/^[\s\S]*?[.!?](?=\s|$)/);return (m?m[0]:s.split('\n')[0]).trim();};
+const cleanTopic=t=>String(t||'').replace(/\s*[:—–]\s.*$/,'').replace(/\s+(in \d+ seconds|explained)$/i,'').trim();
+const vsParts=t=>{const m=cleanTopic(t).split(/\s+vs\.?\s+/i);return m.length===2?m:null;};
+/* Deterministic draft from the script. No AI: it reorders and lightly rephrases what is already written. */
+function captionFromScript(it){
+  const P=it.points.map(x=>String(x||'').trim()).filter(Boolean), hook=capSentence(it.hook), cta=capSentence(it.cta);
+  let h=hook;const body=[];
+  const lead=(x,start,phrase)=>{const s=noEnd(x);return new RegExp('^'+start,'i').test(s)?capSentence(s):capSentence(phrase+lowerFirst(s));};
+  switch(it.captionStyle){
+    case 'Comparison':{const v=vsParts(title(it));if(v)h=v[0]+' or '+titleLc(v[1])+'?';
+      if(P[0]&&P[1])body.push(capSentence(P[0])+' '+capSentence(P[1]));else P.slice(0,2).forEach(x=>body.push(capSentence(x)));
+      if(P[2])body.push(capSentence(P[2]));break;}
+    case 'FAQ':{if(h&&!/\?$/.test(h)&&/^(do|does|is|are|can|should|how|what|why|when|which|will)\b/i.test(h))h=h.replace(/[.!]$/,'?');
+      if(P[0])body.push(capSentence(P[0]));if(P[1]||P[2])body.push(P.slice(1).map(capSentence).join(' '));break;}
+    case 'Project Showcase':{h=h||"Here's a look at one of our latest builds.";
+      if(P[0])body.push(lead(P[0],'the goal','The goal on this project was '));
+      if(P[1])body.push(lead(P[1],'we ','We built '));
+      if(P[2])body.push(lead(P[2],'one of','One of the standout features is '));break;}
+    case 'Promotional':{if(!h&&P[0]){h=capSentence(P[0]);P.shift();}else if(P[0]&&h){body.push(capSentence(P[0]));P.shift();}
+      P.forEach(x=>body.push(capSentence(x)));break;}
+    case 'Company / Trust':{if(P[0]||P[1])body.push(P.slice(0,2).map(capSentence).join(' '));if(P[2])body.push(capSentence(P[2]));break;}
+    case 'Process':{if(P.length)body.push("Here's how it works:\n"+P.map((x,i)=>(i+1)+'. '+noEnd(x)).join('\n'));
+      const why=it.mainMessage||it.takeaway;if(nonEmpty(why))body.push(capSentence(why));break;}
+    case 'Short & Simple':{h=h||capSentence(it.mainMessage)||capSentence(P[0]);break;}
+    default:{if(P[0])body.push(capSentence(P[0])+(P[1]?' '+capSentence(P[1]):''));if(P[2])body.push(capSentence(P[2]));}
+  }
+  if(!h)h=capSentence(it.mainMessage);
+  return {hook:h,body:body.filter(nonEmpty).join('\n\n'),cta:cta};
+}
+const assembleSocial=it=>[it.captionHook,it.captionBody,it.captionCTA].map(x=>String(x||'').trim()).filter(Boolean).join('\n\n');
+const socialText=it=>it.socialManual?it.socialCaption:assembleSocial(it);
+function shortsFromCaption(it){
+  const topic=cleanTopic(title(it)), src=nonEmpty(it.captionBody)?firstSentence(it.captionBody):firstSentence(socialText(it).split('\n\n').slice(1).join(' ')||it.captionHook||it.hook);
+  const line=src?topic+': '+lowerFirst(noEnd(src))+'.':capSentence(topic);
+  const c=String(it.captionCTA||it.cta||'').trim();
+  return line+'\n\n'+(c&&c.length<=110?capSentence(c):'Follow for more deck-building tips.');
+}
+function coverList(it){return it.sections.map((s,i)=>{const t=(it.secMeta[i]||{}).title;return nonEmpty(t)?t.trim():(nonEmpty(s)?s.trim().split('\n')[0]:'');}).filter(Boolean);}
+function assembleYt(it){
+  const L=it.ytLinks||{}, T=S.settings, links=[];
+  const web=L.website||T.website, quote=L.quote||T.quoteUrl;
+  if(nonEmpty(web))links.push('Website: '+web.trim());if(nonEmpty(quote))links.push('Start a quote: '+quote.trim());
+  if(nonEmpty(L.related))links.push('Related video: '+L.related.trim());if(nonEmpty(L.other))links.push(L.other.trim());
+  const cov=coverList(it);
+  return [it.ytSummary,it.ytCover&&cov.length?'In this video we cover:\n'+cov.map(t=>'- '+t).join('\n'):'',it.ytCTA,links.join('\n')].map(x=>String(x||'').trim()).filter(Boolean).join('\n\n');
+}
+const ytText=it=>it.ytManual?it.ytDescription:assembleYt(it);
+const hashText=it=>String(it.hashtagGroup==='Custom'?it.customHashtags:(S.settings.hashtags[it.hashtagGroup]||'')).trim();
+const withTags=(txt,it)=>it.includeHashtags&&nonEmpty(hashText(it))&&nonEmpty(txt)?txt.replace(/\s+$/,'')+'\n\n'+hashText(it):txt;
+const needsSocial=it=>{const p=it.platforms||[];return p.includes('Instagram')||p.includes('Facebook')||!p.some(x=>x==='YouTube Shorts'||x==='YouTube');};
+const needsShorts=it=>{const p=it.platforms||[];return p.includes('YouTube Shorts')||(it.type==='Reel'&&p.includes('YouTube'));};
+/* Only platforms that are actually selected are required. */
+function captionMissing(it){
+  if(!it.captionNeeded)return [];
+  if(it.type==='Long Form')return nonEmpty(ytText(it))?[]:['YouTube Description'];
+  const m=[];
+  if(needsSocial(it)&&!nonEmpty(socialText(it)))m.push('Instagram / Facebook Caption');
+  if(needsShorts(it)&&!nonEmpty(it.shortsDescription))m.push('YouTube Shorts Description');
+  return m;
+}
+const captionReady=it=>!captionMissing(it).length;
+/* Shown as a signal only. Statuses never change on their own. */
+function postMissing(it){
+  const m=[];
+  if(!(it.prod.edited||stIdx(it.status)>=5))m.push('Editing complete');
+  if(!captionReady(it))m.push('Caption');
+  if(it.thumbNeeded&&!(it.thumbStatus==='Done'||it.prod.cover))m.push('Thumbnail / cover');
+  return m;
+}
+
 /* ================= need to film ================= */
 function fcard(it){
   const late=it.filmDate&&it.filmDate<today(), L=it.type==='Long Form';
@@ -1235,7 +1400,7 @@ function viewPublished(){
   const posted=S.items.filter(i=>i.status==='Posted'&&(!f.type||i.type===f.type)&&(!f.pillar||i.pillar===f.pillar)&&(!f.platform||i.platforms.includes(f.platform))).sort((a,b)=>(b.publishedDate||b.publishDate||'').localeCompare(a.publishedDate||a.publishDate||''));
   const waiting=S.items.filter(i=>i.status==='Scheduled'||i.status==='Ready to Post').sort(byPub);
   return '<div class="page">'+head('Published Content','Everything that is live, with links and quick results.')
-   +(waiting.length?'<section class="card"><div class="card-h"><h2>Waiting to go live</h2><span class="count">'+waiting.length+'</span></div><ul class="mlist">'+waiting.map(i=>'<li class="mrow"><button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'<button class="btn primary sm" data-act="markPosted" data-id="'+i.id+'">Mark posted</button></li>').join('')+'</ul></section>':'')
+   +(waiting.length?'<section class="card"><div class="card-h"><h2>Waiting to go live</h2><span class="count">'+waiting.length+'</span></div><ul class="mlist">'+waiting.map(i=>'<li class="mrow"><button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'<button class="btn ghost sm" data-act="capCopyItem" data-id="'+i.id+'">Copy caption</button><button class="btn primary sm" data-act="markPosted" data-id="'+i.id+'">Mark posted</button></li>').join('')+'</ul></section>':'')
    +'<div class="filters"><label>Type<select data-ui="pub.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Pillar<select data-ui="pub.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Platform<select data-ui="pub.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label></div>'
    +'<section class="card">'+(posted.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Posted</th><th>Video</th><th>Type</th><th>Pillar</th><th>Platform</th><th class="r">Views</th><th class="r">Leads</th><th>Link</th></tr></thead><tbody>'
      +posted.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="nw">'+fmt(i.publishedDate||i.publishDate)+'</td><td class="t">'+(i.winning?'<span class="star" title="Winning content">'+I('star')+'</span>':'')+esc(title(i))+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(platText(i))+'</td><td class="r">'+(i.perf.views!==''?nf(num(i.perf.views)):'–')+'</td><td class="r">'+(i.perf.leads!==''?nf(num(i.perf.leads)):'–')+'</td><td>'+(i.publishedLink?'<a href="'+esc(i.publishedLink)+'" target="_blank" rel="noopener" data-stop>Open '+I('ext','xs')+'</a>':'–')+'</td></tr>').join('')
@@ -1430,13 +1595,15 @@ function viewSettings(){
    +'<section class="card"><div class="card-h"><h2>Monthly targets</h2></div><div class="card-b form-grid two"><div class="fld"><label for="st-r">Reels per month</label><input id="st-r" type="number" min="0" data-s="settings.reelTarget" value="'+T.reelTarget+'"></div><div class="fld"><label for="st-l">Long-form videos per month</label><input id="st-l" type="number" min="0" data-s="settings.longTarget" value="'+T.longTarget+'"></div><div class="fld"><label for="st-c">Company name</label><input id="st-c" data-s="settings.company" value="'+esc(T.company)+'"></div><div class="fld"><label for="st-t">Theme</label><select id="st-t" data-s="settings.theme">'+opts([['auto','Match my device'],['light','Light'],['dark','Dark']],T.theme)+'</select></div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Default lead times</h2></div><div class="card-b"><p class="muted">Used when dates are filled in automatically. All of them count back from the publish date.</p><div class="form-grid two"><div class="fld"><label for="of-f">Filming, days before publish</label><input id="of-f" type="number" min="0" data-s="settings.offsets.film" value="'+T.offsets.film+'"></div><div class="fld"><label for="of-e">Editing deadline, days before publish</label><input id="of-e" type="number" min="0" data-s="settings.offsets.edit" value="'+T.offsets.edit+'"></div><div class="fld"><label for="of-s">Script deadline, days before filming</label><input id="of-s" type="number" min="0" data-s="settings.offsets.script" value="'+T.offsets.script+'"></div><div class="fld"><label for="of-p">Planning day, days before script</label><input id="of-p" type="number" min="0" data-s="settings.offsets.plan" value="'+T.offsets.plan+'"></div></div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Content pillars</h2></div><div class="card-b pillars">'+PILLARS.map(p=>'<div><h4>'+p.name+'</h4><p>'+esc(p.purpose)+'</p><p class="muted sm">'+esc(p.ex.join(', '))+'</p></div>').join('')+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Captions</h2><button class="btn ghost sm" data-act="resetTags">Reset hashtags</button></div><div class="card-b"><p class="muted">Links are added to YouTube descriptions when filled in. Leave them blank if you don\'t want them.</p><div class="form-grid two"><div class="fld"><label for="st-web">Website</label><input id="st-web" type="url" data-s="settings.website" value="'+esc(T.website)+'" placeholder="https://"></div><div class="fld"><label for="st-quote">Quote link</label><input id="st-quote" type="url" data-s="settings.quoteUrl" value="'+esc(T.quoteUrl)+'" placeholder="https://"></div></div>'
+   +'<h3 class="dr-sec">Hashtag groups</h3><p class="muted sm">Hashtags are optional and only added when a video has Include hashtags turned on.</p><div class="form-grid two">'+Object.keys(HASHTAG_GROUPS).map((g,n)=>'<div class="fld"><label for="ht-'+n+'">'+esc(g)+'</label><textarea id="ht-'+n+'" rows="2" data-s="settings.hashtags.'+g+'">'+esc(T.hashtags[g]||'')+'</textarea></div>').join('')+'</div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Backup and restore</h2></div><div class="card-b"><p class="muted">Your content is saved in this browser only. Export a backup now and then, and use it to move the dashboard to another computer.</p><div class="row-gap"><button class="btn primary" data-act="export">Export backup</button><label class="btn ghost file">Import backup<input type="file" accept="application/json,.json" data-import hidden></label><button class="btn danger" data-act="reset">Reset to starter content</button></div></div></section></div>';
 }
 
 const VIEWS={dashboard:viewDashboard,calendar:viewCalendar,pipeline:viewPipeline,ideas:viewIdeas,month:viewMonth,film:viewFilm,published:viewPublished,performance:viewPerformance,templates:viewTemplates,settings:viewSettings,library:viewLibrary,plan:viewPlan};
 
 /* ================= editor (drawer) ================= */
-const TABS=[['overview','Overview'],['script','Script'],['shoot','Shoot & edit'],['schedule','Schedule'],['repurpose','Repurpose'],['publish','Publish & results']];
+const TABS=[['overview','Overview'],['script','Script'],['shoot','Shoot & edit'],['caption','Caption'],['schedule','Schedule'],['repurpose','Repurpose'],['publish','Publish & results']];
 function F(it,path,label,o){
   o=o||{};const v=gp(it,path),id='f_'+path.replace(/\./g,'_'),t=o.t||'text';
   if(t==='check')return '<label class="chk"><input type="checkbox" data-f="'+path+'" '+(v?'checked':'')+'><span>'+label+'</span></label>';
@@ -1445,8 +1612,9 @@ function F(it,path,label,o){
   else if(t==='select')ctl='<select id="'+id+'" data-f="'+path+'">'+opts(o.opts,v,o.blank)+'</select>';
   else ctl='<input id="'+id+'" type="'+t+'" data-f="'+path+'" value="'+esc(v==null?'':v)+'" placeholder="'+esc(o.ph||'')+'"'+(t==='number'?' min="0" step="any"':'')+'>';
   const lab='<label for="'+id+'">'+label+'</label>';
-  const top=o.lib?'<div class="lbl-row">'+lab+'<button class="link" type="button" data-act="lib" data-lib="'+o.lib+'" data-field="'+path+'">'+(o.lib==='hook'?'Browse hooks':'Browse CTAs')+'</button></div>':lab;
-  return '<div class="fld'+(o.wide?' wide':'')+'">'+top+ctl+(o.help?'<small class="help">'+o.help+'</small>':'')+'</div>';
+  const btns=(o.extra||'')+(o.lib?'<button class="link" type="button" data-act="lib" data-lib="'+o.lib+'" data-field="'+path+'">'+LIBS[o.lib].btn+'</button>':'');
+  const top=btns?'<div class="lbl-row">'+lab+'<span class="lbl-btns">'+btns+'</span></div>':lab;
+  return '<div class="fld'+(o.wide?' wide':'')+'">'+top+ctl+(o.cc?'<small class="cc" data-cc="'+path+'">'+String(v||'').length+' characters</small>':'')+(o.help?'<small class="help">'+o.help+'</small>':'')+'</div>';
 }
 const STAT3=['Not started','In progress','Done'];
 function tabOverview(it){
@@ -1468,9 +1636,10 @@ function readyInner(it){
   return '<div class="sr-top"><span class="sr-badge">Needs '+miss.length+(miss.length===1?' thing':' things')+'</span></div><ul class="sr-miss">'+miss.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul>';
 }
 function readyChip(it){
-  if(it.type!=='Reel'||stIdx(it.status)>=2)return '';
-  const n=scriptMissing(it).length;
-  return '<span id="dr-ready" class="sr-chip '+(n?'':'ok')+'">'+(n?'Script: '+n+' to go':'Script ready ✓')+'</span>';
+  const i=stIdx(it.status);
+  if(it.type==='Reel'&&i<2){const n=scriptMissing(it).length;return '<span id="dr-ready" class="sr-chip '+(n?'':'ok')+'">'+(n?'Script: '+n+' to go':'Script ready ✓')+'</span>';}
+  if(i===3||i===4){const n=postMissing(it).length;return '<span id="dr-ready" class="sr-chip '+(n?'':'ok')+'">'+(n?'Post: '+n+' to go':'Ready to Post ✓')+'</span>';}
+  return '<span id="dr-ready" hidden></span>';
 }
 function advBlock(key,label,inner){
   return '<details class="adv"'+(ui.advOpen[key]?' open':'')+'><summary data-adv="'+key+'">'+label+'</summary><div class="adv-b">'+inner+'</div></details>';
@@ -1528,26 +1697,36 @@ function shortsBlock(it){
       +F(it,'shorts.'+i+'.section','Timestamp / notes')+'</div></div>';
    }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addShort">Add another Short</button></div></section>';
 }
+const LIBS={hook:{data:HOOK_LIBRARY,btn:'Browse hooks',title:'Hook ideas',noun:'hook',blanks:true},cta:{data:CTA_LIBRARY,btn:'Browse CTAs',title:'CTA ideas',noun:'CTA'},
+  caption:{data:CAPTION_OPENINGS,btn:'Caption ideas',title:'Caption openings',noun:'opening',blanks:true}};
 function libHtml(){
-  const c=ui.libCtx, L=c.lib==='hook'?HOOK_LIBRARY:CTA_LIBRARY;
-  return '<div class="modal-h"><h3>'+(c.lib==='hook'?'Hook ideas':'CTA ideas')+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
-   +'<p class="muted sm">Tap one to use it.'+(c.lib==='hook'?' Then fill in the blanks (___).':'')+'</p>'
+  const c=ui.libCtx, D=LIBS[c.lib], L=D.data;
+  return '<div class="modal-h"><h3>'+D.title+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p class="muted sm">Tap one to use it.'+(D.blanks?' Then fill in the blanks (___).':'')+'</p>'
    +L.map((g,gi)=>'<div class="lib-g"><h4>'+esc(g.cat)+'</h4>'+g.items.map((t,ti)=>'<button class="lib-i" data-act="libPick" data-g="'+gi+'" data-t="'+ti+'">'+esc(t)+'</button>').join('')+'</div>').join('')+'</div>';
 }
 function applyLib(mode){
   const c=ui.libCtx, it=getItem(c.id);if(!it)return;
   const cur=gp(it,c.field)||'';
   sp(it,c.field,mode==='append'&&nonEmpty(cur)?cur.replace(/\s+$/,'')+' '+c.text:c.text);
-  save();closeModal();renderEditor();
+  syncDerived(it,c.field);save();closeModal();renderEditor();
   const ta=$('.drawer [data-f="'+c.field+'"]');
   if(ta){ta.focus();const v=ta.value,p=v.indexOf('___',mode==='append'?cur.length:0);if(p>=0)ta.setSelectionRange(p,p+3);else ta.setSelectionRange(v.length,v.length);}
-  toast(c.lib==='hook'?'Hook added':'CTA added');
+  toast(LIBS[c.lib].noun[0].toUpperCase()+LIBS[c.lib].noun.slice(1)+' added');
+}
+/* Inserts library or CTA text, asking first if the field already has something in it. */
+function offerText(){
+  const c=ui.libCtx,it=getItem(c.id),cur=it?gp(it,c.field)||'':'';
+  if(!nonEmpty(cur)||cur.trim()===c.text){applyLib('replace');return;}
+  showModal('<div class="modal-h"><h3>Replace your current '+LIBS[c.lib].noun+'?</h3></div><div class="modal-b"><div class="cmp"><span class="muted sm">Current</span><p>'+esc(cur)+'</p><span class="muted sm">New</span><p>'+esc(c.text)+'</p></div>'
+    +'<div class="row-gap"><button class="btn primary" data-act="libApply" data-mode="replace">Replace</button><button class="btn ghost" data-act="libApply" data-mode="append">Add after current</button>'+(c.fromLib===false?'<button class="btn ghost" data-act="modalClose">Cancel</button>':'<button class="btn ghost" data-act="libBack">Back to ideas</button>')+'</div></div>');
 }
 function liveScript(it){
   if(!ui.edit.id||ui.edit.id!==it.id)return;
   const sr=$('#sr-box');if(sr)sr.innerHTML=readyInner(it);
   const pv=$('#sg-prev');if(pv)pv.innerHTML=guideHtml(guideParts(it));
-  const ch=$('#dr-ready');if(ch){const n=scriptMissing(it).length;ch.className='sr-chip '+(n?'':'ok');ch.textContent=n?'Script: '+n+' to go':'Script ready ✓';}
+  const ch=$('#dr-ready');if(ch)ch.outerHTML=readyChip(it);
+  liveCaption(it);
 }
 function aiPrompt(it){
   const d=scriptDef(it), co=S.settings.company||'Benchmark Decks', line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
@@ -1562,19 +1741,115 @@ function aiPrompt(it){
     '- Preserve every factual detail supplied above exactly as given. If something is missing, say what to confirm with '+co+' instead of guessing.',
     '- Write for homeowners, in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
 }
-function copyText(txt){
+function copyText(txt,msg){
+  msg=msg||'Prompt copied. Paste it into Claude.';
   const fallback=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}ta.remove();return ok;};
-  const manual=()=>showModal('<div class="modal-h"><h3>Copy this prompt</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b"><p class="muted sm">Your browser blocked automatic copying. Select all and copy.</p><textarea rows="14" readonly style="width:100%">'+esc(txt)+'</textarea></div>','lg');
-  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(()=>toast('Prompt copied. Paste it into Claude.'),()=>{fallback()?toast('Prompt copied. Paste it into Claude.'):manual();});
-  else fallback()?toast('Prompt copied. Paste it into Claude.'):manual();
+  const manual=()=>showModal('<div class="modal-h"><h3>Copy this text</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b"><p class="muted sm">Your browser blocked automatic copying. Select all and copy.</p><textarea rows="14" readonly style="width:100%">'+esc(txt)+'</textarea></div>','lg');
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(()=>toast(msg),()=>{fallback()?toast(msg):manual();});
+  else fallback()?toast(msg):manual();
+}
+/* ---------- Caption tab ---------- */
+function capReadyInner(it){
+  const cm=captionMissing(it), pm=postMissing(it), done=it.captionStatus==='Done';
+  let h='<div class="sr-top"><span class="sr-badge'+(cm.length?'':' ok')+'">'+(!it.captionNeeded?'Caption not needed':cm.length?'Caption: needs '+cm.length:'Caption Ready ✓')+'</span>'
+    +(it.captionNeeded&&!cm.length?(done?'<span class="muted sm">Marked complete</span>':'<button class="btn primary sm" data-act="capComplete">Mark caption complete</button>'):'')+'</div>';
+  if(cm.length)h+='<ul class="sr-miss">'+cm.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul>';
+  h+='<div class="post-line"><span class="'+(pm.length?'':'ok')+'">'+(pm.length?'Before posting: '+pm.map(esc).join(', '):'Ready to Post ✓')+'</span>'
+    +(!pm.length&&stIdx(it.status)<5?'<button class="btn ghost sm" data-act="toReadyToPost">Move to Ready to Post</button>':'')+'</div>';
+  return h;
+}
+function capPreviewText(it,which){return withTags(which==='shorts'?it.shortsDescription:which==='yt'?ytText(it):socialText(it),it);}
+function capPreviewHtml(it){
+  const w=ui.capTab, txt=capPreviewText(it,w);
+  return nonEmpty(txt)?'<div class="cap-text">'+esc(txt)+'</div><p class="cc">'+txt.length+' characters</p>':'<p class="muted sm">Nothing to preview yet.</p>';
+}
+function previewBlock(it){
+  const L=it.type==='Long Form', tabs=L?[['yt','YouTube']]:[needsSocial(it)&&['social','Instagram / Facebook'],needsShorts(it)&&['shorts','YouTube Shorts']].filter(Boolean);
+  if(!tabs.some(t=>t[0]===ui.capTab))ui.capTab=tabs[0][0];
+  return '<section class="sg-prev"><div class="sg-prev-h"><h3>Preview</h3>'+(tabs.length>1?'<div class="seg">'+tabs.map(t=>'<button class="'+(ui.capTab===t[0]?'on':'')+'" data-act="capTab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</div>':'')+'</div>'
+    +'<div id="cap-prev">'+capPreviewHtml(it)+'</div><div class="row-gap"><button class="btn primary sm" data-act="capCopy">'+(L?'Copy YouTube Description':'Copy Caption')+'</button></div></section>';
+}
+function hashBlock(it){
+  return '<div class="form-grid">'+F(it,'hashtagGroup','Hashtag group',{t:'select',opts:HASHTAG_GROUP_NAMES})+'<div class="fld"><label>&nbsp;</label>'+F(it,'includeHashtags','Include hashtags',{t:'check'})+'</div>'
+    +(it.hashtagGroup==='Custom'?F(it,'customHashtags','Custom hashtags',{t:'textarea',rows:2,wide:true,ph:'#DeckBuilder #YourTag'}):'<p class="muted sm wide">'+(esc(hashText(it))||'This group is empty. Edit groups in Settings.')+'</p>')+'</div>';
+}
+function completeRow(it){
+  return '<div class="form-grid">'+F(it,'captionNeeded',it.type==='Long Form'?'Description needed':'Caption needed',{t:'check'})+F(it,'captionStatus',it.type==='Long Form'?'Caption / description status':'Caption status',{t:'select',opts:STAT3})+'</div>';
+}
+function tabCaption(it){
+  if(!it.socialManual)it.socialCaption=assembleSocial(it);
+  if(!it.ytManual)it.ytDescription=assembleYt(it);
+  const useCta=f=>'<button class="link" type="button" data-act="useVideoCta" data-field="'+f+'">Use video CTA</button>';
+  let h='<div id="cr-box" class="sr-box cap-ready">'+capReadyInner(it)+'</div>';
+  if(it.type==='Long Form'){
+    const cov=coverList(it);
+    h+='<section class="sg-card"><h3 class="dr-sec">YouTube description</h3>'
+      +F(it,'ytSummary','Opening summary',{t:'textarea',rows:4,ph:'2 to 4 sentences on what this video covers',extra:'<button class="link" type="button" data-act="ytFill">Start from title and hook</button>'})
+      +F(it,'ytCover','Include an "In this video we cover" list',{t:'check'})
+      +'<div class="cover-prev">'+(cov.length?'<ul>'+cov.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>':'<span class="muted sm">Add section titles on the <button class="link-b" data-act="tab" data-tab="script">Script tab</button> and they will appear here.</span>')+'</div>'
+      +F(it,'ytCTA','CTA',{t:'textarea',rows:2,lib:'cta',extra:useCta('ytCTA')})
+      +'<div class="form-grid">'+F(it,'ytLinks.website','Website',{t:'url',ph:S.settings.website||'https://'})+F(it,'ytLinks.quote','Quote link',{t:'url',ph:S.settings.quoteUrl||'https://'})+F(it,'ytLinks.related','Related video',{t:'url',ph:'https://'})+F(it,'ytLinks.other','Other link',{ph:'Label: https://'})+'</div>'
+      +'</section>'
+      +'<h3 class="dr-sec">Final description</h3>'+F(it,'ytDescription','YouTube Description',{t:'textarea',rows:10,cc:true})
+      +'<p id="yt-hint" class="help">'+(it.ytManual?'Edited by hand, so changes above won\'t overwrite it. <button class="link-b" data-act="ytRebuild">Rebuild from the parts above</button>':'Builds itself from the parts above. Edit it here if you want to customize.')+'</p>'
+      +((it.platforms||[]).includes('Facebook')?'<p class="muted sm">Facebook can use the same description.</p>':'')
+      +previewBlock(it)
+      +advBlock('capadv','Advanced caption options',hashBlock(it))+completeRow(it);
+    return h;
+  }
+  const st=CAPTION_STYLES[it.captionStyle]||CAPTION_STYLES.Educational, soc=needsSocial(it), sh=needsShorts(it);
+  h+='<section class="sg-card"><div class="form-grid">'+F(it,'captionStyle','Caption style',{t:'select',opts:CAPTION_STYLE_NAMES})
+    +'<div class="fld"><label>&nbsp;</label><button class="btn ghost" data-act="capBuild">Build caption from script</button></div></div>'
+    +'<p class="flow">'+st.flow.map(esc).join(' <span>›</span> ')+'</p><p class="help cap-tip">'+esc(st.tip)+'</p>'
+    +F(it,'captionHook','Caption hook / opening',{t:'textarea',rows:2,lib:'caption'})
+    +F(it,'captionBody','Caption body',{t:'textarea',rows:5,ph:'Short explanation and one to three useful takeaways'})
+    +F(it,'captionCTA','Caption CTA',{t:'textarea',rows:2,lib:'cta',extra:useCta('captionCTA')})
+    +'</section>'
+    +'<h3 class="dr-sec">Platform captions</h3>'
+    +F(it,'socialCaption','Instagram / Facebook caption'+(soc?'':' <span class="muted sm">(not selected for this video)</span>'),{t:'textarea',rows:8,cc:true})
+    +'<p id="social-hint" class="help">'+(it.socialManual?'Edited by hand, so changes above won\'t overwrite it. <button class="link-b" data-act="capRebuild">Rebuild from the parts above</button>':'Builds itself from the caption parts above. Edit it here if you want to customize.')+'</p>'
+    +F(it,'shortsDescription','YouTube Shorts description'+(sh?'':' <span class="muted sm">(not selected for this video)</span>'),{t:'textarea',rows:3,cc:true,extra:'<button class="link" type="button" data-act="capShorts">Create from main caption</button>'})
+    +previewBlock(it)
+    +advBlock('capadv','Advanced caption options',hashBlock(it)+'<div class="row-gap"><button class="btn ghost sm" data-act="copyCapAI">Copy AI caption prompt</button></div>')
+    +completeRow(it);
+  return h;
+}
+/* Keeps the assembled captions in step with their parts, unless the final text was edited by hand. */
+function syncDerived(it,path){
+  if(/^caption(Hook|Body|CTA)$/.test(path)&&!it.socialManual){it.socialCaption=assembleSocial(it);const t=$('.drawer [data-f="socialCaption"]');if(t)t.value=it.socialCaption;}
+  if(path==='socialCaption')it.socialManual=it.socialCaption.trim()!==assembleSocial(it).trim();
+  if((/^yt(Summary|CTA|Cover)$/.test(path)||path.indexOf('ytLinks.')===0)&&!it.ytManual){it.ytDescription=assembleYt(it);const t=$('.drawer [data-f="ytDescription"]');if(t)t.value=it.ytDescription;}
+  if(path==='ytDescription')it.ytManual=it.ytDescription.trim()!==assembleYt(it).trim();
+}
+function liveCaption(it){
+  const cr=$('#cr-box');if(cr)cr.innerHTML=capReadyInner(it);
+  const pv=$('#cap-prev');if(pv)pv.innerHTML=capPreviewHtml(it);
+  $$('.drawer [data-cc]').forEach(el=>{el.textContent=String(gp(it,el.dataset.cc)||'').length+' characters';});
+  const sh=$('#social-hint');if(sh)sh.innerHTML=it.socialManual?'Edited by hand, so changes above won\'t overwrite it. <button class="link-b" data-act="capRebuild">Rebuild from the parts above</button>':'Builds itself from the caption parts above. Edit it here if you want to customize.';
+  const yh=$('#yt-hint');if(yh)yh.innerHTML=it.ytManual?'Edited by hand, so changes above won\'t overwrite it. <button class="link-b" data-act="ytRebuild">Rebuild from the parts above</button>':'Builds itself from the parts above. Edit it here if you want to customize.';
+}
+function confirmReplace(msg,cb){
+  ui.confirmCb=cb;
+  showModal('<div class="modal-h"><h3>Replace what you have?</h3></div><div class="modal-b"><p>'+msg+'</p><div class="row-gap"><button class="btn primary" data-act="confirmYes">Replace</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
+}
+function aiCaptionPrompt(it){
+  const co=S.settings.company||'Benchmark Decks', d=scriptDef(it), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
+  return ['You are helping write social captions for a '+co+' video. '+co+' builds custom decks and outdoor structures for homeowners in North Texas and Southern Oklahoma.','',
+   'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType,'Caption style: '+it.captionStyle+' ('+(CAPTION_STYLES[it.captionStyle]||{flow:[]}).flow.join(' > ')+')','Platforms: '+platText(it),'',
+   'WHAT THE VIDEO SAYS',line('Hook',it.hook)].concat(d.labels.map((l,i)=>line(l,it.points[i])),[line('CTA',it.cta)],
+   nonEmpty(socialText(it))?['','CURRENT CAPTION DRAFT',socialText(it)]:[],
+   ['','PLEASE WRITE','1. An Instagram / Facebook caption','2. A YouTube Shorts description (shorter, topic-focused, searchable first line)','3. 3 to 5 relevant hashtags','4. One shorter alternate caption','',
+   'RULES','- Do not invent construction facts.','- Do not invent financing terms.','- Do not invent warranty details.','- Do not invent prices.',
+   '- Preserve every fact provided by '+co+' exactly as given.','- Write naturally, the way a person talks.','- Avoid generic corporate marketing language.','- Avoid excessive emojis.','- Avoid excessive hashtags.',
+   '- Write for homeowners in North Texas and Southern Oklahoma.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
 }
 function tabShoot(it){
   let h='<h3 class="dr-sec">Shot list</h3>';
   if(it.type==='Reel')h+='<div class="shots">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div>';
   h+='<div class="form-grid">'+F(it,'shotText',it.type==='Reel'?'Other shot notes':'Shot list',{t:'textarea',rows:3,wide:true})+F(it,'broll','B-roll needed',{t:'textarea',rows:3})+F(it,'jobsite','Jobsite footage needed',{t:'textarea',rows:3})+F(it,'location','Location / project needed',{wide:true})+'</div>';
-  h+='<h3 class="dr-sec">Thumbnail and caption</h3><div class="form-grid">'+F(it,'thumbNeeded','Thumbnail needed',{t:'check'})+F(it,'thumbStatus','Thumbnail status',{t:'select',opts:STAT3})
+  h+='<h3 class="dr-sec">Thumbnail</h3><div class="form-grid">'+F(it,'thumbNeeded','Thumbnail needed',{t:'check'})+F(it,'thumbStatus','Thumbnail status',{t:'select',opts:STAT3})
     +(it.type==='Long Form'?F(it,'thumbIdea','Thumbnail idea',{t:'textarea',rows:2,wide:true}):'')
-    +F(it,'captionNeeded','Caption needed',{t:'check'})+F(it,'captionStatus','Caption status',{t:'select',opts:STAT3})+'</div>';
+    +'</div><p class="muted sm">Captions now have their own <button class="link-b" data-act="tab" data-tab="caption">Caption tab</button>.</p>';
   h+='<h3 class="dr-sec">Production checklist</h3><div class="shots">'+PROD_STEPS.map(s=>F(it,'prod.'+s[0],s[1],{t:'check'})).join('')+'</div>';
   return h;
 }
@@ -1605,7 +1880,7 @@ function tabPublish(it){
 }
 function editorHtml(it){
   const tab=ui.edit.tab, i=stIdx(it.status);
-  const body={overview:tabOverview,script:tabScript,shoot:tabShoot,schedule:tabSchedule,repurpose:tabRepurpose,publish:tabPublish}[tab](it);
+  const body={overview:tabOverview,script:tabScript,shoot:tabShoot,caption:tabCaption,schedule:tabSchedule,repurpose:tabRepurpose,publish:tabPublish}[tab](it);
   return '<div class="scrim" data-act="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-label="Edit video" tabindex="-1" data-item-id="'+it.id+'">'
    +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+readyChip(it)+'<button class="icon-btn" data-act="close" aria-label="Close">'+I('x')+'</button></div><input class="dr-title" data-f="title" value="'+esc(it.title)+'" placeholder="'+(it.type==='Long Form'?'Long-form video title':'Reel title')+'" aria-label="Video title"></div>'
    +'<nav class="dr-tabs" role="tablist">'+TABS.map(t=>'<button role="tab" class="'+(tab===t[0]?'on':'')+'" aria-selected="'+(tab===t[0])+'" data-act="tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</nav>'
@@ -1631,7 +1906,7 @@ function discardIfEmpty(nextId){
   if(it&&!it.title.trim()&&!it.workingTitle.trim())S.items=S.items.filter(i=>i.id!==id);
   ui.newId=null;
 }
-function openEditor(id,tab){discardIfEmpty(id);ui.edit={id:id,tab:tab||'overview'};renderEditor(!$('.drawer'));}
+function openEditor(id,tab){ui.capTab='';discardIfEmpty(id);ui.edit={id:id,tab:tab||'overview'};renderEditor(!$('.drawer'));}
 function closeEditor(){
   discardIfEmpty(null);
   ui.edit={id:null,tab:'overview'};$('#drawer-wrap').innerHTML='';document.body.classList.remove('drawer-open');
@@ -1743,17 +2018,44 @@ const ACTS={
     if(stIdx(it.status)>=2){toast('Already at '+it.status);return;}
     setStatus(it,'Ready to Film');it.prod.script=true;save();render();renderEditor();toast('Moved to Ready to Film');
   },
-  lib:a=>{ui.libCtx={lib:a.dataset.lib,field:a.dataset.field,id:ui.edit.id};showModal(libHtml(),'lg');},
-  libPick:a=>{
-    const c=ui.libCtx,L=c.lib==='hook'?HOOK_LIBRARY:CTA_LIBRARY;c.text=L[+a.dataset.g].items[+a.dataset.t];
-    const it=getItem(c.id),cur=it?gp(it,c.field)||'':'';
-    if(!nonEmpty(cur)||cur.trim()===c.text){applyLib('replace');return;}
-    showModal('<div class="modal-h"><h3>Replace your current '+(c.lib==='hook'?'hook':'CTA')+'?</h3></div><div class="modal-b"><div class="cmp"><span class="muted sm">Current</span><p>'+esc(cur)+'</p><span class="muted sm">New</span><p>'+esc(c.text)+'</p></div>'
-      +'<div class="row-gap"><button class="btn primary" data-act="libApply" data-mode="replace">Replace</button><button class="btn ghost" data-act="libApply" data-mode="append">Add after current</button><button class="btn ghost" data-act="libBack">Back to ideas</button></div></div>');
-  },
+  lib:a=>{ui.libCtx={lib:a.dataset.lib,field:a.dataset.field,id:ui.edit.id,fromLib:true};showModal(libHtml(),'lg');},
+  libPick:a=>{const c=ui.libCtx;c.text=LIBS[c.lib].data[+a.dataset.g].items[+a.dataset.t];c.fromLib=true;offerText();},
   libApply:a=>applyLib(a.dataset.mode),
   libBack:()=>showModal(libHtml(),'lg'),
   copyAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiPrompt(it));},
+  copyCapAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiCaptionPrompt(it));},
+  capTab:a=>{ui.capTab=a.dataset.tab;renderEditor();},
+  capCopy:()=>{const it=getItem(ui.edit.id);if(!it)return;const t=capPreviewText(it,ui.capTab);if(!nonEmpty(t)){toast('Nothing to copy yet');return;}copyText(t,ui.capTab==='yt'?'Description copied.':'Caption copied.');},
+  capCopyItem:a=>{const it=getItem(a.dataset.id);if(!it)return;const L=it.type==='Long Form',t=withTags(L?ytText(it):(nonEmpty(socialText(it))?socialText(it):it.shortsDescription),it);
+    if(!nonEmpty(t)){toast('No caption written yet');return;}copyText(t,L?'Description copied.':'Caption copied.');},
+  capBuild:()=>{
+    const it=getItem(ui.edit.id);if(!it)return;const r=captionFromScript(it);
+    if(!nonEmpty(r.hook)&&!nonEmpty(r.body)&&!nonEmpty(r.cta)){toast('Write the hook, points, or CTA on the Script tab first');return;}
+    const go=()=>{it.captionHook=r.hook;it.captionBody=r.body;it.captionCTA=r.cta;it.socialManual=false;it.socialCaption=assembleSocial(it);if(it.captionStatus==='Not started')it.captionStatus='In progress';save();renderEditor();toast('Caption draft built from the script');};
+    const has=[it.captionHook,it.captionBody,it.captionCTA].some(nonEmpty)||(it.socialManual&&nonEmpty(it.socialCaption));
+    has?confirmReplace('This replaces your current caption hook, body, and CTA'+(it.socialManual?', and your hand-edited Instagram / Facebook caption':'')+' with a fresh draft from the script.',go):go();
+  },
+  capRebuild:()=>{const it=getItem(ui.edit.id);confirmReplace('This replaces your hand-edited Instagram / Facebook caption with the caption parts above.',()=>{it.socialManual=false;it.socialCaption=assembleSocial(it);save();renderEditor();});},
+  ytRebuild:()=>{const it=getItem(ui.edit.id);confirmReplace('This replaces your hand-edited YouTube description with one built from the parts above.',()=>{it.ytManual=false;it.ytDescription=assembleYt(it);save();renderEditor();});},
+  capShorts:()=>{
+    const it=getItem(ui.edit.id);if(!it)return;
+    if(!nonEmpty(socialText(it))&&!nonEmpty(it.hook)){toast('Write the main caption first');return;}
+    const go=()=>{it.shortsDescription=shortsFromCaption(it);save();renderEditor();toast('Shorts description created');};
+    nonEmpty(it.shortsDescription)?confirmReplace('This replaces your current YouTube Shorts description.',go):go();
+  },
+  ytFill:()=>{
+    const it=getItem(ui.edit.id);if(!it)return;
+    const s=[capSentence(it.hook),'In this video, we walk through '+titleLc(cleanTopic(title(it)))+'.'].filter(nonEmpty).join('\n\n');
+    const go=()=>{it.ytSummary=s;syncDerived(it,'ytSummary');save();renderEditor();};
+    nonEmpty(it.ytSummary)?confirmReplace('This replaces your current opening summary.',go):go();
+  },
+  useVideoCta:a=>{
+    const it=getItem(ui.edit.id);if(!it)return;if(!nonEmpty(it.cta)){toast('This video has no CTA yet. Add one on the Script tab.');return;}
+    ui.libCtx={lib:'cta',field:a.dataset.field,id:it.id,text:it.cta.trim(),fromLib:false};offerText();
+  },
+  capComplete:()=>{const it=getItem(ui.edit.id);if(!captionReady(it)){toast('Still needed: '+captionMissing(it).join(', '));return;}it.captionStatus='Done';it.prod.caption=true;save();renderEditor();toast('Caption marked complete');},
+  toReadyToPost:()=>{const it=getItem(ui.edit.id);if(!it||postMissing(it).length)return;if(stIdx(it.status)>=5){toast('Already at '+it.status);return;}setStatus(it,'Ready to Post');save();render();renderEditor();toast('Moved to Ready to Post');},
+  resetTags:()=>{S.settings.hashtags=Object.assign({},HASHTAG_GROUPS);save();render();toast('Hashtag groups reset');},
   rmShort:a=>{const L=getItem(ui.edit.id);L.shorts.splice(+a.dataset.i,1);save();renderEditor();},
   planStep:a=>{const k=ui.planMonth;S.plan[k]=S.plan[k]||{};S.plan[k][+a.dataset.i]=a.checked;save();render();},
   slotAssign:a=>{
@@ -1825,7 +2127,7 @@ document.addEventListener('input',e=>{
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
     const p=el.dataset.plat,has=it.platforms.includes(p);
     if(el.checked&&!has)it.platforms.push(p);if(!el.checked&&has)it.platforms=it.platforms.filter(x=>x!==p);
-    save();return;
+    save();liveCaption(it);return;
   }
   if(el.dataset.ui){
     sp(ui,el.dataset.ui,el.type==='checkbox'?el.checked:el.value);
@@ -1844,8 +2146,11 @@ document.addEventListener('input',e=>{
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
     const path=el.dataset.f;let v=el.type==='checkbox'?el.checked:el.value;
     if(/^shorts\.\d+\.sectionIdx$/.test(path)){v=v===''?-1:+v;sp(it,path,v);save();renderEditor();return;}
+    const old=gp(it,path);
     sp(it,path,v);
-    if(path==='scriptType'){save();renderEditor();return;}
+    if(path==='scriptType'){if(!it.captionStyle||it.captionStyle===CAPTION_FROM_SCRIPT[old])it.captionStyle=CAPTION_FROM_SCRIPT[v]||'Educational';save();renderEditor();return;}
+    syncDerived(it,path);
+    if(['captionStyle','hashtagGroup','includeHashtags','captionNeeded','ytCover','captionStatus'].includes(path)){if(path==='captionStatus')it.prod.caption=v==='Done';save();renderEditor();return;}
     if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
     if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();save();renderEditor();return;}
     if(path==='type'){ensureType(it);it.platforms=defaultPlatforms(it.type);save();renderEditor();return;}
