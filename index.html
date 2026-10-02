@@ -579,6 +579,24 @@ details.adv[open] summary::before{transform:rotate(45deg)}
   .fld>label:only-child,.fld>label:first-child:empty{display:none}
   .sg-card .form-grid .fld>label:first-child:not([for]){display:none}
 }
+
+/* ---------- Speaker script ---------- */
+.spk{border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px;background:var(--surface);border-top:3px solid var(--slate)}
+.spk>.muted{margin:0 0 12px}
+.spk-note{margin:6px 0 0}
+.spk .seg{margin-top:2px}
+.spk-prev{margin:12px 0;padding:14px;border-radius:var(--r2);background:var(--surface2)}
+.spk-msg{max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:18px 18px 18px 6px;padding:16px 18px;font-size:16.5px;line-height:1.6;box-shadow:var(--shadow)}
+.spk-head{font-weight:700;font-size:14px;color:var(--ink2);margin-bottom:12px;line-height:1.45}
+.spk-b+.spk-b{margin-top:16px}
+.spk-l{font:600 15px var(--fd);letter-spacing:.6px;color:var(--slate);margin-bottom:4px}
+.spk-t{white-space:pre-wrap;word-wrap:break-word}
+.spk-btns{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:820px){
+  .spk-btns{flex-direction:column}
+  .spk-btns .btn{width:100%;padding:12px 16px;font-size:15px}
+  .spk-msg{font-size:17px;max-width:none}
+}
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
@@ -803,7 +821,7 @@ function newItem(type,o){
     plannedMonth:'',planDate:'',scriptDate:'',filmDate:'',editDate:'',publishDate:'',
     platforms:defaultPlatforms(type),
     mainTopic:'',audienceProblem:'',mainMessage:'',takeaway:'',cta:'',offer:'',
-    scriptType:'',hook:'',script:'',talking:'',shotText:'',broll:'',jobsite:'',location:'',
+    scriptType:'',hook:'',script:'',talking:'',speaker:'',speakerVersion:'',speakerLabels:true,shotText:'',broll:'',jobsite:'',location:'',
     thumbNeeded:true,thumbStatus:'Not started',captionNeeded:true,captionStatus:'Not started',
     captionStyle:'',captionHook:'',captionBody:'',captionCTA:'',socialCaption:'',socialManual:false,shortsDescription:'',
     ytSummary:'',ytCover:true,ytCTA:'',ytDescription:'',ytManual:false,ytLinks:{website:'',quote:'',related:'',other:''},
@@ -1293,6 +1311,58 @@ function guideHtml(parts){
   return '<ol class="sg">'+parts.map(p=>'<li class="'+(p.hook?'is-hook':p.cta?'is-cta':'')+'">'+(p.k?'<span class="sg-k">'+esc(p.k)+'</span>':'')+'<span class="sg-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>';
 }
 
+/* ---------- Speaker script: one helper formats everything that gets shared ---------- */
+/* Formats existing script fields for a speaker. It never rewrites wording, it only trims and spaces. */
+const spkClean=s=>String(s==null?'':s).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+const spkUnquote=s=>{s=spkClean(s);const m=s.match(/^["“](.*)["”]$/s);return m&&!/["“”]/.test(m[1])?m[1].trim():s;};
+const spkVersion=it=>it.speakerVersion!=='structured'&&nonEmpty(it.script)?'full':'structured';
+function speakerBlocks(it){
+  const header=['VIDEO: '+spkClean(title(it))].concat(nonEmpty(it.speaker)?['SPEAKER: '+spkClean(it.speaker)]:[]);
+  if(spkVersion(it)==='full')return {header:header,blocks:[{label:'',text:spkClean(it.script)}],full:true};
+  const b=[], add=(label,text)=>{text=spkUnquote(text);if(text)b.push({label:label,text:text});};
+  if(it.type==='Long Form'){
+    add('INTRO / HOOK',it.hook);let n=0;
+    it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=spkClean(s);if(!t&&!pts)return;n++;
+      b.push({label:'SECTION '+n+(t?': '+t:''),text:pts||t,titleOnly:!pts});});
+    add('CONCLUSION',it.conclusion);add('CTA',it.cta);
+  }else{
+    add('HOOK',it.hook);
+    const pts=nonEmpty(it.talking)?it.talking.split('\n'):it.points;let n=0;
+    pts.forEach(x=>{const t=spkUnquote(x);if(t){n++;b.push({label:'PART '+n,text:t});}});
+    add('CTA',it.cta);
+  }
+  return {header:header,blocks:b,full:false};
+}
+/* mode 'script' = full speaker script (labels optional), 'points' = short talking-points sheet */
+function speakerText(it,mode){
+  const d=speakerBlocks(it);
+  if(mode==='points'){
+    const out=[[spkClean(title(it))].concat(nonEmpty(it.speaker)?['SPEAKER: '+spkClean(it.speaker)]:[]).join('\n')];
+    const hook=spkUnquote(it.hook), cta=spkUnquote(it.cta), list=[];
+    if(it.type==='Long Form'){
+      it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=spkClean(s).split('\n').filter(nonEmpty);if(!t&&!pts.length)return;
+        list.push(t?'- '+t+(pts.length?'\n'+pts.map(x=>'  '+x.trim()).join('\n'):''):pts.map(x=>'- '+x.trim()).join('\n'));});
+    }else{
+      (nonEmpty(it.talking)?it.talking.split('\n'):it.points).forEach(x=>{const t=spkUnquote(x);if(t)list.push('- '+t.split('\n').join('\n  '));});
+    }
+    if(hook)out.push((it.type==='Long Form'?'INTRO / HOOK':'HOOK')+'\n'+hook);
+    if(list.length)out.push('TALKING POINTS\n'+list.join('\n'));
+    if(it.type==='Long Form'&&nonEmpty(it.conclusion))out.push('CONCLUSION\n'+spkUnquote(it.conclusion));
+    if(cta)out.push('CTA\n'+cta);
+    return out.length>1?out.join('\n\n'):'';
+  }
+  if(!d.blocks.length)return '';
+  if(!it.speakerLabels)return d.blocks.map(x=>x.titleOnly?'':x.text).filter(Boolean).join('\n\n');
+  return [d.header.join('\n')].concat(d.blocks.map(x=>x.titleOnly?x.label:(x.label?x.label+'\n\n'+x.text:x.text))).join('\n\n');
+}
+function speakerPreviewHtml(it){
+  const d=speakerBlocks(it);
+  if(!d.blocks.length)return '<p class="muted sm">Add a hook, talking points, or a full script and the speaker version appears here.</p>';
+  const L=it.speakerLabels;
+  return '<div class="spk-msg">'+(L?'<div class="spk-head">'+d.header.map(esc).join('<br>')+'</div>':'')
+    +d.blocks.filter(x=>L||!x.titleOnly).map(x=>'<div class="spk-b">'+(L&&x.label?'<div class="spk-l">'+esc(x.label)+'</div>':'')+(x.titleOnly&&L?'':'<div class="spk-t">'+esc(x.text)+'</div>')+'</div>').join('')+'</div>';
+}
+
 /* ---------- Caption system ---------- */
 const capSentence=s=>{s=String(s==null?'':s).trim().replace(/^["“”']+|["“”']+$/g,'').trim();if(!s)return '';s=s[0].toUpperCase()+s.slice(1);return /[.!?…:]$/.test(s)?s:s+'.';};
 const noEnd=s=>String(s==null?'':s).trim().replace(/^["“”']+|["“”']+$/g,'').replace(/[.!?]+$/,'').trim();
@@ -1384,7 +1454,7 @@ function fcard(it){
    +(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')
    +(it.location?blk('Location / project','<p>'+esc(it.location)+'</p>'):'')
    +blk('Film date','<span class="due'+(late?' late':'')+'">'+(it.filmDate?esc(fmtW(it.filmDate))+(late?' (past due)':''):'Not set')+'</span>')
-   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
+   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn ghost sm" data-act="spkShare" data-id="'+it.id+'">Share script</button><button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
 }
 function viewFilm(){
   const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
@@ -1629,6 +1699,17 @@ function tabOverview(it){
    +F(it,'notes','Notes',{t:'textarea',rows:4});
 }
 /* ---------- Scripting 2.0 ---------- */
+function speakerSection(it){
+  const hasFull=nonEmpty(it.script), v=spkVersion(it);
+  return '<section class="spk"><div class="sg-prev-h"><h3>Speaker Script</h3></div>'
+   +'<p class="muted sm">A clean version to send to whoever is on camera. No internal notes, B-roll, or strategy.</p>'
+   +'<div class="form-grid">'+F(it,'speaker','Speaker (optional)',{ph:'e.g. Tyler'})
+   +'<div class="fld"><label>Speaker version</label>'+(hasFull?'<div class="seg"><button class="'+(v==='full'?'on':'')+'" data-act="spkVer" data-v="full">Full Script</button><button class="'+(v==='structured'?'on':'')+'" data-act="spkVer" data-v="structured">Structured Script</button></div>'
+     :'<p class="muted sm spk-note">Structured Script. Write a Full Script below to share word-for-word instead.</p>')+'</div></div>'
+   +F(it,'speakerLabels','Include section labels',{t:'check'})
+   +'<div id="spk-prev" class="spk-prev">'+speakerPreviewHtml(it)+'</div>'
+   +'<div class="spk-btns"><button class="btn primary" data-act="spkShare" data-id="'+it.id+'">Share Speaker Script</button><button class="btn ghost" data-act="spkCopy" data-mode="script" data-id="'+it.id+'">Copy Full Speaker Script</button><button class="btn ghost" data-act="spkCopy" data-mode="points" data-id="'+it.id+'">Copy Talking Points</button></div></section>';
+}
 function readyInner(it){
   const miss=scriptMissing(it), i=stIdx(it.status);
   if(!miss.length)return '<div class="sr-top"><span class="sr-badge ok">Script Ready ✓</span>'
@@ -1661,7 +1742,7 @@ function tabScript(it){
       +'<div class="fld"><label>Visuals / B-roll</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>'
       +F(it,'broll','B-roll notes',{t:'textarea',rows:2,ph:'Specific shots you need, one per line'})
       +'<div id="sr-box" class="sr-box">'+readyInner(it)+'</div></section>'
-      +'<section class="sg-prev"><div class="sg-prev-h"><h3>Speaking guide preview</h3><button class="btn ghost sm" data-act="copyAI">Copy AI script prompt</button></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>';
+      +'<section class="sg-prev"><div class="sg-prev-h"><h3>Speaking guide preview</h3><button class="btn ghost sm" data-act="copyAI">Copy AI script prompt</button></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'+speakerSection(it);
     if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+RECAP_FIELDS.map(r=>F(it,'recap.'+r[0],r[1],{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
     h+=advBlock('strategy','Advanced strategy','<div class="form-grid">'+F(it,'mainTopic','Topic')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'mainMessage','Main message',{t:'textarea',rows:2})+F(it,'takeaway','Desired takeaway',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content',{wide:true})+'</div>');
     return h+scriptExtras(it);
@@ -1680,7 +1761,7 @@ function tabScript(it){
     }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addSection">Add section</button></div>'
     +'<div class="form-grid" style="margin-top:14px">'+F(it,'conclusion','Conclusion',{t:'textarea',rows:2})+F(it,'cta','CTA',{t:'textarea',rows:2,lib:'cta'})+'</div>'
     +shortsBlock(it)
-    +'<section class="sg-prev"><div class="sg-prev-h"><h3>Outline preview</h3></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'
+    +'<section class="sg-prev"><div class="sg-prev-h"><h3>Outline preview</h3></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'+speakerSection(it)
     +advBlock('strategy','Advanced strategy','<div class="form-grid">'+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content')+'</div>');
   return h+scriptExtras(it);
 }
@@ -1725,6 +1806,7 @@ function liveScript(it){
   if(!ui.edit.id||ui.edit.id!==it.id)return;
   const sr=$('#sr-box');if(sr)sr.innerHTML=readyInner(it);
   const pv=$('#sg-prev');if(pv)pv.innerHTML=guideHtml(guideParts(it));
+  const sv=$('#spk-prev');if(sv)sv.innerHTML=speakerPreviewHtml(it);
   const ch=$('#dr-ready');if(ch)ch.outerHTML=readyChip(it);
   liveCaption(it);
 }
@@ -1816,9 +1898,9 @@ function tabCaption(it){
 }
 /* Keeps the assembled captions in step with their parts, unless the final text was edited by hand. */
 function syncDerived(it,path){
-  if(/^caption(Hook|Body|CTA)$/.test(path)&&!it.socialManual){it.socialCaption=assembleSocial(it);const t=$('.drawer [data-f="socialCaption"]');if(t)t.value=it.socialCaption;}
+  if(/^caption(Hook|Body|CTA)$/.test(path)&&!it.socialManual){it.socialCaption=assembleSocial(it);const t=$('.drawer [data-f="socialCaption"]');if(t){t.value=it.socialCaption;autoSize(t);}}
   if(path==='socialCaption')it.socialManual=it.socialCaption.trim()!==assembleSocial(it).trim();
-  if((/^yt(Summary|CTA|Cover)$/.test(path)||path.indexOf('ytLinks.')===0)&&!it.ytManual){it.ytDescription=assembleYt(it);const t=$('.drawer [data-f="ytDescription"]');if(t)t.value=it.ytDescription;}
+  if((/^yt(Summary|CTA|Cover)$/.test(path)||path.indexOf('ytLinks.')===0)&&!it.ytManual){it.ytDescription=assembleYt(it);const t=$('.drawer [data-f="ytDescription"]');if(t){t.value=it.ytDescription;autoSize(t);}}
   if(path==='ytDescription')it.ytManual=it.ytDescription.trim()!==assembleYt(it).trim();
 }
 function liveCaption(it){
@@ -1894,6 +1976,7 @@ function renderEditor(first){
   if(!it){w.innerHTML='';document.body.classList.remove('drawer-open');return;}
   const old=$('.dr-b',w), st=old?old.scrollTop:0;
   w.innerHTML=editorHtml(it);
+  autoSizeAll(w);
   const b=$('.dr-b',w);if(b&&!first)b.scrollTop=st;
   document.body.classList.add('drawer-open');
   const d=$('.drawer',w);
@@ -1912,6 +1995,14 @@ function closeEditor(){
   ui.edit={id:null,tab:'overview'};$('#drawer-wrap').innerHTML='';document.body.classList.remove('drawer-open');
   save();render();
 }
+
+/* Text boxes grow with their content. The rows attribute stays the minimum height. */
+function autoSize(el){
+  if(!el||el.tagName!=='TEXTAREA'||el.offsetParent===null)return;
+  el.style.overflowY='hidden';el.style.height='auto';
+  el.style.height=(el.scrollHeight+el.offsetHeight-el.clientHeight)+'px';
+}
+const autoSizeAll=root=>$$('textarea',root||document).forEach(autoSize);
 
 /* ================= modal, toast, confirm ================= */
 function showModal(html,cls){$('#modal-wrap').innerHTML='<div class="scrim show" data-act="modalClose"></div><div class="modal'+(cls?' '+cls:'')+'" role="dialog" aria-modal="true">'+html+'</div>';const m=$('#modal-wrap .modal');const f=$('input,select,button.primary',m);f&&f.focus();}
@@ -2023,6 +2114,17 @@ const ACTS={
   libApply:a=>applyLib(a.dataset.mode),
   libBack:()=>showModal(libHtml(),'lg'),
   copyAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiPrompt(it));},
+  spkVer:a=>{const it=getItem(ui.edit.id);if(!it)return;it.speakerVersion=a.dataset.v;save();renderEditor();},
+  spkCopy:a=>{const it=getItem(a.dataset.id);if(!it)return;const pts=a.dataset.mode==='points',t=speakerText(it,pts?'points':'script');
+    if(!nonEmpty(t)){toast(pts?'No talking points written yet':'Nothing to copy yet');return;}copyText(t,pts?'Talking points copied.':'Speaker script copied.');},
+  spkShare:a=>{
+    const it=getItem(a.dataset.id);if(!it)return;const t=speakerText(it,'script');
+    if(!nonEmpty(t)){toast('Nothing to share yet');return;}
+    const fallback=()=>copyText(t,"Sharing isn't supported in this browser, so the script was copied instead.");
+    if(navigator.share){
+      try{navigator.share({title:title(it),text:t}).catch(err=>{if(!err||err.name!=='AbortError')fallback();});}catch(err){fallback();}
+    }else fallback();
+  },
   copyCapAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiCaptionPrompt(it));},
   capTab:a=>{ui.capTab=a.dataset.tab;renderEditor();},
   capCopy:()=>{const it=getItem(ui.edit.id);if(!it)return;const t=capPreviewText(it,ui.capTab);if(!nonEmpty(t)){toast('Nothing to copy yet');return;}copyText(t,ui.capTab==='yt'?'Description copied.':'Caption copied.');},
@@ -2122,6 +2224,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('input',e=>{
   const el=e.target;
+  if(el.tagName==='TEXTAREA')autoSize(el);
   if(el.id==='q'){ui.q=el.value;if(ui.view!=='library')ui.view='library';render();return;}
   if(el.dataset.plat){
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
@@ -2150,6 +2253,7 @@ document.addEventListener('input',e=>{
     sp(it,path,v);
     if(path==='scriptType'){if(!it.captionStyle||it.captionStyle===CAPTION_FROM_SCRIPT[old])it.captionStyle=CAPTION_FROM_SCRIPT[v]||'Educational';save();renderEditor();return;}
     syncDerived(it,path);
+    if(path==='script'&&$('.spk .seg')===null&&nonEmpty(v)&&$('#spk-prev')){save();const sc=$('.dr-b').scrollTop;renderEditor();const ta=$('.drawer [data-f="script"]');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}$('.dr-b').scrollTop=sc;return;}
     if(['captionStyle','hashtagGroup','includeHashtags','captionNeeded','ytCover','captionStatus'].includes(path)){if(path==='captionStatus')it.prod.caption=v==='Done';save();renderEditor();return;}
     if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
     if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();save();renderEditor();return;}
@@ -2184,6 +2288,8 @@ document.addEventListener('keydown',e=>{
     else if(ui.edit.id)closeEditor();
   }
 });
+document.addEventListener('toggle',e=>{if(e.target.tagName==='DETAILS'&&e.target.open)autoSizeAll(e.target);},true);
+let rsT=null;window.addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>autoSizeAll(),150);});
 /* drag and drop for the pipeline */
 document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.kcard');if(!c)return;e.dataTransfer.setData('text/plain',c.dataset.id);e.dataTransfer.effectAllowed='move';c.classList.add('dragging');});
 document.addEventListener('dragend',()=>{$$('.kcard.dragging').forEach(c=>c.classList.remove('dragging'));$$('.kcol.over').forEach(c=>c.classList.remove('over'));});
@@ -2206,6 +2312,7 @@ function render(){
   $('#nav').innerHTML=navHtml();
   $('#main').innerHTML=VIEWS[ui.view]();
   const kb2=$('.kanban');if(kb2)kb2.scrollLeft=sl;
+  autoSizeAll($('#main'));
   if(ui.focus){const f=$(ui.focus);if(f)f.focus();ui.focus=null;}
   const q=$('#q');if(q&&q.value!==ui.q)q.value=ui.q;
 }
