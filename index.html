@@ -1024,10 +1024,16 @@ function applyCaptionExamples(st){
 }
 
 /* ================= state ================= */
-let S=null, memOnly=false, saveT=null;
+let S=null, memOnly=false, saveT=null, loadFailed=false;
 function storageOk(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
 function load(){
-  try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){return fixState(o);}}}catch(e){}
+  let raw=null;
+  try{raw=localStorage.getItem(LS_KEY);}catch(e){return null;}
+  if(!raw)return null;
+  try{const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){return fixState(o);}}catch(e){console.error('Content HQ: saved content could not be loaded',e);}
+  // Saved content exists but could not be read. Leave it untouched, keep a recovery copy, and turn saving off for this session.
+  loadFailed=true;
+  try{localStorage.setItem(LS_KEY+'.recovery',raw);}catch(e){}
   return null;
 }
 function fixState(o){
@@ -1043,6 +1049,7 @@ function fixState(o){
 }
 function save(now){
   if(saveT){clearTimeout(saveT);saveT=null;}
+  if(loadFailed){updateStoreNote();return;}
   const go=()=>{saveT=null;try{localStorage.setItem(LS_KEY,JSON.stringify(S));memOnly=false;}catch(e){memOnly=true;}updateStoreNote();};
   if(now)go();else saveT=setTimeout(go,250);
 }
@@ -2206,7 +2213,7 @@ const ACTS={
     a.href=URL.createObjectURL(blob);a.download='content-hq-backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('Backup downloaded');
   },
-  reset:()=>askConfirm('This replaces everything in the dashboard with the starter content. Export a backup first if you want to keep your work.','Reset everything',()=>{S=seed();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;save(true);applyTheme();render();toast('Starter content restored');}),
+  reset:()=>askConfirm('This replaces everything in the dashboard with the starter content. Export a backup first if you want to keep your work.','Reset everything',()=>{S=seed();loadFailed=false;ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;save(true);applyTheme();render();toast('Starter content restored');}),
   confirmYes:()=>{const cb=ui.confirmCb;ui.confirmCb=null;closeModal();cb&&cb();},
   modalClose:()=>closeModal()
 };
@@ -2269,7 +2276,7 @@ document.addEventListener('change',e=>{
   if(el.matches&&el.matches('input[data-import]')){
     const f=el.files&&el.files[0];if(!f)return;
     const r=new FileReader();
-    r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.items))throw new Error('bad');S=fixState(o);save(true);applyTheme();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;render();toast('Backup restored');}catch(err){toast('That file is not a Content HQ backup');}};
+    r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.items))throw new Error('bad');S=fixState(o);loadFailed=false;save(true);applyTheme();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;render();toast('Backup restored');}catch(err){toast('That file is not a Content HQ backup');}};
     r.readAsText(f);el.value='';
   }
 });
@@ -2306,7 +2313,7 @@ function applyTheme(){
   document.documentElement.setAttribute('data-theme',S.settings.theme||'auto');
   const b=$('#brandSub');if(b)b.textContent=S.settings.company||'Deck content planner';
 }
-function updateStoreNote(){const n=$('#storeNote');if(n)n.textContent=memOnly?'Saving is off in this browser. Export a backup before you leave.':'Saved in this browser.';n&&n.classList.toggle('warn',memOnly);}
+function updateStoreNote(){const n=$('#storeNote');if(n)n.textContent=loadFailed?'Your saved content could not be loaded. It has not been changed, and saving is paused.':memOnly?'Saving is off in this browser. Export a backup before you leave.':'Saved in this browser.';n&&n.classList.toggle('warn',memOnly||loadFailed);}
 function render(){
   const kb=$('.kanban'),sl=kb?kb.scrollLeft:0;
   $('#nav').innerHTML=navHtml();
@@ -2323,6 +2330,7 @@ function init(){
   applyTheme();
   ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;ui.planMonth=addMonths(mk(today()),1);
   render();updateStoreNote();
+  if(loadFailed)showModal('<div class="modal-h"><h3>Your saved content could not be loaded</h3></div><div class="modal-b"><p>Nothing was deleted or overwritten. Your saved content is still in this browser, untouched.</p><p>You are looking at the starter content. Changes you make right now will <b>not</b> be saved.</p><p>To get your work back, go to Settings and use Import backup with your latest backup file. Avoid exporting a backup right now, because it would only contain the starter content.</p><div class="row-gap"><button class="btn primary" data-act="modalClose">OK</button></div></div>');
 }
 init();
 window.__hq={get S(){return S;},ui:ui,render:render,ACTS:ACTS,VIEWS:VIEWS,openEditor:openEditor};
