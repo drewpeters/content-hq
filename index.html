@@ -669,14 +669,81 @@ details.adv[open] summary::before{transform:rotate(45deg)}
 .tp-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
 .tp-legacy{margin-top:12px;padding:10px 12px;border-radius:var(--r1);background:var(--amberL);font-size:13.5px}
 .tp-legacy p{margin:2px 0 6px}.tp-legacy ul{margin:0;padding-left:18px}.tp-legacy .row-gap{margin-top:10px}
-.fc-s h4 .count{margin-left:6px}
-.fc-blocks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
-.fb{display:flex;gap:10px;align-items:flex-start}
-.fb-n{flex:none;width:24px;height:24px;margin-top:1px;border-radius:6px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font:600 14px var(--fd);color:var(--ink2)}
-.fb-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
-.fb-b{display:flex;align-items:flex-start!important;font-size:15px!important}
-.fb-b>span{display:flex;flex-direction:column;gap:1px;min-width:0}
-.fb-b:has(input:checked) .pre{text-decoration:line-through;color:var(--ink2)}
+/* ---------- Shot list ---------- */
+.shot-ref{font:600 17px var(--fd);letter-spacing:.3px;color:var(--ink)}
+.shot-type{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:1px 6px;border-radius:4px;border:1.5px solid var(--slate);white-space:nowrap}
+.shot-type.a{background:var(--slate);color:#fff}
+.shot-type.b{border-color:var(--cedar);color:var(--cedarD);background:none;border-style:dashed}
+.sp-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.sp{padding:10px 12px;border:1px solid var(--line);border-radius:var(--r1);background:var(--surface2)}
+.sp-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--ink2);margin-bottom:7px;flex-wrap:wrap}
+.sp-k{font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3)}
+.sp-bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden}
+.sp-bar i{display:block;height:100%;background:var(--green);border-radius:4px}
+.shot-h{margin-bottom:10px}.shot-h .dr-sec{margin:0 0 8px}
+.sf{display:flex;flex-wrap:wrap;gap:6px}
+.sf .chip{cursor:pointer}
+.shot-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.shot{display:grid;grid-template-columns:64px minmax(0,1fr) 128px;gap:12px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}
+.shot-g{padding:14px 0 6px;font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--line)}
+.shot-id{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.shot-m{display:flex;flex-direction:column;gap:5px;min-width:0;align-items:flex-start}
+.shot-m textarea{width:100%}
+.shot-d{margin:0;font-size:14.5px;line-height:1.45}
+.shot.cap .shot-d{color:var(--ink2)}
+.shot-src{font-size:12px;font-weight:600;color:var(--ink3)}
+button.shot-src{text-decoration:underline;text-underline-offset:2px}
+.shot-man{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shot-man .shot-src{text-transform:uppercase;letter-spacing:.4px;font-size:11px}
+.shot-man select{padding:3px 6px;font-size:13px}
+.shot-notes{font-size:13px;background:var(--surface2);border-style:dashed}
+.shot-c{display:flex;flex-direction:column;gap:7px;font-size:13px}
+.shot-c .chk{font-size:13px}
+.arch{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.arch li{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.arch small{display:block;color:var(--ink2)}
+.arch-b{display:flex;gap:6px}
+/* Need to Film: one big tap target per shot */
+.nf-filter{margin:-6px 0 14px}
+.nf-filter .chip{padding:8px 14px;font-size:14px;font-weight:600}
+.sf-todo{border-color:var(--cedar);color:var(--cedarD)}
+.sf-todo.on{background:var(--cedar);border-color:var(--cedar);color:#fff}
+.fc-tags .due{margin-left:auto}
+.nf-prog{margin:10px 0 4px}
+.nf-prog b{display:block;font:600 18px var(--fd);margin-bottom:6px}
+.nf-none{margin:14px 0}
+.nf-g{margin:18px 0 8px;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3)}
+.nf-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.nf-shot{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--surface);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nf-shot input{position:absolute;opacity:0;width:1px;height:1px}
+.nf-box{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px}
+.nf-shot:has(input:checked){background:var(--greenL);border-color:transparent}
+.nf-shot:has(input:checked) .nf-box{background:var(--green);border-color:var(--green)}
+.nf-shot:has(input:checked) .nf-box::after{content:'';width:13px;height:7px;border:2.5px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-2px)}
+.nf-shot:has(input:focus-visible){outline:2px solid var(--slate);outline-offset:2px}
+.nf-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.nf-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nf-link{font-size:12.5px;color:var(--ink3);font-weight:600}
+.nf-d{font-size:17px;line-height:1.4}
+.nf-shot:has(input:checked) .nf-d{color:var(--ink2)}
+.nf-note{font-size:13.5px;color:var(--slate)}
+.nf-state{display:none}
+.nf-more{margin-top:12px}
+@media (max-width:820px){
+  .sp-row{grid-template-columns:1fr}
+  .shot{grid-template-columns:minmax(0,1fr);gap:8px;padding:14px 0}
+  .shot-id{flex-direction:row;align-items:center;gap:8px}
+  .shot-m textarea,.shot-man select{font-size:16px}
+  .shot-c{flex-direction:row;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:15px}
+  .shot-c .chk{font-size:15px;align-items:center}.shot-c .chk input{width:22px;height:22px}
+  .shot-c .icon-btn{margin-left:auto;width:38px;height:38px}
+  .nf-shot{padding:14px}
+  .nf-d{font-size:18px}
+  .nf-state{display:block;margin-top:8px;padding:11px 12px;border-radius:8px;border:1.5px solid var(--ink2);text-align:center;font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink)}
+  .nf-state::after{content:'Mark captured'}
+  .nf-shot:has(input:checked) .nf-state{border-color:transparent;background:none;color:var(--greenD);padding:4px 0 0;text-align:left}
+  .nf-shot:has(input:checked) .nf-state::after{content:'Captured ✓  Tap to undo'}
+}
 /* Phones and iPads: each point stacks, so nothing is squeezed side by side */
 @media (max-width:900px){
   .tp-cols{display:none}
@@ -878,6 +945,7 @@ function sectionBlocks(text,visual){
   if(!blocks.length)blocks.push(blankBlock());
   return blocks;
 }
+const SHOT_TYPES=['A-roll','B-roll','Screen Recording','Photo','Drone','Before / After','Other'];
 const mkSec=(title,text,visual)=>({title:title,visual:'',blocks:sectionBlocks(text,visual)});
 /* Reels: the old Custom talking points text becomes numbered blocks. The original is kept in talkingLegacy. */
 function absorbTalking(m){
@@ -1020,7 +1088,7 @@ function newItem(type,o){
     captionStyle:'',captionHook:'',captionBody:'',captionCTA:'',socialCaption:'',socialManual:false,shortsDescription:'',
     ytSummary:'',ytCover:true,ytCTA:'',ytDescription:'',ytManual:false,ytLinks:{website:'',quote:'',related:'',other:''},
     hashtagGroup:'General Deck',includeHashtags:false,customHashtags:'',
-    goal:'',points:['','',''],blocks:[blankBlock()],legacyPoints:[],
+    goal:'',points:['','',''],blocks:[blankBlock()],legacyPoints:[],shotMeta:{},manualShots:[],shotArchive:[],
     finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],secMeta:[blankSec(),blankSec(),blankSec(),blankSec(),blankSec()],conclusion:'',thumbIdea:'',
     recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
     shots:{},prod:{},
@@ -1047,6 +1115,12 @@ function normalize(it){
     m.blocks=cleanBlocks(it.blocks);
     m.legacyPoints=Array.isArray(it.legacyPoints)?it.legacyPoints.map(String):[];
   }else{m.legacyPoints=[];migrateBlocks(m);}
+  // Shot list: production state for script shots is keyed by stable ids, manual shots are their own records. Older items simply start empty.
+  const sm=it.shotMeta&&typeof it.shotMeta==='object'&&!Array.isArray(it.shotMeta)?it.shotMeta:{};
+  m.shotMeta={};Object.keys(sm).forEach(k=>{const x=sm[k];if(x&&typeof x==='object')m.shotMeta[k]={captured:!!x.captured,used:!!x.used,notes:String(x.notes==null?'':x.notes)};});
+  const shotRec=x=>({id:x.id||uid(),ref:String(x.ref==null?'':x.ref),type:SHOT_TYPES.includes(x.type)?x.type:'B-roll',desc:String(x.desc==null?'':x.desc),captured:!!x.captured,used:!!x.used,notes:String(x.notes==null?'':x.notes)});
+  m.manualShots=(Array.isArray(it.manualShots)?it.manualShots:[]).filter(x=>x&&typeof x==='object').map(shotRec);
+  m.shotArchive=(Array.isArray(it.shotArchive)?it.shotArchive:[]).filter(x=>x&&typeof x==='object').map(shotRec);
   if(!Array.isArray(m.sections))m.sections=['','','','',''];
   while(m.sections.length<5)m.sections.push('');
   if(!Array.isArray(m.shorts))m.shorts=[];
@@ -1273,7 +1347,7 @@ const ui={
   view:'dashboard',month:'',calMonth:'',calDay:'',calMode:'content',planMonth:'',pipeMonth:'',q:'',
   ideaTopic:'All',ideaRoadmap:false,lib:{},perf:{type:'',platform:'',pillar:'',month:''},perfTab:'overview',
   tplTab:'reel',pub:{type:'',pillar:'',platform:''},projDraft:blankProj(),projResults:false,
-  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null,capTab:'social'
+  planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null,capTab:'social',shotFilter:'all',filmFilter:'all'
 };
 function focusMonthDefault(){
   const cur=mk(today());
@@ -1665,11 +1739,56 @@ function talkingText(it){
 }
 const pointTexts=it=>it.blocks.map(b=>b.text.trim()).filter(Boolean);
 const blockBroll=it=>it.blocks.map(b=>b.broll.trim()).filter(Boolean);
-function hasVisual(it){return Object.values(it.shots||{}).some(Boolean)||[it.broll,it.jobsite,it.shotText].some(nonEmpty)||(it.type==='Reel'&&blockBroll(it).length>0);}
+function hasVisual(it){return Object.values(it.shots||{}).some(Boolean)||[it.broll,it.jobsite,it.shotText].some(nonEmpty)||(it.type==='Reel'&&blockBroll(it).length>0)||it.manualShots.some(x=>nonEmpty(x.desc));}
 const pointCount=it=>pointTexts(it).length;
 /* Captured counts only points that actually call for B-roll. */
 function capProg(it){const need=it.blocks.filter(b=>nonEmpty(b.broll));return {done:need.filter(b=>b.captured).length,total:need.length};}
 const capText=it=>{const p=capProg(it);return p.total?'B-roll captured: '+p.done+' / '+p.total:'';};
+/* ---------- Shot list ---------- */
+/* Built fresh from the script every time, so descriptions, order and references always follow the Script tab.
+   Only production state is stored: block.captured for a point's B-roll (the same tick the Script tab uses),
+   it.shotMeta[id] for everything else on a script shot, and it.manualShots for shots that are not in the script. */
+const allBlocks=it=>it.blocks.concat.apply(it.blocks,it.secMeta.map(x=>x.blocks||[]));
+function shotList(it){
+  const out=[], L=it.type==='Long Form', M=it.shotMeta;
+  const add=(id,ref,kind,desc,link,group,blk)=>{const m=M[id]||{};out.push({id:id,ref:ref,kind:kind,type:kind==='a'?'A-roll':'B-roll',desc:String(desc).trim(),link:link,group:group,manual:false,
+    captured:kind==='b'?!!blk.captured:!!m.captured,used:!!m.used,notes:m.notes||''});};
+  const pts=(blocks,pre,linkPre,group)=>blocks.forEach((b,i)=>{
+    if(nonEmpty(b.text))add(b.id+':a',pre+(i+1)+'A','a',b.text,linkPre+(i+1),group,b);
+    if(nonEmpty(b.broll))add(b.id+':b',pre+(i+1)+'B','b',b.broll,linkPre+(i+1),group,b);});
+  if(nonEmpty(it.hook))add('hook','H','a',it.hook,L?'Intro / Hook':'Hook',L?'Intro':'');
+  if(L){
+    it.sections.forEach((x,i)=>{const m=it.secMeta[i]||{};pts(m.blocks||[],'S'+(i+1)+'-','Section '+(i+1)+' → Point ','Section '+(i+1)+(nonEmpty(m.title)?' — '+m.title.trim():''));});
+    if(nonEmpty(it.conclusion))add('con','CON','a',it.conclusion,'Conclusion','Conclusion');
+  }else pts(it.blocks,'','Talking Point ','');
+  if(nonEmpty(it.cta))add('cta','CTA','a',it.cta,'CTA',L?'CTA':'');
+  it.manualShots.forEach((x,i)=>out.push({id:x.id,ref:'M'+(i+1),kind:'m',type:x.type,desc:x.desc,link:'',group:'Manual shots',manual:true,captured:!!x.captured,used:!!x.used,notes:x.notes||''}));
+  return out;
+}
+const SHOT_FIELDS=['captured','used','notes','type','desc'];
+function shotSet(it,id,f,v){
+  if(!SHOT_FIELDS.includes(f))return;
+  const man=it.manualShots.find(x=>x.id===id);
+  if(man){man[f]=v;return;}
+  if(f==='type'||f==='desc')return; // script shots take these from the script
+  if(f==='captured'&&/:b$/.test(id)){const b=allBlocks(it).find(x=>x.id===id.slice(0,-2));if(b){b.captured=!!v;return;}}
+  const m=it.shotMeta[id]||(it.shotMeta[id]={captured:false,used:false,notes:''});m[f]=v;
+}
+function shotProg(it){const l=shotList(it);return {n:l.length,cap:l.filter(x=>x.captured).length,used:l.filter(x=>x.used).length};}
+const shotPass=(x,f)=>f==='a'?x.type==='A-roll':f==='b'?x.type!=='A-roll':f==='manual'?x.manual:f==='todo'?!x.captured:f==='done'?x.captured:f==='unused'?!x.used:true;
+/* A point leaving the script takes its shots with it. Anything already filmed, used or annotated is set aside, not deleted. */
+function archiveBlock(it,b){
+  const refs={};shotList(it).forEach(x=>{refs[x.id]=x.ref;});let n=0;
+  ['a','b'].forEach(k=>{
+    const id=b.id+':'+k, m=it.shotMeta[id]||{}, cap=k==='b'?!!b.captured:!!m.captured;
+    if(cap||m.used||nonEmpty(m.notes)){it.shotArchive.push({id:uid(),ref:refs[id]||'',type:k==='a'?'A-roll':'B-roll',desc:String(k==='a'?b.text:b.broll).trim(),captured:cap,used:!!m.used,notes:m.notes||''});n++;}
+    delete it.shotMeta[id];
+  });
+  return n;
+}
+const shotBadge=x=>'<span class="shot-type '+(x.type==='A-roll'?'a':'b')+'">'+esc(x.type)+'</span>';
+const bar=(label,done,n,word)=>'<div class="sp"><div class="sp-h"><span class="sp-k">'+label+'</span><span><b>'+done+' / '+n+'</b> shots '+word+'</span></div><div class="sp-bar"><i style="width:'+(n?Math.round(done/n*100):0)+'%"></i></div></div>';
+const filterBar=(act,cur,list)=>'<div class="sf" role="group" aria-label="Filter shots">'+list.map(f=>'<button type="button" class="chip'+(cur===f[0]?' on':'')+(f[0]==='todo'?' sf-todo':'')+'" aria-pressed="'+(cur===f[0])+'" data-act="'+act+'" data-f="'+f[0]+'">'+f[1]+'</button>').join('')+'</div>';
 const ptLines=it=>{const P=pointTexts(it);return P.length?P.map((t,i)=>'Point '+(i+1)+': '+t):scriptDef(it).labels.map(l=>l+': (not written yet)');};
 /* Reels only. Full script, strategy, thumbnail and caption are never required. */
 function scriptMissing(it){
@@ -1814,39 +1933,42 @@ function postMissing(it){
 }
 
 /* ================= need to film ================= */
-/* Reels: every talking point sits with its own B-roll, and the B-roll can be ticked off as it is captured. */
-function fcBlocks(it,blk){
-  const rows=it.blocks.map((b,i)=>blockEmpty(b)?'':'<li class="fb"><span class="fb-n">'+(i+1)+'</span><div class="fb-m">'
-    +(nonEmpty(b.text)?'<span class="fp-v pre">'+esc(b.text.trim())+'</span>':'')
-    +(nonEmpty(b.broll)?'<label class="chk big fb-b"><input type="checkbox" data-f="blocks.'+i+'.captured" '+(b.captured?'checked':'')+'><span><span class="fp-k">B-roll</span><span class="pre">'+esc(b.broll.trim())+'</span></span></label>':'')
-    +'</div></li>').join('');
-  if(!rows)return '';
-  const prog=capText(it);
-  return blk('Talking points and B-roll <span class="count" data-tp-prog="'+it.id+'"'+(prog?'':' hidden')+'>'+prog+'</span>','<ol class="fc-blocks">'+rows+'</ol>');
+/* The filming version of the shot list. Same shots and the same captured state as Shoot & edit, with one big tap target per shot. */
+const FILM_FILTERS=[['all','All'],['todo','Not Captured'],['a','A-roll'],['b','B-roll'],['manual','Manual']];
+function nfShot(x){
+  return '<li><label class="nf-shot"><input type="checkbox" data-shot="'+esc(x.id)+'" data-sf="captured" '+(x.captured?'checked':'')+' aria-label="'+esc(x.ref)+' captured"><span class="nf-box" aria-hidden="true"></span>'
+   +'<span class="nf-m"><span class="nf-top"><b class="shot-ref">'+esc(x.ref)+'</b>'+shotBadge(x)+(x.manual?'<span class="nf-link">Manual shot</span>':x.link&&x.link!==x.ref?'<span class="nf-link">'+esc(x.link.replace('Talking Point','Point'))+'</span>':'')+'</span>'
+   +'<span class="nf-d pre">'+(nonEmpty(x.desc)?esc(x.desc):'<span class="muted">No description yet</span>')+'</span>'
+   +(nonEmpty(x.notes)?'<span class="nf-note pre">Note: '+esc(x.notes.trim())+'</span>':'')
+   +'<span class="nf-state" aria-hidden="true"></span></span></label></li>';
 }
 function fcard(it){
-  const late=it.filmDate&&it.filmDate<today(), L=it.type==='Long Form';
-  const parts=guideParts(it), hook=parts.find(p=>p.hook), cta=parts.find(p=>p.cta);
-  const body=parts.filter(p=>!p.hook&&!p.cta);
+  const late=it.filmDate&&it.filmDate<today(), L=it.type==='Long Form', all=shotList(it), p=shotProg(it), vis=all.filter(x=>shotPass(x,ui.filmFilter));
   const blk=(label,inner,cls)=>'<div class="fc-s '+(cls||'')+'"><h4>'+label+'</h4>'+inner+'</div>';
+  // Reels film all the talking first, then the B-roll. Long-form videos keep their sections together.
+  const groups=[];
+  if(L)vis.forEach(x=>{const g=groups[groups.length-1];if(g&&g[0]===x.group)g[1].push(x);else groups.push([x.group,[x]]);});
+  else[['A-roll',x=>!x.manual&&x.kind==='a'],['B-roll',x=>!x.manual&&x.kind==='b'],['Manual shots',x=>x.manual]].forEach(g=>{const l=vis.filter(g[1]);if(l.length)groups.push([g[0],l]);});
+  const notes=[it.shotText,it.broll,it.jobsite].some(nonEmpty)||Object.values(it.shots||{}).some(Boolean);
   return '<article class="fcard card" data-item-id="'+it.id+'">'
-   +'<div class="fc-h"><h3>'+esc(title(it))+'</h3><div class="fc-tags">'+typeTag(it)+(L?'':'<span class="chip sm">'+esc(it.scriptType)+'</span>')+'</div></div>'
-   +(hook?blk(esc(hook.k),'<p class="fc-big">'+esc(hook.v)+'</p>','fc-hook'):'')
-   +(L?'':fcBlocks(it,blk))
-   +(L&&body.length?blk('Outline','<ol class="fc-points">'+body.map(p=>'<li>'+(p.custom?'':'<span class="fp-k">'+esc(p.k)+'</span>')+(p.pts?ptsHtml(p.pts):'<span class="fp-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':''))+'</li>').join('')+'</ol>'):'')
-   +(cta?blk('CTA','<p class="fc-big">'+esc(cta.v)+'</p>','fc-cta'):'')
-   +blk('Shot list','<div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'+(it.shotText?'<p class="pre">'+esc(it.shotText)+'</p>':''))
-   +(it.broll?blk(L?'B-roll needed':'Other B-roll','<p class="pre">'+esc(it.broll)+'</p>'):'')
-   +(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')
+   +'<div class="fc-h"><h3>'+esc(title(it))+'</h3><div class="fc-tags">'+typeTag(it)+(L?'':'<span class="chip sm">'+esc(it.scriptType)+'</span>')+'<span class="due'+(late?' late':'')+'">'+(it.filmDate?'Film '+esc(fmtW(it.filmDate))+(late?' (past due)':''):'No film date')+'</span></div></div>'
+   +(p.n?'<div class="nf-prog"><b>'+p.cap+' / '+p.n+' captured</b><div class="sp-bar"><i style="width:'+Math.round(p.cap/p.n*100)+'%"></i></div></div>':'')
+   +(!p.n?'<p class="muted nf-none">No shots yet. Write the hook, talking points and B-roll on the Script tab and the shot list builds itself.</p>'
+     :!vis.length?'<p class="muted nf-none">'+(ui.filmFilter==='todo'?'Everything is captured.':'No shots in this view.')+'</p>'
+     :groups.map(g=>'<h4 class="nf-g">'+esc(g[0])+'</h4><ul class="nf-list">'+g[1].map(nfShot).join('')+'</ul>').join(''))
+   +(L&&nonEmpty(it.talking)?blk('Custom talking points','<p class="pre">'+esc(it.talking)+'</p>'):'')
    +(it.location?blk('Location / project','<p>'+esc(it.location)+'</p>'):'')
-   +blk('Film date','<span class="due'+(late?' late':'')+'">'+(it.filmDate?esc(fmtW(it.filmDate))+(late?' (past due)':''):'Not set')+'</span>')
-   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn ghost sm" data-act="spkShare" data-id="'+it.id+'">Share script</button><button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
+   +(notes?'<details class="adv nf-more"><summary>Other shoot notes</summary><div class="adv-b">'
+     +'<div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'
+     +(it.shotText?blk('Shot notes','<p class="pre">'+esc(it.shotText)+'</p>'):'')+(it.broll?blk('Other B-roll','<p class="pre">'+esc(it.broll)+'</p>'):'')+(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')+'</div></details>':'')
+   +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="shoot">Open shot list</button><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn ghost sm" data-act="spkShare" data-id="'+it.id+'">Share script</button><button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
 }
 function viewFilm(){
   const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
   const rtf=S.items.filter(i=>i.status==='Ready to Film').sort(srt), now=S.items.filter(i=>i.status==='Filming').sort(srt);
   return '<div class="page narrow">'+head('Need to Film',rtf.length?rtf.length+(rtf.length===1?' video is':' videos are')+' ready to film.':'Nothing is marked Ready to Film.','<button class="btn ghost" data-act="tplGo" data-tab="jobsite">Jobsite checklist</button>')
-   +(rtf.length?rtf.map(fcard).join(''):empty('Move a video to the Ready to Film column and it will show up here with its talking points and shot list.','<button class="btn primary sm" data-act="nav" data-view="pipeline">Open pipeline</button>'))
+   +(rtf.length||now.length?'<div class="nf-filter">'+filterBar('filmFilter',ui.filmFilter,FILM_FILTERS)+'</div>':'')
+   +(rtf.length?rtf.map(fcard).join(''):empty('Move a video to the Ready to Film column and it will show up here with its shot list.','<button class="btn primary sm" data-act="nav" data-view="pipeline">Open pipeline</button>'))
    +(now.length?'<h2 class="sect">Filming now</h2>'+now.map(fcard).join(''):'')+'</div>';
 }
 
@@ -1982,7 +2104,7 @@ function libItems(){
     if(f.status&&it.status!==f.status)return false;if(f.type&&it.type!==f.type)return false;if(f.platform&&!it.platforms.includes(f.platform))return false;
     if(f.pillar&&it.pillar!==f.pillar)return false;if(f.topic&&it.topic!==f.topic)return false;if(f.priority&&it.priority!==f.priority)return false;if(f.month&&monthOf(it)!==f.month)return false;
     if(f.preset==='shorts'&&!(it.type==='Long Form'&&it.status!=='Idea'&&(it.shorts.length<3||it.shorts.some(s=>!s.reelId))))return false;
-    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.scriptType,it.mainTopic,it.hook,it.script,it.talking,it.cta].concat(it.blocks.map(b=>b.text+' '+b.broll),it.secMeta.map((x,i)=>secText(it,i)+' '+secVisual(it,i)),it.secMeta.map(s=>s.title)).join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.scriptType,it.mainTopic,it.hook,it.script,it.talking,it.cta].concat(it.blocks.map(b=>b.text+' '+b.broll),it.secMeta.map((x,i)=>secText(it,i)+' '+secVisual(it,i)),it.manualShots.map(x=>x.desc),it.secMeta.map(s=>s.title)).join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   }).sort(byPub);
 }
@@ -2006,7 +2128,7 @@ function planSteps(key){
   const longs=its.filter(i=>i.type==='Long Form'), reels=its.filter(i=>i.type==='Reel');
   const rec=reels.filter(i=>i.reelKind==='Recap'), st=reels.filter(i=>i.reelKind==='Standalone'), rp=reels.filter(i=>i.reelKind==='Repurposed');
   const dated=its.filter(i=>i.publishDate), filmed=its.filter(i=>i.filmDate);
-  const shots=its.filter(i=>i.shotText||Object.values(i.shots||{}).some(Boolean));
+  const shots=its.filter(i=>i.shotText||Object.values(i.shots||{}).some(Boolean)||shotList(i).some(x=>x.type!=='A-roll'));
   const n=its.length||8;
   return [
    {t:'Choose 2 long-form topics',auto:longs.length>=2,hint:longs.length+' of 2'},
@@ -2157,9 +2279,10 @@ function tpInsertAfter(it,key,i){
   tpFocus(key,i+1);
 }
 function tpRemove(it,key,i,focusPrev){
-  const list=tpList(it,key);
+  const list=tpList(it,key), kept=archiveBlock(it,list[i]);
   list.splice(i,1);if(!list.length)list.push(blankBlock());
   save();renderBlocks(it,key);
+  if(kept)toast('Point removed. Its filming notes are kept in Shoot & edit.');
   if(focusPrev)tpFocus(key,Math.max(0,i-1));
 }
 /* Keyboard flow for the numbered points. Only talking point and B-roll boxes reach this. */
@@ -2380,10 +2503,34 @@ function aiCaptionPrompt(it){
    '- Preserve every fact provided by '+co+' exactly as given.','- Write naturally, the way a person talks.','- Avoid generic corporate marketing language.','- Avoid excessive emojis.','- Avoid excessive hashtags.',
    '- Write for homeowners in North Texas and Southern Oklahoma.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
 }
+const SHOT_FILTERS=[['all','All'],['a','A-roll'],['b','B-roll'],['manual','Manual'],['todo','Not Captured'],['done','Captured'],['unused','Not Used in Edit']];
+function shotRow(x){
+  const id=esc(x.id), chk=(f,label,on)=>'<label class="chk"><input type="checkbox" data-shot="'+id+'" data-sf="'+f+'" '+(on?'checked':'')+'><span>'+label+'</span></label>';
+  return '<li class="shot'+(x.captured?' cap':'')+'"><div class="shot-id"><b class="shot-ref">'+esc(x.ref)+'</b>'+shotBadge(x)+'</div>'
+   +'<div class="shot-m">'+(x.manual
+     ?'<div class="shot-man"><span class="shot-src">Manual shot</span><select data-shot="'+id+'" data-sf="type" aria-label="Shot type for '+esc(x.ref)+'">'+opts(SHOT_TYPES,x.type)+'</select></div>'
+      +'<textarea data-shot="'+id+'" data-sf="desc" rows="1" placeholder="Describe the shot" aria-label="Description for '+esc(x.ref)+'">'+esc(x.desc)+'</textarea>'
+     :'<p class="shot-d pre">'+esc(x.kind==='a'?'“'+x.desc+'”':x.desc)+'</p><button type="button" class="link-b shot-src" data-act="shotGo" data-shot="'+id+'" title="Open this part of the script">Linked: '+esc(x.link)+'</button>')
+   +'<textarea class="shot-notes" data-shot="'+id+'" data-sf="notes" rows="1" placeholder="Production notes" aria-label="Production notes for '+esc(x.ref)+'">'+esc(x.notes)+'</textarea></div>'
+   +'<div class="shot-c">'+chk('captured','Captured',x.captured)+chk('used','Used in Edit',x.used)
+   +(x.manual?'<button type="button" class="icon-btn sm" data-act="shotDel" data-shot="'+id+'" aria-label="Remove manual shot '+esc(x.ref)+'">'+I('trash')+'</button>':'')+'</div></li>';
+}
 function tabShoot(it){
-  let h='<h3 class="dr-sec">Shot list</h3>';
-  if(it.type==='Reel')h+='<div class="shots">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div>';
-  h+='<div class="form-grid">'+F(it,'shotText',it.type==='Reel'?'Other shot notes':'Shot list',{t:'textarea',rows:3,wide:true})+F(it,'broll','B-roll needed',{t:'textarea',rows:3})+F(it,'jobsite','Jobsite footage needed',{t:'textarea',rows:3})+F(it,'location','Location / project needed',{wide:true})+'</div>';
+  const all=shotList(it), p=shotProg(it), vis=all.filter(x=>shotPass(x,ui.shotFilter));
+  let h='<div class="sp-row">'+bar('Filming',p.cap,p.n,'captured')+bar('Editing',p.used,p.n,'used')+'</div>'
+    +'<div class="shot-h"><h3 class="dr-sec">Shot list</h3>'+filterBar('shotFilter',ui.shotFilter,SHOT_FILTERS)+'</div>';
+  if(!all.length)h+='<p class="muted sm">No shots yet. The hook, each talking point, each Visual / B-roll and the CTA on the <button class="link-b" data-act="tab" data-tab="script">Script tab</button> show up here on their own. Add anything else as a manual shot.</p>';
+  else if(!vis.length)h+='<p class="muted sm">No shots in this view.</p>';
+  else{let g=null;h+='<ul class="shot-list">'+vis.map(x=>{const head=x.group&&x.group!==g?'<li class="shot-g">'+esc(x.group)+'</li>':'';g=x.group;return head+shotRow(x);}).join('')+'</ul>';}
+  h+='<div class="row-gap"><button type="button" class="btn ghost sm" data-act="shotAdd">+ Add manual shot</button><span class="help">Script shots update themselves when the script changes. Captured, Used in Edit and notes stay with the shot.</span></div>';
+  if(it.shotArchive.length)h+='<div class="tp-legacy"><b>Removed from the script</b><p class="muted sm">These shots had filming or editing notes when their talking point was removed, so they were kept here.</p><ul class="arch">'
+    +it.shotArchive.map(x=>'<li><span>'+(x.ref?'<b>'+esc(x.ref)+'</b> ':'')+esc(x.type)+(nonEmpty(x.desc)?': '+esc(x.desc):'')+'<small>'+[x.captured?'Captured':'',x.used?'Used in edit':'',nonEmpty(x.notes)?'Notes: '+esc(x.notes):''].filter(Boolean).join(' · ')+'</small></span>'
+      +'<span class="arch-b"><button type="button" class="btn ghost sm" data-act="archKeep" data-shot="'+esc(x.id)+'">Make manual shot</button><button type="button" class="btn ghost sm" data-act="archDrop" data-shot="'+esc(x.id)+'">Delete</button></span></li>').join('')+'</ul></div>';
+  // The older freeform shoot fields stay exactly as they were, and can be turned into manual shots when wanted
+  const toShots=f=>nonEmpty(it[f])?'<button class="link" type="button" data-act="noteToShots" data-field="'+f+'">Turn into manual shots</button>':'';
+  h+=advBlock('shootNotes','Other shoot notes',(it.type==='Reel'?'<div class="fld"><label>Shot types</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>':'')
+    +'<div class="form-grid">'+F(it,'shotText',it.type==='Reel'?'Other shot notes':'Shot notes',{t:'textarea',rows:3,wide:true,extra:toShots('shotText')})+F(it,'broll',it.type==='Reel'?'Other B-roll notes':'B-roll needed',{t:'textarea',rows:3,extra:toShots('broll')})
+    +F(it,'jobsite','Jobsite footage needed',{t:'textarea',rows:3,extra:toShots('jobsite')})+F(it,'location','Location / project needed',{wide:true})+'</div>');
   h+='<h3 class="dr-sec">Thumbnail</h3><div class="form-grid">'+F(it,'thumbNeeded','Thumbnail needed',{t:'check'})+F(it,'thumbStatus','Thumbnail status',{t:'select',opts:STAT3})
     +(it.type==='Long Form'?F(it,'thumbIdea','Thumbnail idea',{t:'textarea',rows:2,wide:true}):'')
     +'</div><p class="muted sm">Captions now have their own <button class="link-b" data-act="tab" data-tab="caption">Caption tab</button>.</p>';
@@ -2615,6 +2762,36 @@ const ACTS={
   capComplete:()=>{const it=getItem(ui.edit.id);if(!captionReady(it)){toast('Still needed: '+captionMissing(it).join(', '));return;}it.captionStatus='Done';it.prod.caption=true;save();renderEditor();toast('Caption marked complete');},
   toReadyToPost:()=>{const it=getItem(ui.edit.id);if(!it||postMissing(it).length)return;if(stIdx(it.status)>=5){toast('Already at '+it.status);return;}setStatus(it,'Ready to Post');save();render();renderEditor();toast('Moved to Ready to Post');},
   resetTags:()=>{S.settings.hashtags=Object.assign({},HASHTAG_GROUPS);save();render();toast('Hashtag groups reset');},
+  shotFilter:a=>{ui.shotFilter=a.dataset.f;renderEditor();},
+  filmFilter:a=>{ui.filmFilter=a.dataset.f;render();},
+  shotAdd:()=>{
+    const it=getItem(ui.edit.id);if(!it)return;const x={id:uid(),ref:'',type:'B-roll',desc:'',captured:false,used:false,notes:''};
+    it.manualShots.push(x);if(!shotPass(Object.assign({manual:true},x),ui.shotFilter))ui.shotFilter='all';
+    save();renderEditor();const f=$('.drawer textarea[data-shot="'+x.id+'"][data-sf="desc"]');if(f){f.focus();if(f.scrollIntoView)f.scrollIntoView({block:'nearest'});}
+  },
+  shotDel:a=>{
+    const it=getItem(ui.edit.id),x=it&&it.manualShots.find(m=>m.id===a.dataset.shot);if(!x)return;
+    const go=()=>{it.manualShots=it.manualShots.filter(m=>m!==x);save();renderEditor();};
+    nonEmpty(x.desc)||nonEmpty(x.notes)||x.captured||x.used?askConfirm('Remove this manual shot? The manual shots after it will be renumbered.','Remove shot',go):go();
+  },
+  shotGo:a=>{
+    const it=getItem(ui.edit.id),id=a.dataset.shot;if(!it)return;
+    ui.edit.tab='script';renderEditor();
+    const plain={hook:'hook',cta:'cta',con:'conclusion'}[id];
+    if(plain){const f=$('.drawer [data-f="'+plain+'"]');if(f){f.focus();if(f.scrollIntoView)f.scrollIntoView({block:'center'});}return;}
+    const bid=id.slice(0,-2),keys=it.type==='Long Form'?it.secMeta.map((x,i)=>String(i)):['r'];
+    keys.some(k=>{const i=tpList(it,k).findIndex(b=>b.id===bid);if(i<0)return false;tpFocus(k,i,/:b$/.test(id));return true;});
+  },
+  archKeep:a=>{const it=getItem(ui.edit.id),x=it&&it.shotArchive.find(m=>m.id===a.dataset.shot);if(!x)return;it.shotArchive=it.shotArchive.filter(m=>m!==x);
+    it.manualShots.push({id:uid(),ref:'',type:x.type,desc:x.desc,captured:x.captured,used:x.used,notes:x.notes});save();renderEditor();toast('Added as a manual shot');},
+  archDrop:a=>{const it=getItem(ui.edit.id),x=it&&it.shotArchive.find(m=>m.id===a.dataset.shot);if(!x)return;
+    askConfirm('Delete this removed shot and its notes? This cannot be undone.','Delete',()=>{it.shotArchive=it.shotArchive.filter(m=>m!==x);save();renderEditor();});},
+  noteToShots:a=>{
+    const it=getItem(ui.edit.id),f=a.dataset.field;if(!it||!['shotText','broll','jobsite'].includes(f))return;
+    const lines=splitPoints(it[f]);if(!lines.length)return;
+    lines.forEach(t=>it.manualShots.push({id:uid(),ref:'',type:'B-roll',desc:t,captured:false,used:false,notes:''}));
+    it[f]='';save();renderEditor();liveScript(it);toast(lines.length+(lines.length===1?' manual shot':' manual shots')+' added');
+  },
   tpAdd:a=>{const it=getItem(ui.edit.id);if(!it)return;const key=tpKeyOf(a),list=tpList(it,key),last=list.length-1;if(blockEmpty(list[last]))tpFocus(key,last);else tpInsertAfter(it,key,last);},
   tpMove:a=>{
     const it=getItem(ui.edit.id);if(!it)return;
@@ -2716,6 +2893,14 @@ document.addEventListener('input',e=>{
     if(el.dataset.s==='settings.company')applyTheme();
     if(el.dataset.s.indexOf('jobsite.checks')===0)render();
     save();return;
+  }
+  if(el.dataset.shot){
+    // One shot state, wherever it is ticked: the Script tab, Shoot & edit and Need to Film all read the same record
+    const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
+    const f=el.dataset.sf;shotSet(it,el.dataset.shot,f,el.type==='checkbox'?el.checked:el.value);save();
+    if(f==='notes'||f==='desc'){if(f==='desc')liveScript(it);return;}
+    if(h.classList.contains('fcard'))h.outerHTML=fcard(it);else renderEditor();
+    return;
   }
   if(el.dataset.f){
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
