@@ -644,6 +644,56 @@ details.adv[open] summary::before{transform:rotate(45deg)}
   .sg-card .form-grid .fld>label:first-child:not([for]){display:none}
 }
 
+/* ---------- Numbered talking points ---------- */
+.tp-box{margin:2px 0 14px;--tpc:30px minmax(0,1.5fr) minmax(0,1fr) 92px}
+.tp-box.nocap{--tpc:30px minmax(0,1.5fr) minmax(0,1fr) 80px;margin:0 0 10px}
+.sec .tp-n{background:var(--surface);color:var(--ink2);border:1px solid var(--line2)}
+.sec .tp-f textarea{background:var(--surface)}
+.sg-pts{margin:3px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:15px;line-height:1.45}
+.sg-pts li>span{display:block}
+.fc-points .sg-pts{font-size:17px}
+.tp-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.tp-top h3{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.tp-cols{display:grid;grid-template-columns:var(--tpc);gap:10px;padding:0 0 5px;font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.tps{list-style:none;margin:0;padding:0}
+.tp{display:grid;grid-template-columns:var(--tpc);gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--line)}
+.tp-n{width:26px;height:26px;margin-top:5px;border-radius:7px;background:var(--cedar);color:#fff;display:grid;place-items:center;font:600 15px var(--fd)}
+.tp-f{min-width:0}
+.tp-f label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.tp-f textarea{display:block}
+.tp-side{display:flex;flex-direction:column;gap:6px;padding-top:7px}
+.tp-cap{font-size:13px;color:var(--ink2)}
+.tp-cap:has(input:disabled){opacity:.45;cursor:default}
+.tp-ctl{display:flex;gap:2px;margin-left:-5px}
+.tp-ctl .icon-btn:disabled{opacity:.3;cursor:default;background:none}
+.tp-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+.tp-legacy{margin-top:12px;padding:10px 12px;border-radius:var(--r1);background:var(--amberL);font-size:13.5px}
+.tp-legacy p{margin:2px 0 6px}.tp-legacy ul{margin:0;padding-left:18px}.tp-legacy .row-gap{margin-top:10px}
+.fc-s h4 .count{margin-left:6px}
+.fc-blocks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.fb{display:flex;gap:10px;align-items:flex-start}
+.fb-n{flex:none;width:24px;height:24px;margin-top:1px;border-radius:6px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font:600 14px var(--fd);color:var(--ink2)}
+.fb-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.fb-b{display:flex;align-items:flex-start!important;font-size:15px!important}
+.fb-b>span{display:flex;flex-direction:column;gap:1px;min-width:0}
+.fb-b:has(input:checked) .pre{text-decoration:line-through;color:var(--ink2)}
+/* Phones and iPads: each point stacks, so nothing is squeezed side by side */
+@media (max-width:900px){
+  .tp-cols{display:none}
+  .tps{border-top:1px solid var(--line)}
+  .tp{grid-template-columns:30px minmax(0,1fr);gap:8px 10px;padding:14px 0}
+  .tp-n{grid-row:1/span 3;margin-top:0}
+  .tp-f,.tp-side{grid-column:2}
+  .tp-f label{position:static;width:auto;height:auto;clip-path:none;display:block;margin-bottom:4px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+  .tp-f textarea{font-size:16px}
+  .tp-side{flex-direction:row;justify-content:space-between;align-items:center;padding-top:0}
+  .nocap .tp-side{justify-content:flex-end}
+  .tp-cap{font-size:15px;align-items:center}.tp-cap input{width:22px;height:22px}
+  .tp-ctl{margin:0;gap:6px}.tp-ctl .icon-btn{width:38px;height:38px}.tp-ctl .icon-btn .ic{width:18px;height:18px}
+  .tp-foot .btn{width:100%;padding:12px 16px;font-size:15px}
+  .tp-foot .help{display:none}
+}
+
 /* ---------- Speaker script ---------- */
 .spk{border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px;background:var(--surface);border-top:3px solid var(--slate)}
 .spk>.muted{margin:0 0 12px}
@@ -781,7 +831,76 @@ function inferScriptType(it){
 }
 const scriptDef=it=>SCRIPT_TYPES[it.scriptType]||SCRIPT_TYPES.Educational;
 const blankShort=()=>({hook:'',section:'',reelId:'',angle:'',sectionIdx:-1});
-const blankSec=()=>({title:'',visual:''});
+const blankSec=()=>({title:'',visual:'',blocks:[blankBlock()]});
+
+/* ---------- Numbered talking points ---------- */
+/* Each block is one talking point with its own B-roll and captured state. Numbers come from array order, never stored. */
+const blankBlock=()=>({id:uid(),text:'',broll:'',captured:false});
+const mkBlocks=texts=>texts.map(t=>Object.assign(blankBlock(),{text:t}));
+const LIST_MARK=/^\s*(?:[-–—•*·▪◦‣●○]+\s*|\(?\d{1,2}[.):]\s+)/;
+/* Splits old freeform text into points: bullets, numbered lines, paragraphs, or plain lines. Text is regrouped, never dropped. */
+function splitPoints(raw){
+  const txt=String(raw==null?'':raw).replace(/\r/g,''), lines=txt.split('\n'), full=lines.filter(l=>l.trim());
+  const marked=full.filter(l=>LIST_MARK.test(l)).length;
+  if(marked&&marked*2>=full.length){
+    const out=[];
+    lines.forEach(l=>{
+      if(LIST_MARK.test(l))out.push(l.replace(LIST_MARK,'').trim());
+      else if(l.trim()){if(out.length)out[out.length-1]=(out[out.length-1]+'\n'+l.trim()).trim();else out.push(l.trim());}
+    });
+    return out.filter(Boolean);
+  }
+  const paras=txt.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+  if(paras.length>1&&paras.some(x=>x.includes('\n')))return paras;
+  return full.map(l=>l.replace(LIST_MARK,'').trim()).filter(Boolean);
+}
+/* Pairs old B-roll lines with points only when the match is clear: explicitly numbered, or the same number of lines as points.
+   Anything else stays where it was, in the general B-roll notes. */
+function pairBroll(blocks,raw){
+  const n=blocks.length;raw=String(raw==null?'':raw);
+  if(n<2||!raw.trim())return false;
+  const lines=raw.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+  const nums=lines.map(l=>{const x=l.match(/^\s*\(?(\d{1,2})[.):]\s+/);return x?+x[1]:0;});
+  let map=null;
+  if(nums.every(x=>x>=1&&x<=n)&&new Set(nums).size===nums.length)map=nums.map(x=>x-1);
+  else if(lines.length===n)map=lines.map((l,i)=>i);
+  if(!map)return false;
+  lines.forEach((l,i)=>{blocks[map[i]].broll=l.replace(LIST_MARK,'').trim();});
+  return true;
+}
+function matchBroll(m){if(pairBroll(m.blocks,m.broll)){m.brollLegacy=m.broll;m.broll='';}}
+const cleanBlocks=list=>{const out=list.filter(b=>b&&typeof b==='object').map(b=>Object.assign({},b,{id:b.id||uid(),text:String(b.text==null?'':b.text),broll:String(b.broll==null?'':b.broll),captured:!!b.captured}));if(!out.length)out.push(blankBlock());return out;};
+/* Long-form sections: the old one-per-line talking points become numbered blocks. B-roll that cannot be paired line for line
+   goes on the first point in full, so nothing is dropped. */
+function sectionBlocks(text,visual){
+  const blocks=mkBlocks(splitPoints(text)), v=String(visual==null?'':visual);
+  if(v.trim()){if(!blocks.length)blocks.push(blankBlock());if(!pairBroll(blocks,v))blocks[0].broll=v.trim();}
+  if(!blocks.length)blocks.push(blankBlock());
+  return blocks;
+}
+const mkSec=(title,text,visual)=>({title:title,visual:'',blocks:sectionBlocks(text,visual)});
+/* Reels: the old Custom talking points text becomes numbered blocks. The original is kept in talkingLegacy. */
+function absorbTalking(m){
+  if(m.type==='Long Form'||!String(m.talking==null?'':m.talking).trim())return;
+  const pts=splitPoints(m.talking), have=m.blocks.filter(b=>b.text.trim());
+  if(!Array.isArray(m.legacyPoints))m.legacyPoints=[];
+  if(have.length)m.legacyPoints=m.legacyPoints.concat(pts);
+  else m.blocks=mkBlocks(pts);
+  m.talkingLegacy=m.talking;m.talking='';
+}
+function migrateBlocks(m){
+  const key=x=>x.toLowerCase().replace(/\s+/g,' ');
+  const pts=(Array.isArray(m.points)?m.points:[]).map(x=>String(x==null?'':x).trim()).filter(Boolean);
+  m.blocks=[];m.legacyPoints=Array.isArray(m.legacyPoints)?m.legacyPoints:[];
+  if(m.type!=='Long Form'&&String(m.talking==null?'':m.talking).trim()){
+    // custom talking points always won over the three point fields, so they become the script and the others are set aside
+    absorbTalking(m);
+    const seen=m.blocks.map(b=>key(b.text));
+    m.legacyPoints=m.legacyPoints.concat(pts.filter(x=>!seen.includes(key(x))));
+  }else m.blocks=mkBlocks(pts);
+  if(m.type!=='Long Form')matchBroll(m);
+  if(!m.blocks.length)m.blocks.push(blankBlock());
+}
 
 /* ---------- Caption system configuration ---------- */
 const CAPTION_STYLES={
@@ -834,6 +953,9 @@ const ICONS={
  star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
  left:'<polyline points="15 18 9 12 15 6"/>',
+ up:'<polyline points="18 15 12 9 6 15"/>',
+ down:'<polyline points="6 9 12 15 18 9"/>',
+ trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
  right:'<polyline points="9 18 15 12 9 6"/>',
  ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
@@ -898,7 +1020,7 @@ function newItem(type,o){
     captionStyle:'',captionHook:'',captionBody:'',captionCTA:'',socialCaption:'',socialManual:false,shortsDescription:'',
     ytSummary:'',ytCover:true,ytCTA:'',ytDescription:'',ytManual:false,ytLinks:{website:'',quote:'',related:'',other:''},
     hashtagGroup:'General Deck',includeHashtags:false,customHashtags:'',
-    goal:'',points:['','',''],
+    goal:'',points:['','',''],blocks:[blankBlock()],legacyPoints:[],
     finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],secMeta:[blankSec(),blankSec(),blankSec(),blankSec(),blankSec()],conclusion:'',thumbIdea:'',
     recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
     shots:{},prod:{},
@@ -920,6 +1042,11 @@ function normalize(it){
   ['perf','recap','shots','prod','ytLinks'].forEach(k=>{m[k]=Object.assign({},base[k],it[k]||{});});
   if(!Array.isArray(m.points))m.points=['','',''];
   while(m.points.length<3)m.points.push('');
+  // Numbered talking points: items saved before this existed are built from the old point fields, custom talking points and B-roll
+  if(Array.isArray(it.blocks)){
+    m.blocks=cleanBlocks(it.blocks);
+    m.legacyPoints=Array.isArray(it.legacyPoints)?it.legacyPoints.map(String):[];
+  }else{m.legacyPoints=[];migrateBlocks(m);}
   if(!Array.isArray(m.sections))m.sections=['','','','',''];
   while(m.sections.length<5)m.sections.push('');
   if(!Array.isArray(m.shorts))m.shorts=[];
@@ -927,7 +1054,9 @@ function normalize(it){
   // Scripting 2.0: section outline metadata runs parallel to the existing sections text
   if(!Array.isArray(m.secMeta))m.secMeta=[];
   while(m.secMeta.length<m.sections.length)m.secMeta.push(blankSec());
-  m.secMeta=m.secMeta.map(s=>Object.assign(blankSec(),s||{}));
+  // Sections saved before numbered points existed are built from their old talking points and Visual / B-roll text, which stay in place untouched
+  m.secMeta=m.secMeta.map((s,i)=>{const x=Object.assign({title:'',visual:''},s||{});x.title=String(x.title==null?'':x.title);
+    x.blocks=Array.isArray(x.blocks)?cleanBlocks(x.blocks):sectionBlocks(m.sections[i],x.visual);return x;});
   if(it.scriptType==null||(m.type==='Reel'&&!SCRIPT_TYPES[m.scriptType]))m.scriptType=m.type==='Reel'?inferScriptType(m):'';
   // Caption system: older items get a caption style that follows their script type
   if(it.captionStyle==null||!CAPTION_STYLES[m.captionStyle])m.captionStyle=m.type==='Reel'?captionStyleFor(m):'';
@@ -1038,12 +1167,12 @@ function seed(){
   const firstL=st.items.find(i=>i.title==='Who We Are & Why We Started'&&i.roadmap===1);
   if(first){Object.assign(first,{status:'Ready to Film',mainTopic:'Who Benchmark Decks is',goal:'Introduce the company to homeowners in Northern Texas and Southern Oklahoma.',
     audienceProblem:"Homeowners don't know who we are or whether they can trust a deck builder they just found online.",
-    mainMessage:'We build custom decks and outdoor structures, and we make the process easy.',points:['Who we are and where we build','What we build','Why homeowners trust us'],
+    mainMessage:'We build custom decks and outdoor structures, and we make the process easy.',blocks:mkBlocks(['Who we are and where we build','What we build','Why homeowners trust us']),
     cta:'Request a quote with our 3D configurator.',scriptType:'Trust / Company',hook:"If you've never heard of Benchmark Decks, here's who we are.",
     broll:'Crew working, finished deck wide shot, materials close-up',jobsite:'Wide hero shot of a finished deck',location:'Any active jobsite or finished project'});}
   if(firstL){Object.assign(firstL,{status:'Ready to Film',mainQuestion:'Who is Benchmark Decks, and why should I trust them with my deck?',
     targetViewer:'Homeowners in Northern Texas and Southern Oklahoma who are thinking about a deck',audienceProblem:"They don't know the company yet and aren't sure what the process looks like.",
-    takeaway:"We're a builder you can understand, trust, and work with easily.",hook:"Before you trust anyone to build your deck, you should know who they are.",sections:['','','','',''],secMeta:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'].map(t=>({title:t,visual:''})),
+    takeaway:"We're a builder you can understand, trust, and work with easily.",hook:"Before you trust anyone to build your deck, you should know who they are.",sections:['','','','',''],secMeta:['Why we started','What we build','How we work','What to expect when you reach out','Examples of our work'].map(t=>mkSec(t,'','')),
     cta:'Use the 3D configurator to request a quote.',broll:'Jobsite footage, finished decks, team at work',location:'Finished project or active jobsite'});}
   applyExamples(st);st.examplesV2=true;applyCaptionExamples(st);st.examplesCap=true;
   return st;
@@ -1053,7 +1182,7 @@ function seed(){
 function applyExamples(st){
   const find=t=>st.items.find(i=>i.roadmap&&i.title.toLowerCase()===t.toLowerCase());
   const fill=(it,o)=>{if(!it)return;Object.keys(o).forEach(k=>{
-    if(k==='points'){if(it.points.every(x=>!String(x).trim()))it.points=o.points.slice();}
+    if(k==='points'){if(it.blocks.every(b=>!b.text.trim()&&!b.broll.trim()))it.blocks=mkBlocks(o.points);}
     else if(k==='scriptType'){if(!['hook','cta'].some(f=>String(it[f]||'').trim()))it.scriptType=o.scriptType;}
     else if(!String(it[k]||'').trim())it[k]=o[k];});};
   fill(find('What Joist Tape Does'),{scriptType:'Educational',goal:'Explain why joist tape is offered and what it protects.',
@@ -1065,13 +1194,13 @@ function applyExamples(st){
     points:['Treated lumber has a lower upfront cost but requires ongoing maintenance.','Composite costs more upfront but generally requires less maintenance.','The right choice depends on budget, appearance, maintenance expectations, and the project.'],
     cta:"If you're not sure which option makes sense for your deck, send us your project and we'll walk you through both."});
   const L=find('How We Build Our Decks: Full Framing Breakdown');
-  if(L&&L.sections.every(s=>!String(s).trim())&&L.secMeta.every(s=>!s.title.trim())){
+  if(L&&L.secMeta.every(s=>!s.title.trim()&&s.blocks.every(b=>!b.text.trim()&&!b.broll.trim()))){
     fill(L,{hook:'A finished deck might look simple from the top, but most of what determines how it performs is underneath it.',
       takeaway:'Show homeowners how Benchmark Decks frames decks and explain the reasoning behind the construction choices.'});
     const S5=[['Posts','Post size\nPlacement\nSupport','Exposed posts / footings','Why deck posts matter'],['Beams','Beam structure\nLoad support\nConnection','Beam close-up',''],
       ['Joists','Spacing\nBlocking\nLayout','','Why joist spacing matters'],['Fasteners','','','What screws we use and why'],['Protection','','','What joist tape actually does']];
     S5.forEach((s,i)=>{
-      L.sections[i]=s[1];L.secMeta[i]={title:s[0],visual:s[2]};
+      L.sections[i]='';L.secMeta[i]=mkSec(s[0],s[1],s[2]);
       if(s[3]){let slot=L.shorts.find(x=>!x.reelId&&!x.hook.trim()&&x.sectionIdx<0);if(!slot){slot=blankShort();L.shorts.push(slot);}slot.hook=s[3];slot.sectionIdx=i;}
     });
   }
@@ -1102,7 +1231,11 @@ function load(){
   let raw=null;
   try{raw=localStorage.getItem(LS_KEY);}catch(e){return null;}
   if(!raw)return null;
-  try{const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){return fixState(o);}}catch(e){console.error('Content HQ: saved content could not be loaded',e);}
+  try{const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){
+    // First load after numbered talking points arrived: keep an untouched copy of what was saved before anything is converted
+    if(o.items.some(i=>i&&!Array.isArray(i.blocks))){try{if(!localStorage.getItem(LS_KEY+'.beforeBlocks'))localStorage.setItem(LS_KEY+'.beforeBlocks',raw);}catch(e){}}
+    if(o.items.some(i=>i&&Array.isArray(i.secMeta)&&i.secMeta.some(x=>x&&!Array.isArray(x.blocks)))){try{if(!localStorage.getItem(LS_KEY+'.beforeSections'))localStorage.setItem(LS_KEY+'.beforeSections',raw);}catch(e){}}
+    return fixState(o);}}catch(e){console.error('Content HQ: saved content could not be loaded',e);}
   // Saved content exists but could not be read. Leave it untouched, keep a recovery copy, and turn saving off for this session.
   loadFailed=true;
   try{localStorage.setItem(LS_KEY+'.recovery',raw);}catch(e){}
@@ -1505,6 +1638,10 @@ function viewMonth(){
 
 /* ---------- Scripting 2.0: speaking guide + readiness ---------- */
 const nonEmpty=v=>String(v==null?'':v).trim()!=='';
+const secPts=(it,i)=>((it.secMeta[i]||{}).blocks||[]).filter(b=>nonEmpty(b.text)||nonEmpty(b.broll)).map(b=>({t:b.text.trim(),b:b.broll.trim()}));
+const secText=(it,i)=>secPts(it,i).map(x=>x.t).filter(Boolean).join('\n');
+const secVisual=(it,i)=>secPts(it,i).map(x=>x.b).filter(Boolean).join('\n');
+const ptsHtml=pts=>'<ol class="sg-pts">'+pts.map(x=>'<li>'+(x.t?'<span class="pre">'+esc(x.t)+'</span>':'')+(x.b?'<span class="sg-vis pre">Visual: '+esc(x.b)+'</span>':'')+'</li>').join('')+'</ol>';
 const secLabel=(it,i)=>{const t=(it.secMeta[i]||{}).title;return 'Section '+(i+1)+(nonEmpty(t)?': '+t:'');};
 /* One place that decides what the speaker says. Custom talking points always win over the auto guide. */
 function guideParts(it){
@@ -1512,15 +1649,13 @@ function guideParts(it){
   if(it.type==='Long Form'){
     if(custom)return it.talking.split('\n').filter(nonEmpty).map(l=>({k:'',v:l.trim(),custom:true,point:true}));
     if(nonEmpty(it.hook))out.push({k:'Intro / hook',v:it.hook,hook:true});
-    it.sections.forEach((s,i)=>{const m=it.secMeta[i]||{};if(nonEmpty(s)||nonEmpty(m.title)||nonEmpty(m.visual))out.push({k:secLabel(it,i),v:s,visual:m.visual});});
+    it.sections.forEach((s,i)=>{const m=it.secMeta[i]||{},pts=secPts(it,i);if(pts.length||nonEmpty(m.title))out.push({k:secLabel(it,i),v:secText(it,i),pts:pts});});
     if(nonEmpty(it.conclusion))out.push({k:'Conclusion',v:it.conclusion});
     if(nonEmpty(it.cta))out.push({k:'CTA',v:it.cta,cta:true});
     return out;
   }
-  const d=scriptDef(it);
   if(nonEmpty(it.hook))out.push({k:it.scriptType==='FAQ'?'Question':'Hook',v:it.hook,hook:true});
-  if(custom)it.talking.split('\n').filter(nonEmpty).forEach(l=>out.push({k:'',v:l.trim(),custom:true,point:true}));
-  else it.points.forEach((p,i)=>{if(nonEmpty(p))out.push({k:d.labels[i],v:p,point:true});});
+  it.blocks.forEach((b,i)=>{if(nonEmpty(b.text))out.push({k:'Point '+(i+1),v:b.text.trim(),point:true});});
   if(nonEmpty(it.cta))out.push({k:'CTA',v:it.cta,cta:true});
   return out;
 }
@@ -1528,11 +1663,14 @@ function talkingText(it){
   if(nonEmpty(it.talking))return it.talking;
   return guideParts(it).map(p=>(p.k?p.k+': ':'')+p.v+(p.visual?' (visual: '+p.visual+')':'')).join('\n');
 }
-function hasVisual(it){return Object.values(it.shots||{}).some(Boolean)||[it.broll,it.jobsite,it.shotText].some(nonEmpty);}
-function pointCount(it){
-  const n=it.points.filter(nonEmpty).length;
-  return nonEmpty(it.talking)?Math.max(n,it.talking.split('\n').filter(nonEmpty).length):n;
-}
+const pointTexts=it=>it.blocks.map(b=>b.text.trim()).filter(Boolean);
+const blockBroll=it=>it.blocks.map(b=>b.broll.trim()).filter(Boolean);
+function hasVisual(it){return Object.values(it.shots||{}).some(Boolean)||[it.broll,it.jobsite,it.shotText].some(nonEmpty)||(it.type==='Reel'&&blockBroll(it).length>0);}
+const pointCount=it=>pointTexts(it).length;
+/* Captured counts only points that actually call for B-roll. */
+function capProg(it){const need=it.blocks.filter(b=>nonEmpty(b.broll));return {done:need.filter(b=>b.captured).length,total:need.length};}
+const capText=it=>{const p=capProg(it);return p.total?'B-roll captured: '+p.done+' / '+p.total:'';};
+const ptLines=it=>{const P=pointTexts(it);return P.length?P.map((t,i)=>'Point '+(i+1)+': '+t):scriptDef(it).labels.map(l=>l+': (not written yet)');};
 /* Reels only. Full script, strategy, thumbnail and caption are never required. */
 function scriptMissing(it){
   const m=[];
@@ -1545,7 +1683,7 @@ function scriptMissing(it){
 const scriptReady=it=>it.type==='Reel'&&!scriptMissing(it).length;
 function guideHtml(parts){
   if(!parts.length)return '<p class="muted sm">Start with a hook and a couple of talking points. The guide builds itself as you type.</p>';
-  return '<ol class="sg">'+parts.map(p=>'<li class="'+(p.hook?'is-hook':p.cta?'is-cta':'')+'">'+(p.k?'<span class="sg-k">'+esc(p.k)+'</span>':'')+'<span class="sg-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>';
+  return '<ol class="sg">'+parts.map(p=>'<li class="'+(p.hook?'is-hook':p.cta?'is-cta':'')+'">'+(p.k?'<span class="sg-k">'+esc(p.k)+'</span>':'')+(p.pts?ptsHtml(p.pts):'<span class="sg-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':''))+'</li>').join('')+'</ol>';
 }
 
 /* ---------- Speaker script: one helper formats everything that gets shared ---------- */
@@ -1559,13 +1697,13 @@ function speakerBlocks(it){
   const b=[], add=(label,text)=>{text=spkUnquote(text);if(text)b.push({label:label,text:text});};
   if(it.type==='Long Form'){
     add('INTRO / HOOK',it.hook);let n=0;
-    it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=spkClean(s);if(!t&&!pts)return;n++;
+    it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=spkClean(secText(it,i));if(!t&&!pts)return;n++;
       b.push({label:'SECTION '+n+(t?': '+t:''),text:pts||t,titleOnly:!pts});});
     add('CONCLUSION',it.conclusion);add('CTA',it.cta);
   }else{
     add('HOOK',it.hook);
-    const pts=nonEmpty(it.talking)?it.talking.split('\n'):it.points;let n=0;
-    pts.forEach(x=>{const t=spkUnquote(x);if(t){n++;b.push({label:'PART '+n,text:t});}});
+    let n=0;
+    it.blocks.forEach(x=>{const t=spkUnquote(x.text);if(t){n++;b.push({label:'PART '+n,text:t});}});
     add('CTA',it.cta);
   }
   return {header:header,blocks:b,full:false};
@@ -1577,10 +1715,10 @@ function speakerText(it,mode){
     const out=[[spkClean(title(it))].concat(nonEmpty(it.speaker)?['SPEAKER: '+spkClean(it.speaker)]:[]).join('\n')];
     const hook=spkUnquote(it.hook), cta=spkUnquote(it.cta), list=[];
     if(it.type==='Long Form'){
-      it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=spkClean(s).split('\n').filter(nonEmpty);if(!t&&!pts.length)return;
+      it.sections.forEach((s,i)=>{const t=spkClean((it.secMeta[i]||{}).title),pts=secPts(it,i).map(x=>spkClean(x.t).replace(/\n+/g,' ')).filter(nonEmpty);if(!t&&!pts.length)return;
         list.push(t?'- '+t+(pts.length?'\n'+pts.map(x=>'  '+x.trim()).join('\n'):''):pts.map(x=>'- '+x.trim()).join('\n'));});
     }else{
-      (nonEmpty(it.talking)?it.talking.split('\n'):it.points).forEach(x=>{const t=spkUnquote(x);if(t)list.push('- '+t.split('\n').join('\n  '));});
+      it.blocks.forEach(x=>{const t=spkUnquote(x.text);if(t)list.push('- '+t.split('\n').join('\n  '));});
     }
     if(hook)out.push((it.type==='Long Form'?'INTRO / HOOK':'HOOK')+'\n'+hook);
     if(list.length)out.push('TALKING POINTS\n'+list.join('\n'));
@@ -1610,7 +1748,7 @@ const cleanTopic=t=>String(t||'').replace(/\s*[:—–]\s.*$/,'').replace(/\s+(i
 const vsParts=t=>{const m=cleanTopic(t).split(/\s+vs\.?\s+/i);return m.length===2?m:null;};
 /* Deterministic draft from the script. No AI: it reorders and lightly rephrases what is already written. */
 function captionFromScript(it){
-  const P=it.points.map(x=>String(x||'').trim()).filter(Boolean), hook=capSentence(it.hook), cta=capSentence(it.cta);
+  const P=pointTexts(it), hook=capSentence(it.hook), cta=capSentence(it.cta);
   let h=hook;const body=[];
   const lead=(x,start,phrase)=>{const s=noEnd(x);return new RegExp('^'+start,'i').test(s)?capSentence(s):capSentence(phrase+lowerFirst(s));};
   switch(it.captionStyle){
@@ -1642,7 +1780,7 @@ function shortsFromCaption(it){
   const c=String(it.captionCTA||it.cta||'').trim();
   return line+'\n\n'+(c&&c.length<=110?capSentence(c):'Follow for more deck-building tips.');
 }
-function coverList(it){return it.sections.map((s,i)=>{const t=(it.secMeta[i]||{}).title;return nonEmpty(t)?t.trim():(nonEmpty(s)?s.trim().split('\n')[0]:'');}).filter(Boolean);}
+function coverList(it){return it.sections.map((s,i)=>{const t=(it.secMeta[i]||{}).title;return nonEmpty(t)?t.trim():secText(it,i).split('\n')[0];}).filter(Boolean);}
 function assembleYt(it){
   const L=it.ytLinks||{}, T=S.settings, links=[];
   const web=L.website||T.website, quote=L.quote||T.quoteUrl;
@@ -1676,6 +1814,16 @@ function postMissing(it){
 }
 
 /* ================= need to film ================= */
+/* Reels: every talking point sits with its own B-roll, and the B-roll can be ticked off as it is captured. */
+function fcBlocks(it,blk){
+  const rows=it.blocks.map((b,i)=>blockEmpty(b)?'':'<li class="fb"><span class="fb-n">'+(i+1)+'</span><div class="fb-m">'
+    +(nonEmpty(b.text)?'<span class="fp-v pre">'+esc(b.text.trim())+'</span>':'')
+    +(nonEmpty(b.broll)?'<label class="chk big fb-b"><input type="checkbox" data-f="blocks.'+i+'.captured" '+(b.captured?'checked':'')+'><span><span class="fp-k">B-roll</span><span class="pre">'+esc(b.broll.trim())+'</span></span></label>':'')
+    +'</div></li>').join('');
+  if(!rows)return '';
+  const prog=capText(it);
+  return blk('Talking points and B-roll <span class="count" data-tp-prog="'+it.id+'"'+(prog?'':' hidden')+'>'+prog+'</span>','<ol class="fc-blocks">'+rows+'</ol>');
+}
 function fcard(it){
   const late=it.filmDate&&it.filmDate<today(), L=it.type==='Long Form';
   const parts=guideParts(it), hook=parts.find(p=>p.hook), cta=parts.find(p=>p.cta);
@@ -1684,10 +1832,11 @@ function fcard(it){
   return '<article class="fcard card" data-item-id="'+it.id+'">'
    +'<div class="fc-h"><h3>'+esc(title(it))+'</h3><div class="fc-tags">'+typeTag(it)+(L?'':'<span class="chip sm">'+esc(it.scriptType)+'</span>')+'</div></div>'
    +(hook?blk(esc(hook.k),'<p class="fc-big">'+esc(hook.v)+'</p>','fc-hook'):'')
-   +(body.length?blk(L?'Outline':'Talking points','<ol class="fc-points">'+body.map(p=>'<li>'+(p.custom?'':'<span class="fp-k">'+esc(p.k)+'</span>')+'<span class="fp-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':'')+'</li>').join('')+'</ol>'):'')
+   +(L?'':fcBlocks(it,blk))
+   +(L&&body.length?blk('Outline','<ol class="fc-points">'+body.map(p=>'<li>'+(p.custom?'':'<span class="fp-k">'+esc(p.k)+'</span>')+(p.pts?ptsHtml(p.pts):'<span class="fp-v pre">'+esc(p.v||'')+'</span>'+(p.visual?'<span class="sg-vis">Visual: '+esc(p.visual)+'</span>':''))+'</li>').join('')+'</ol>'):'')
    +(cta?blk('CTA','<p class="fc-big">'+esc(cta.v)+'</p>','fc-cta'):'')
    +blk('Shot list','<div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'+(it.shotText?'<p class="pre">'+esc(it.shotText)+'</p>':''))
-   +(it.broll?blk('B-roll needed','<p class="pre">'+esc(it.broll)+'</p>'):'')
+   +(it.broll?blk(L?'B-roll needed':'Other B-roll','<p class="pre">'+esc(it.broll)+'</p>'):'')
    +(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')
    +(it.location?blk('Location / project','<p>'+esc(it.location)+'</p>'):'')
    +blk('Film date','<span class="due'+(late?' late':'')+'">'+(it.filmDate?esc(fmtW(it.filmDate))+(late?' (past due)':''):'Not set')+'</span>')
@@ -1776,8 +1925,8 @@ function viewTemplates(){
   const tabs=[['reel','Reel'],['long','Long-form video'],['recap','Monthly recap'],['jobsite','Jobsite checklist'],['project','Project to content']];
   let body='';
   if(tab==='reel')body='<section class="card"><div class="card-h"><h2>Reel template</h2><button class="btn primary sm" data-act="tplNew" data-kind="reel">Create Reel from template</button></div><div class="card-b"><p class="muted">Every new Reel starts with these fields, this shot list, and this production checklist.</p><div class="tpl">'
-      +tplList('Speaking guide',['Script type','Goal','Hook','Talking point 1','Talking point 2','Talking point 3','CTA','Visuals / B-roll'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div>'
-      +'<h3 class="dr-sec" style="margin-top:22px">Script types</h3><p class="muted">Pick one per Reel. The three talking-point fields relabel themselves to match. A full script is optional.</p><div class="st-grid">'+SCRIPT_TYPE_NAMES.map(n=>'<div class="st-i"><h4>'+esc(n)+'</h4><p class="flow">'+SCRIPT_TYPES[n].flow.map(esc).join(' <span>›</span> ')+'</p></div>').join('')+'</div></div></section>';
+      +tplList('Speaking guide',['Script type','Goal','Hook','Numbered talking points','Visual / B-roll for each point','CTA'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div>'
+      +'<h3 class="dr-sec" style="margin-top:22px">Script types</h3><p class="muted">Pick one per Reel. The first talking points suggest what to cover for that type. A full script is optional.</p><div class="st-grid">'+SCRIPT_TYPE_NAMES.map(n=>'<div class="st-i"><h4>'+esc(n)+'</h4><p class="flow">'+SCRIPT_TYPES[n].flow.map(esc).join(' <span>›</span> ')+'</p></div>').join('')+'</div></div></section>';
   if(tab==='long')body='<section class="card"><div class="card-h"><h2>Long-form video template</h2><button class="btn primary sm" data-act="tplNew" data-kind="long">Create long-form video</button></div><div class="card-b"><p class="muted">Long-form videos are source content. Plan the Shorts and Reels you will cut from each one, then create them with one click and keep them linked.</p><div class="tpl">'
       +tplList('Plan',['Working title','Final title','Main question','Target viewer','Audience problem','Main takeaway'])+tplList('Script',['Intro / hook','Section 1','Section 2','Section 3','Section 4','Section 5','Conclusion','CTA'])+tplList('Production',['Shot list','B-roll','Thumbnail idea','Shorts / Reels to create (hook + timestamp for each)'])+'</div></div></section>';
   if(tab==='recap')body='<section class="card"><div class="card-h"><h2>Monthly recap template</h2><button class="btn primary sm" data-act="tplNew" data-kind="recap">Create Monthly Recap</button></div><div class="card-b"><p class="muted">A recurring Reel that leans on visual storytelling and company personality more than education.</p><div class="tpl">'+tplList('Fields',RECAP_FIELDS.map(r=>r[1]))+'</div></div></section>';
@@ -1833,7 +1982,7 @@ function libItems(){
     if(f.status&&it.status!==f.status)return false;if(f.type&&it.type!==f.type)return false;if(f.platform&&!it.platforms.includes(f.platform))return false;
     if(f.pillar&&it.pillar!==f.pillar)return false;if(f.topic&&it.topic!==f.topic)return false;if(f.priority&&it.priority!==f.priority)return false;if(f.month&&monthOf(it)!==f.month)return false;
     if(f.preset==='shorts'&&!(it.type==='Long Form'&&it.status!=='Idea'&&(it.shorts.length<3||it.shorts.some(s=>!s.reelId))))return false;
-    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.scriptType,it.mainTopic,it.hook,it.script,it.talking,it.cta].concat(it.points,it.sections,it.secMeta.map(s=>s.title)).join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    if(q){const hay=[title(it),it.notes,it.topic,it.pillar,it.scriptType,it.mainTopic,it.hook,it.script,it.talking,it.cta].concat(it.blocks.map(b=>b.text+' '+b.broll),it.secMeta.map((x,i)=>secText(it,i)+' '+secVisual(it,i)),it.secMeta.map(s=>s.title)).join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   }).sort(byPub);
 }
@@ -1965,7 +2114,74 @@ function advBlock(key,label,inner){
 function scriptExtras(it){
   return advBlock('script','Full script (optional)','<div class="form-grid">'
     +F(it,'script','Full Script — Optional',{t:'textarea',rows:8,wide:true,help:'Use this when exact wording matters. Most videos only need a speaking guide.'})
-    +F(it,'talking','Custom talking points (optional)',{t:'textarea',rows:4,wide:true,help:it.type==='Reel'?'Leave blank and the speaking guide builds itself. Anything typed here replaces the three talking points on the Need to Film screen.':'Leave blank and the outline above is used on the Need to Film screen. Anything typed here replaces it.'})+'</div>');
+    +(it.type==='Reel'?'':F(it,'talking','Custom talking points (optional)',{t:'textarea',rows:4,wide:true,help:'Leave blank and the outline above is used on the Need to Film screen. Anything typed here replaces it.'}))+'</div>');
+}
+/* ---------- Numbered talking points editor ---------- */
+/* One list component for both places. key 'r' = the Reel's points, key '0','1',... = that long-form section's points. */
+const tpList=(it,key)=>key==='r'?it.blocks:((it.secMeta[+key]||{}).blocks||[]);
+const tpKeyOf=el=>{const h=el.closest('[data-tpl]');return h?h.dataset.tpl:'r';};
+const tpBox=key=>$('.drawer [data-tpl="'+key+'"]');
+function blocksInner(it,key){
+  const reel=key==='r', list=tpList(it,key), d=scriptDef(it), n=list.length, prog=reel?capText(it):'', path=(reel?'':'secMeta.'+key+'.')+'blocks.';
+  return (reel?'<div class="tp-top"><h3>Talking points</h3><span class="count" data-tp-prog="'+it.id+'"'+(prog?'':' hidden')+'>'+prog+'</span></div>':'')
+   +'<div class="tp-cols" aria-hidden="true"><span>#</span><span>Talking point</span><span>Visual / B-roll</span><span>'+(reel?'Captured':'')+'</span></div>'
+   +'<ol class="tps">'+list.map((b,i)=>{
+     const k=i+1, has=nonEmpty(b.broll), id=key+'_'+i;
+     return '<li class="tp" data-bid="'+b.id+'"><span class="tp-n" aria-hidden="true">'+k+'</span>'
+      +'<div class="tp-f"><label for="tp_t_'+id+'">Talking point '+k+'</label><textarea id="tp_t_'+id+'" data-f="'+path+i+'.text" data-tp="'+i+'" rows="2" enterkeyhint="next" placeholder="'+esc(reel?(i<3?d.labels[i]+': '+d.ph[i]:'Next point'):(i?'Next point':'First point in this section'))+'">'+esc(b.text)+'</textarea></div>'
+      +'<div class="tp-f"><label for="tp_b_'+id+'">Visual / B-roll '+k+'</label><textarea id="tp_b_'+id+'" data-f="'+path+i+'.broll" data-tpb="'+i+'" rows="2" placeholder="What is on screen (optional)">'+esc(b.broll)+'</textarea></div>'
+      +'<div class="tp-side">'+(reel?'<label class="chk tp-cap"><input type="checkbox" data-f="blocks.'+i+'.captured" '+(has&&b.captured?'checked ':'')+(has?'':'disabled ')+'aria-label="B-roll '+k+' captured"><span>Captured</span></label>':'')
+      +'<span class="tp-ctl"><button type="button" class="icon-btn sm" data-act="tpMove" data-i="'+i+'" data-d="-1" aria-label="Move point '+k+' up"'+(i?'':' disabled')+'>'+I('up')+'</button>'
+      +'<button type="button" class="icon-btn sm" data-act="tpMove" data-i="'+i+'" data-d="1" aria-label="Move point '+k+' down"'+(i<n-1?'':' disabled')+'>'+I('down')+'</button>'
+      +'<button type="button" class="icon-btn sm" data-act="tpDel" data-i="'+i+'" aria-label="Remove point '+k+'">'+I('trash')+'</button></span></div></li>';
+   }).join('')+'</ol>'
+   +'<div class="tp-foot"><button type="button" class="btn ghost sm" data-act="tpAdd">+ Add talking point</button>'+(reel?'<span class="help">'+TP_HELP+'</span>':'')+'</div>'
+   +(reel&&it.legacyPoints.length?'<div class="tp-legacy"><b>Earlier talking points</b><p class="muted sm">These were saved in the old point fields but were not part of the script, so they have been set aside here instead of being deleted.</p><ul>'+it.legacyPoints.map(x=>'<li class="pre">'+esc(x)+'</li>').join('')+'</ul>'
+     +'<div class="row-gap"><button type="button" class="btn ghost sm" data-act="tpLegacyAdd">Add as talking points</button><button type="button" class="btn ghost sm" data-act="tpLegacyDrop">Discard</button></div></div>':'');
+}
+const blocksBox=(it,key)=>'<div class="tp-box'+(key==='r'?'':' nocap')+'" data-tpl="'+key+'">'+blocksInner(it,key)+'</div>';
+function renderBlocks(it,key){
+  const box=tpBox(key);if(!box){renderEditor();return;}
+  box.innerHTML=blocksInner(it,key);autoSizeAll(box);liveScript(it);
+}
+function tpFocus(key,i,broll){
+  const box=tpBox(key), el=box&&$('[data-'+(broll?'tpb':'tp')+'="'+i+'"]',box);if(!el)return;
+  el.focus();el.setSelectionRange(el.value.length,el.value.length);
+  if(el.scrollIntoView)el.scrollIntoView({block:'nearest'});
+}
+const blockEmpty=b=>!nonEmpty(b.text)&&!nonEmpty(b.broll);
+/* Adds the next point after index i in the same list, or lands on the one already waiting there if it is still blank. */
+function tpInsertAfter(it,key,i){
+  const list=tpList(it,key), nx=list[i+1];
+  if(!(nx&&blockEmpty(nx))){list.splice(i+1,0,blankBlock());save();renderBlocks(it,key);}
+  tpFocus(key,i+1);
+}
+function tpRemove(it,key,i,focusPrev){
+  const list=tpList(it,key);
+  list.splice(i,1);if(!list.length)list.push(blankBlock());
+  save();renderBlocks(it,key);
+  if(focusPrev)tpFocus(key,Math.max(0,i-1));
+}
+/* Keyboard flow for the numbered points. Only talking point and B-roll boxes reach this. */
+function tpKey(e,el){
+  const it=getItem(ui.edit.id);if(!it||e.isComposing||e.keyCode===229)return;
+  const key=tpKeyOf(el), list=tpList(it,key), isPt=el.dataset.tp!=null, i=+(isPt?el.dataset.tp:el.dataset.tpb), b=list[i];if(!b)return;
+  if(e.key==='Enter'){
+    if(e.metaKey||e.ctrlKey){e.preventDefault();if(isPt)tpFocus(key,i,true);else tpInsertAfter(it,key,i);return;}
+    if(!isPt||e.shiftKey||e.altKey)return;
+    e.preventDefault();tpInsertAfter(it,key,i);return;
+  }
+  if(e.key==='Backspace'&&isPt&&!e.shiftKey&&!e.altKey&&!e.metaKey&&!e.ctrlKey&&el.value===''&&list.length>1){
+    e.preventDefault();
+    if(blockEmpty(b))tpRemove(it,key,i,true);
+    else toast('Point '+(i+1)+' still has B-roll. Use the remove button to delete it.');
+  }
+}
+function liveBlocks(it,el){
+  const t=capText(it);
+  $$('[data-tp-prog="'+it.id+'"]').forEach(x=>{x.textContent=t;x.hidden=!t;});
+  const row=el.closest('.tp'), i=+el.dataset.tpb, b=it.blocks[i];
+  if(row&&b){const c=$('.tp-cap input',row), has=nonEmpty(b.broll);c.disabled=!has;c.checked=has&&b.captured;}
 }
 function tabScript(it){
   let h='';
@@ -1974,10 +2190,10 @@ function tabScript(it){
     h+='<section class="sg-card"><div class="form-grid">'+F(it,'scriptType','Script type',{t:'select',opts:SCRIPT_TYPE_NAMES})+F(it,'goal','Goal',{ph:'What should this video do?'})+'</div>'
       +'<p class="flow">'+d.flow.map(esc).join(' <span>›</span> ')+'</p>'
       +'<div class="form-grid">'+F(it,'hook',it.scriptType==='FAQ'?'Hook (the question)':'Hook',{t:'textarea',rows:2,wide:true,lib:'hook',ph:d.hookPh})
-      +[0,1,2].map(i=>F(it,'points.'+i,d.labels[i],{t:'textarea',rows:2,wide:true,ph:d.ph[i]})).join('')
+      +'</div>'+blocksBox(it,'r')+'<div class="form-grid">'
       +F(it,'cta','CTA',{t:'textarea',rows:2,wide:true,lib:'cta',ph:'What should the viewer do next?'})+'</div>'
-      +'<div class="fld"><label>Visuals / B-roll</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>'
-      +F(it,'broll','B-roll notes',{t:'textarea',rows:2,ph:'Specific shots you need, one per line'})
+      +'<div class="fld"><label>Shot types</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>'
+      +F(it,'broll','Other B-roll notes',{t:'textarea',rows:2,ph:'General shots that do not belong to one talking point'})
       +'<div id="sr-box" class="sr-box">'+readyInner(it)+'</div></section>'
       +'<section class="sg-prev"><div class="sg-prev-h"><h3>Speaking guide preview</h3><button class="btn ghost sm" data-act="copyAI">Copy AI script prompt</button></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'+speakerSection(it);
     if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+RECAP_FIELDS.map(r=>F(it,'recap.'+r[0],r[1],{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
@@ -1986,11 +2202,11 @@ function tabScript(it){
   }
   h+='<div class="form-grid">'+F(it,'finalTitle','Final title',{wide:true})+F(it,'mainQuestion','Main question',{wide:true})+F(it,'targetViewer','Target viewer')+F(it,'takeaway','Main takeaway / promise',{t:'textarea',rows:2})+'</div>'
     +'<div class="form-grid">'+F(it,'hook','Intro / hook',{t:'textarea',rows:2,wide:true,lib:'hook'})+'</div>'
-    +'<h3 class="dr-sec">Outline</h3><p class="muted sm">A few words per point is plenty. You are building a guide to talk from, not a script to read.</p>'
+    +'<h3 class="dr-sec">Outline</h3><p class="muted sm">A few words per point is plenty. You are building a guide to talk from, not a script to read. '+TP_HELP+'</p>'
     +'<div class="secs">'+it.sections.map((s,i)=>{
       const m=it.secMeta[i]||blankSec(), k=it.shorts.findIndex(x=>x.sectionIdx===i), sh=k>=0?it.shorts[k]:null, linked=sh&&sh.reelId&&getItem(sh.reelId);
       return '<div class="sec"><div class="sec-h"><span class="sec-n">'+(i+1)+'</span><input data-f="secMeta.'+i+'.title" value="'+esc(m.title)+'" placeholder="Section title, e.g. Posts" aria-label="Section '+(i+1)+' title"></div>'
-        +'<div class="form-grid">'+F(it,'sections.'+i,'Talking points',{t:'textarea',rows:3,ph:'One point per line'})+F(it,'secMeta.'+i+'.visual','Visual / B-roll',{t:'textarea',rows:3,ph:'What should be on screen'})+'</div>'
+        +blocksBox(it,String(i))
         +'<label class="chk"><input type="checkbox" data-act="secReel" data-i="'+i+'" '+(sh?'checked':'')+'><span>Potential Reel</span></label>'
         +(sh?'<div class="sec-reel"><div class="form-grid">'+F(it,'shorts.'+k+'.hook','Reel / Short hook')+F(it,'shorts.'+k+'.angle','Short idea / angle')+'</div>'
           +(linked?'<p class="sm">'+pill(linked.status)+' <button class="link-b" data-act="edit" data-id="'+linked.id+'">Open linked Reel</button></p>':'<button class="btn ghost sm" data-act="createShort" data-i="'+k+'">Create Reel</button>')+'</div>':'')
@@ -2015,6 +2231,8 @@ function shortsBlock(it){
       +F(it,'shorts.'+i+'.section','Timestamp / notes')+'</div></div>';
    }).join('')+'</div><div class="row-gap"><button class="btn ghost sm" data-act="addShort">Add another Short</button></div></section>';
 }
+const MODK=/Mac|iPhone|iPad/.test(navigator.platform||'')?'⌘':'Ctrl';
+const TP_HELP='Enter adds the next point. Shift + Enter makes a new line. '+MODK+' + Enter jumps to B-roll.';
 const LIBS={hook:{data:HOOK_LIBRARY,btn:'Browse hooks',title:'Hook ideas',noun:'hook',blanks:true},cta:{data:CTA_LIBRARY,btn:'Browse CTAs',title:'CTA ideas',noun:'CTA'},
   caption:{data:CAPTION_OPENINGS,btn:'Caption ideas',title:'Caption openings',noun:'opening',blanks:true}};
 function libHtml(){
@@ -2053,9 +2271,9 @@ function aiPrompt(it){
   const extra=[['Audience problem',it.audienceProblem],['Main message',it.mainMessage],['Desired takeaway',it.takeaway],['Offer',it.offer],['Notes',it.notes],['Full script draft',it.script]].filter(x=>nonEmpty(x[1]));
   return ['You are helping write a short-form video (Reel) speaking guide for '+co+', a deck-building company that builds custom decks and outdoor structures for homeowners in Northern Texas and Southern Oklahoma.','',
     'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType+' ('+d.flow.join(' > ')+')','Content pillar: '+it.pillar,'Platforms: '+platText(it),'',
-    'WHAT WE HAVE SO FAR',line('Hook',it.hook)].concat(d.labels.map((l,i)=>line(l,it.points[i])),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', '),it.broll].filter(nonEmpty).join('; '))],
+    'WHAT WE HAVE SO FAR',line('Hook',it.hook)].concat(ptLines(it),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', ')].concat(it.blocks.filter(b=>nonEmpty(b.broll)).map(b=>'Point '+(it.blocks.indexOf(b)+1)+': '+b.broll.trim()),[it.broll]).filter(nonEmpty).join('; '))],
     extra.length?['','FACTS AND CONTEXT FROM '+co.toUpperCase()].concat(extra.map(x=>x[0]+': '+String(x[1]).trim())):[],
-    ['','PLEASE WRITE','1. 5 alternative hooks, one sentence each','2. 3 concise talking points that follow the '+it.scriptType+' structure, labeled: '+d.labels.join(', '),'3. 2 CTA options','4. Suggested B-roll shots','',
+    ['','PLEASE WRITE','1. 5 alternative hooks, one sentence each','2. Concise numbered talking points that follow the '+it.scriptType+' structure ('+d.labels.join(', ')+')','3. 2 CTA options','4. One suggested B-roll shot for each talking point','',
     'RULES','- Do not invent construction facts, materials, measurements, or building methods.','- Do not invent financing terms, prices, rates, or approval details.','- Do not invent warranties or guarantees.',
     '- Preserve every factual detail supplied above exactly as given. If something is missing, say what to confirm with '+co+' instead of guessing.',
     '- Write for homeowners, in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
@@ -2152,10 +2370,10 @@ function confirmReplace(msg,cb){
   showModal('<div class="modal-h"><h3>Replace what you have?</h3></div><div class="modal-b"><p>'+msg+'</p><div class="row-gap"><button class="btn primary" data-act="confirmYes">Replace</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
 }
 function aiCaptionPrompt(it){
-  const co=S.settings.company||'Benchmark Decks', d=scriptDef(it), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
+  const co=S.settings.company||'Benchmark Decks', line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
   return ['You are helping write social captions for a '+co+' video. '+co+' builds custom decks and outdoor structures for homeowners in North Texas and Southern Oklahoma.','',
    'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType,'Caption style: '+it.captionStyle+' ('+(CAPTION_STYLES[it.captionStyle]||{flow:[]}).flow.join(' > ')+')','Platforms: '+platText(it),'',
-   'WHAT THE VIDEO SAYS',line('Hook',it.hook)].concat(d.labels.map((l,i)=>line(l,it.points[i])),[line('CTA',it.cta)],
+   'WHAT THE VIDEO SAYS',line('Hook',it.hook)].concat(ptLines(it),[line('CTA',it.cta)],
    nonEmpty(socialText(it))?['','CURRENT CAPTION DRAFT',socialText(it)]:[],
    ['','PLEASE WRITE','1. An Instagram / Facebook caption','2. A YouTube Shorts description (shorter, topic-focused, searchable first line)','3. 3 to 5 relevant hashtags','4. One shorter alternate caption','',
    'RULES','- Do not invent construction facts.','- Do not invent financing terms.','- Do not invent warranty details.','- Do not invent prices.',
@@ -2267,7 +2485,7 @@ function go(v){ui.view=v;window.scrollTo(0,0);render();}
 function closeMenu(){$('#addmenu').classList.remove('open');$('#addbtn').setAttribute('aria-expanded','false');}
 function ensureType(it){
   if(it.type==='Long Form'){it.reelKind='';if(!it.shorts.length)for(let i=0;i<3;i++)it.shorts.push({hook:'',section:'',reelId:''});}
-  else{if(!it.reelKind)it.reelKind='Standalone';if(!SCRIPT_TYPES[it.scriptType])it.scriptType=inferScriptType(it);}
+  else{if(!it.reelKind)it.reelKind='Standalone';if(!SCRIPT_TYPES[it.scriptType])it.scriptType=inferScriptType(it);absorbTalking(it);}
 }
 function refreshPerf(){const c=$('#perf-charts');if(c)c.innerHTML=perfCharts(perfItems());}
 
@@ -2322,10 +2540,10 @@ const ACTS={
     if(dup){s.reelId=dup.id;save();renderEditor();toast('Linked to the existing Reel with this hook');return;}
     const si=s.sectionIdx, m=si>=0?(L.secMeta[si]||blankSec()):blankSec(), secName=si>=0?(nonEmpty(m.title)?m.title:'Section '+(si+1)):'';
     const ctx=['Pulled from the long-form video "'+title(L)+'"'+(secName?', section: '+secName:'')+'.'];
-    if(si>=0&&nonEmpty(L.sections[si]))ctx.push('Section talking points:\n'+L.sections[si].trim());
+    if(si>=0&&nonEmpty(secText(L,si)))ctx.push('Section talking points:\n'+secText(L,si));
     if(nonEmpty(s.angle))ctx.push('Angle: '+s.angle.trim());
     const r=newItem('Reel',{title:s.hook.trim(),hook:s.hook.trim(),reelKind:'Repurposed',parentId:L.id,repurposedFrom:[secName,s.section].filter(nonEmpty).join(' · '),
-      mainTopic:secName,goal:s.angle||'',broll:m.visual||'',notes:ctx.join('\n\n'),pillar:L.pillar,topic:L.topic,group:L.group,status:'Scripting',plannedMonth:L.plannedMonth});
+      mainTopic:secName,goal:s.angle||'',broll:si>=0?secVisual(L,si):'',notes:ctx.join('\n\n'),pillar:L.pillar,topic:L.topic,group:L.group,status:'Scripting',plannedMonth:L.plannedMonth});
     S.items.push(r);s.reelId=r.id;save();renderEditor();toast('Reel created and linked');
   },
   addShort:()=>{const L=getItem(ui.edit.id);L.shorts.push(blankShort());save();renderEditor();},
@@ -2397,6 +2615,21 @@ const ACTS={
   capComplete:()=>{const it=getItem(ui.edit.id);if(!captionReady(it)){toast('Still needed: '+captionMissing(it).join(', '));return;}it.captionStatus='Done';it.prod.caption=true;save();renderEditor();toast('Caption marked complete');},
   toReadyToPost:()=>{const it=getItem(ui.edit.id);if(!it||postMissing(it).length)return;if(stIdx(it.status)>=5){toast('Already at '+it.status);return;}setStatus(it,'Ready to Post');save();render();renderEditor();toast('Moved to Ready to Post');},
   resetTags:()=>{S.settings.hashtags=Object.assign({},HASHTAG_GROUPS);save();render();toast('Hashtag groups reset');},
+  tpAdd:a=>{const it=getItem(ui.edit.id);if(!it)return;const key=tpKeyOf(a),list=tpList(it,key),last=list.length-1;if(blockEmpty(list[last]))tpFocus(key,last);else tpInsertAfter(it,key,last);},
+  tpMove:a=>{
+    const it=getItem(ui.edit.id);if(!it)return;
+    const key=tpKeyOf(a),list=tpList(it,key),i=+a.dataset.i,d=+a.dataset.d,j=i+d;if(j<0||j>=list.length)return;
+    const b=list[i];list[i]=list[j];list[j]=b;save();renderBlocks(it,key);
+    const box=tpBox(key),q=x=>box&&$('[data-act="tpMove"][data-i="'+j+'"][data-d="'+x+'"]:not([disabled])',box),f=q(d)||q(-d);f&&f.focus();
+  },
+  tpDel:a=>{
+    const it=getItem(ui.edit.id);if(!it)return;
+    const key=tpKeyOf(a),list=tpList(it,key),i=+a.dataset.i,b=list[i];if(!b)return;
+    if(blockEmpty(b))tpRemove(it,key,i);
+    else askConfirm('Remove point '+(i+1)+(nonEmpty(b.broll)?' and its B-roll':'')+'? The points after it will be renumbered.','Remove point',()=>{const k=tpList(it,key).indexOf(b);if(k>=0)tpRemove(it,key,k);});
+  },
+  tpLegacyAdd:()=>{const it=getItem(ui.edit.id);if(!it)return;it.blocks=it.blocks.filter(b=>!blockEmpty(b)).concat(mkBlocks(it.legacyPoints));it.legacyPoints=[];save();renderBlocks(it,'r');toast('Added as talking points');},
+  tpLegacyDrop:()=>{const it=getItem(ui.edit.id);if(!it)return;askConfirm('Discard these earlier talking points? This cannot be undone.','Discard',()=>{it.legacyPoints=[];save();renderBlocks(it,'r');});},
   rmShort:a=>{const L=getItem(ui.edit.id);L.shorts.splice(+a.dataset.i,1);save();renderEditor();},
   planStep:a=>{const k=ui.planMonth;S.plan[k]=S.plan[k]||{};S.plan[k][+a.dataset.i]=a.checked;save();render();},
   slotAssign:a=>{
@@ -2492,6 +2725,7 @@ document.addEventListener('input',e=>{
     sp(it,path,v);
     if(path==='scriptType'){if(!it.captionStyle||it.captionStyle===CAPTION_FROM_SCRIPT[old])it.captionStyle=CAPTION_FROM_SCRIPT[v]||'Educational';save();renderEditor();return;}
     syncDerived(it,path);
+    if(/^blocks\.\d+\.(broll|captured)$/.test(path))liveBlocks(it,el);
     if(path==='script'&&$('.spk .seg')===null&&nonEmpty(v)&&$('#spk-prev')){save();const sc=$('.dr-b').scrollTop;renderEditor();const ta=$('.drawer [data-f="script"]');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}$('.dr-b').scrollTop=sc;return;}
     if(['captionStyle','hashtagGroup','includeHashtags','captionNeeded','ytCover','captionStatus'].includes(path)){if(path==='captionStatus')it.prod.caption=v==='Done';save();renderEditor();return;}
     if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
@@ -2521,6 +2755,8 @@ document.addEventListener('submit',e=>{
   save();ui.focus='#qa-title';render();toast('Idea added');
 });
 document.addEventListener('keydown',e=>{
+  const kt=e.target;
+  if(kt&&kt.dataset&&(kt.dataset.tp!=null||kt.dataset.tpb!=null)&&(e.key==='Enter'||e.key==='Backspace')){tpKey(e,kt);return;}
   if(e.key==='Escape'){
     if($('#modal-wrap .modal'))closeModal();
     else if($('#addmenu').classList.contains('open'))closeMenu();
