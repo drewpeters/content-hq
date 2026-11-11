@@ -952,6 +952,29 @@ button.shot-src{text-decoration:underline;text-underline-offset:2px}
   *{transition:none!important;animation:none!important}
 }
 
+/* monthly carryover */
+.cbadge{display:inline-block;font-size:11px;font-weight:600;line-height:1.5;padding:0 7px;border-radius:999px;border:1px dashed var(--line2);color:var(--ink2);background:var(--surface2);white-space:nowrap;letter-spacing:.2px;vertical-align:middle}
+.cbadge.warn{border:1px solid var(--attention-color);color:var(--attention-color);background:var(--surface);cursor:pointer}
+button.cbadge.warn:hover{background:var(--attention-soft)}
+.card.carry{border-left:3px solid var(--amber)}
+.clist{list-style:none;margin:0;padding:0}
+.crow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:10px 16px 10px 14px;border-bottom:1px solid var(--line);box-shadow:inset 3px 0 0 var(--c)}
+.clist .crow:last-child{border-bottom:0}
+.crow-t{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+.crow-t b{font-weight:600}
+.crow-t span{font-size:12.5px;color:var(--ink3)}
+.crow-t:hover b{text-decoration:underline;text-underline-offset:2px}
+.crow-act{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}
+.modal .clist,.card-b .clist{border:1px solid var(--line);border-radius:var(--r1);margin-top:10px}
+.cbulk{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mp-c{font-size:12px;color:var(--ink3);margin-top:2px}
+.chist{display:flex;flex-direction:column;gap:2px;padding:10px 12px;margin-bottom:14px;border:1px solid var(--line);border-radius:var(--r1);background:var(--surface2);font-size:13.5px}
+.carry-hint{margin:0 0 18px}
+.dr-b .hint{margin:0 0 14px}
+.pg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pg{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r1);background:var(--surface2)}
+.pg span{font-size:13px;color:var(--ink2)}.pg em{font-style:normal;font-weight:600;font-size:13.5px}
+@media (max-width:700px){.pg-row{grid-template-columns:1fr}.crow-act{width:100%}}
 </style>
 </head>
 <body>
@@ -1227,6 +1250,7 @@ const pd=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);
 const today=()=>ds(new Date());
 const addDays=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d);};
 const mk=s=>s?String(s).slice(0,7):'';
+const isMonthKey=v=>/^\d{4}-\d{2}$/.test(v||'');
 const addMonths=(k,n)=>{const a=k.split('-').map(Number);return ds(new Date(a[0],a[1]-1+n,1)).slice(0,7);};
 const monthName=k=>MONTHS[+k.slice(5,7)-1];
 const monthLabel=k=>k?monthName(k)+' '+k.slice(0,4):'';
@@ -1273,6 +1297,7 @@ function newItem(type,o){
     shots:{},prod:{},
     shorts:type==='Long Form'?[blankShort(),blankShort(),blankShort()]:[],
     parentId:'',repurposedFrom:'',relatedId:'',
+    originalPlannedMonth:'',carryHistory:[],backlogFrom:'',archived:false,archivedAt:'',
     publishedLink:'',publishedDate:'',
     perf:{views:'',likes:'',comments:'',shares:'',saves:'',watchHours:'',avgDuration:'',leads:'',learnings:''},
     winning:false,winWhy:'',winReuse:'',
@@ -1315,6 +1340,12 @@ function normalize(it){
   if(it.captionStyle==null||!CAPTION_STYLES[m.captionStyle])m.captionStyle=m.type==='Reel'?captionStyleFor(m):'';
   if(!HASHTAG_GROUP_NAMES.includes(m.hashtagGroup))m.hashtagGroup='General Deck';
   if(!Array.isArray(m.platforms))m.platforms=defaultPlatforms(m.type);
+  // Monthly carryover: older items start with no history, no parked stage and not archived
+  const isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
+  m.originalPlannedMonth=isMonthKey(it.originalPlannedMonth)?it.originalPlannedMonth:'';
+  m.carryHistory=(Array.isArray(it.carryHistory)?it.carryHistory:[]).filter(isObj).map(h=>({from:isMonthKey(h.from)?h.from:'',to:isMonthKey(h.to)?h.to:'',at:String(h.at||''),kind:h.kind==='backlog'?'backlog':'move',dates:isObj(h.dates)?h.dates:{}}));
+  m.backlogFrom=STATUSES.includes(it.backlogFrom)&&it.backlogFrom!=='Idea'?it.backlogFrom:'';
+  m.archived=!!it.archived;m.archivedAt=String(it.archivedAt||'');
   return m;
 }
 function autoDates(it,st,min){
@@ -1522,12 +1553,65 @@ function save(now){
 }
 const getItem=id=>S.items.find(i=>i.id===id);
 const monthOf=it=>it.plannedMonth||mk(it.publishDate)||'';
-const itemsIn=k=>S.items.filter(i=>monthOf(i)===k);
+const itemsIn=k=>S.items.filter(i=>!i.archived&&monthOf(i)===k);
 const byPub=(a,b)=>(a.publishDate||'9999').localeCompare(b.publishDate||'9999')||(a.created-b.created);
 const title=it=>it.title||it.workingTitle||(it.type==='Long Form'?'Untitled long-form video':'Untitled Reel');
 const platText=it=>(it.platforms||[]).map(p=>PLAT_SHORT[p]).join(' / ')||'No platform';
 const pill=st=>'<span class="pill st'+stIdx(st)+'">'+esc(st)+'</span>';
 const typeTag=it=>'<span class="tag '+(it.type==='Long Form'?'long':'reel')+'">'+(it.type==='Long Form'?'Long Form':'Reel')+'</span>';
+
+/* ================= monthly carryover =================
+   A video planned for an earlier month that is not posted (and not archived) waits in Carryover until it is moved,
+   rescheduled, parked in the Idea Bank or archived. Nothing changes on its own when the month turns over.
+   Carryover only ever touches the planned month and dates. Script, shots, captions and results are never reset. */
+const curMonth=()=>mk(today());
+const DATE_DONE={planDate:1,scriptDate:2,filmDate:4,editDate:5,publishDate:7}; // a date stops mattering once the pipeline is past it
+const DATE_FIELDS=Object.keys(DATE_DONE);
+// Ideas are not active work yet: one left in a month that has passed simply goes back to the Idea Bank (see viewIdeas)
+const isCarry=i=>{const m=monthOf(i);return !i.archived&&i.status!=='Posted'&&i.status!=='Idea'&&!!m&&m<curMonth();};
+const inIdeaBank=i=>!i.archived&&i.status==='Idea'&&(!i.roadmap||!monthOf(i)||monthOf(i)<curMonth());
+const carryList=()=>S.items.filter(isCarry).sort((a,b)=>monthOf(a).localeCompare(monthOf(b))||byPub(a,b));
+const wasCarried=i=>!!i.originalPlannedMonth&&monthOf(i)>i.originalPlannedMonth;
+const missedPub=i=>!i.archived&&i.status!=='Posted'&&!!i.publishDate&&i.publishDate<today();
+const carryMonthName=k=>k.slice(0,4)===curMonth().slice(0,4)?monthName(k):monthLabel(k);
+const carryBadge=i=>wasCarried(i)?'<span class="cbadge" title="Originally planned for '+esc(monthLabel(i.originalPlannedMonth))+'">Carryover</span>':'';
+function snapDates(it){const o={};DATE_FIELDS.forEach(f=>{if(it[f])o[f]=it[f];});return o;}
+function logCarry(it,from,to,kind,dates){
+  if(!it.originalPlannedMonth&&from)it.originalPlannedMonth=from;
+  it.carryHistory.push({from:from||'',to:to||'',at:today(),kind:kind||'move',dates:dates||{}});
+}
+// Any other place the planned month moves forward out of a month that has already passed counts as a carryover too
+function noteMonthChange(it,from){
+  const to=monthOf(it);if(!isMonthKey(to)||to<'2000')return; // ignore half-typed dates
+  if(to&&!from&&!it.archived&&(it.carryHistory[it.carryHistory.length-1]||{}).kind==='backlog')logCarry(it,'',to,'move');
+  else if(from&&to&&from<to&&from<curMonth()&&it.status!=='Posted'&&it.status!=='Idea'&&!it.archived)logCarry(it,from,to,'move');
+}
+// Past dates for steps that are not done yet would only keep producing overdue tasks, so they are cleared (and kept in the history entry)
+function clearStale(it){const t=today(),x=stIdx(it.status);DATE_FIELDS.forEach(f=>{if(it[f]&&it[f]<t&&x<DATE_DONE[f])it[f]='';});}
+// Fill only blank dates from the publish date, and only for steps that are still ahead
+function fillBlankDates(it){
+  const was=snapDates(it),x=stIdx(it.status);autoDates(it,S.settings);
+  DATE_FIELDS.forEach(f=>{if(was[f])it[f]=was[f];else if(x>=DATE_DONE[f])it[f]='';});
+}
+function carryMove(it,key){
+  const from=monthOf(it),before=snapDates(it);
+  clearStale(it);it.plannedMonth=key;
+  if(from&&from<key)logCarry(it,from,key,'move',before);
+}
+function carryBacklog(it){
+  const from=monthOf(it),before=snapDates(it);
+  if(from)logCarry(it,from,'','backlog',before);
+  if(it.status!=='Idea'){it.backlogFrom=it.status;it.status='Idea';}
+  it.plannedMonth='';DATE_FIELDS.forEach(f=>{it[f]='';});
+}
+// Taking a parked video out of the Idea Bank puts it back at the stage it was parked at
+function unpark(it){const s=it.backlogFrom;it.backlogFrom='';return s&&STATUSES.includes(s)?s:'Scripting';}
+function carryPath(it){
+  if(!it.originalPlannedMonth)return [];
+  const out=[it.originalPlannedMonth];
+  it.carryHistory.forEach(h=>{const k=h.kind==='backlog'?'backlog':h.to;if(k&&out[out.length-1]!==k)out.push(k);});
+  return out.map(k=>k==='backlog'?'Idea Bank':monthLabel(k));
+}
 
 /* ================= ui state ================= */
 function blankProj(){return {name:'',city:'',deckType:'',materials:'',features:'',challenges:'',goal:''};}
@@ -1536,7 +1620,7 @@ const ui={
   ideaTopic:'All',ideaRoadmap:false,lib:{},perf:{type:'',platform:'',pillar:'',month:''},perfTab:'overview',
   tplTab:'reel',pub:{type:'',pillar:'',platform:''},projDraft:blankProj(),projResults:false,
   planFilm:{a:'',b:''},edit:{id:null,tab:'overview'},newId:null,focus:null,confirmCb:null,advOpen:{},libCtx:null,capTab:'social',shotFilter:'all',filmFilter:'all',
-  panelFocus:false,attnAll:false,taskHint:null,taskEdit:null,tqCat:'general',perfOpen:'',snapCtx:null
+  panelFocus:false,attnAll:false,carrySel:{},carryOpen:false,carryTarget:'',taskHint:null,taskEdit:null,tqCat:'general',perfOpen:'',snapCtx:null
 };
 function focusMonthDefault(){
   const cur=mk(today());
@@ -1547,8 +1631,8 @@ function focusMonthDefault(){
 /* ================= shared view bits ================= */
 const NAV=[['dashboard','Dashboard','home'],['calendar','Content Calendar','calendar'],['pipeline','Production Pipeline','columns'],['ideas','Idea Bank','bulb'],['month','This Month','list'],['film','Need to Film','camera'],['published','Published Content','check'],['performance','Performance','chart'],['templates','Templates','layout'],['settings','Settings','sliders']];
 function navHtml(){
-  const t=today(), late=allTasks().filter(x=>!x.done&&x.date<=t).length;
-  const badge={dashboard:late,ideas:S.items.filter(i=>i.status==='Idea'&&!i.roadmap).length,film:S.items.filter(i=>i.status==='Ready to Film').length};
+  const t=today(), late=allTasks().filter(x=>!x.done&&x.date<=t&&!(x.src==='gen'&&isCarry(x.it))).length+carryList().length;
+  const badge={dashboard:late,ideas:S.items.filter(inIdeaBank).length,film:S.items.filter(i=>!i.archived&&i.status==='Ready to Film').length};
   return NAV.map(n=>'<button class="nav-i '+(ui.view===n[0]?'on':'')+'" data-act="nav" data-view="'+n[0]+'">'+I(n[2])+'<span>'+n[1]+'</span>'+(badge[n[0]]?'<em>'+badge[n[0]]+'</em>':'')+'</button>').join('')
    +'<div class="nav-sep"></div><button class="nav-i '+(ui.view==='library'?'on':'')+'" data-act="nav" data-view="library">'+I('database')+'<span>All content</span></button>';
 }
@@ -1588,6 +1672,7 @@ const genKey=(id,type,date)=>'g|'+id+'|'+type+'|'+date;
 function genTasks(){
   const out=[];
   S.items.forEach(it=>{
+    if(it.archived)return;
     const x=stIdx(it.status);
     GEN_ORDER.forEach(type=>{
       const g=GEN[type], date=it[g.field];if(!date)return;
@@ -1621,18 +1706,21 @@ function taskBuckets(){
   const byRank=(a,b)=>(a.done-b.done)||(taskRank(a)-taskRank(b))||a.title.localeCompare(b.title);
   return {
     today:all.filter(x=>x.date===t).sort(byRank),
-    late:all.filter(x=>x.date<t&&!x.done).sort((a,b)=>a.date.localeCompare(b.date)||byRank(a,b)),
+    late:all.filter(x=>x.date<t&&!x.done&&!(x.src==='gen'&&isCarry(x.it))).sort((a,b)=>a.date.localeCompare(b.date)||byRank(a,b)),
     soon:all.filter(x=>x.date>t&&x.date<=end&&!x.done).sort((a,b)=>a.date.localeCompare(b.date)||byRank(a,b))
   };
 }
 function taskRow(x,mode){
   const t=today(), late=mode==='late'?dayDiff(x.date,t):0;
-  const when=mode==='late'?'<span class="task-late">'+I('clock','xs')+' '+(late===1?'1 day overdue':late+' days overdue')+' · was due '+esc(fmtW(x.date))+'</span>':'';
+  // A publish date that has gone by without posting needs a new date, so it reads as a missed date with the reschedule flow
+  const missed=mode==='late'&&x.src==='gen'&&x.type==='pub';
+  if(missed)x=Object.assign({},x,{title:'Missed publish date — '+title(x.it),label:'Needs reschedule'});
+  const when=mode==='late'?'<span class="task-late">'+I('clock','xs')+' '+(missed?(late===1?'1 day ago':late+' days ago')+' · was set for ':(late===1?'1 day overdue':late+' days overdue')+' · was due ')+esc(fmtW(x.date))+'</span>':'';
   return '<li class="task k-'+x.kind+(x.done?' done':'')+'">'
    +'<label class="chk tchk"><input type="checkbox" data-act="taskToggle" data-key="'+esc(x.key)+'"'+(x.done?' checked':'')+(x.auto?' disabled title="Already done in the pipeline"':'')+' aria-label="Done: '+esc(x.title)+'"><span></span></label>'
    +'<button class="task-main" data-act="taskOpen" data-key="'+esc(x.key)+'"><span class="task-top"><span class="kbadge">'+I(x.icon)+esc(x.label)+'</span>'+when+'</span>'
    +'<b class="task-t">'+esc(x.title)+'</b>'+(x.sub?'<span class="task-s">'+esc(x.sub)+'</span>':'')+'</button>'
-   +(mode==='late'?'<span class="task-act"><button class="btn ghost sm" data-act="taskToday" data-key="'+esc(x.key)+'">Move to today</button><button class="btn ghost sm" data-act="taskResched" data-key="'+esc(x.key)+'">Reschedule</button></span>':'')
+   +(mode==='late'?'<span class="task-act"><button class="btn ghost sm" data-act="taskToday" data-key="'+esc(x.key)+'">Move to today</button>'+(missed?'<button class="btn ghost sm" data-act="carryResched" data-id="'+x.it.id+'">Reschedule</button>':'<button class="btn ghost sm" data-act="taskResched" data-key="'+esc(x.key)+'">Reschedule</button>')+'</span>':'')
    +'</li>';
 }
 function hintHtml(){
@@ -1648,9 +1736,10 @@ function quickAdd(){
 }
 function monthGoal(key){
   const its=itemsIn(key), T=S.settings;
-  const part=(list,target)=>({posted:list.filter(i=>i.status==='Posted').length,planned:list.filter(i=>i.status!=='Posted').length,target:target});
+  // Each video counts once, in the month it is planned for now. carry = how many of those were moved in from an earlier month.
+  const part=(list,target)=>({posted:list.filter(i=>i.status==='Posted').length,planned:list.filter(i=>i.status!=='Posted').length,carry:list.filter(wasCarried).length,target:target});
   const reels=part(its.filter(i=>i.type!=='Long Form'),T.reelTarget), longs=part(its.filter(i=>i.type==='Long Form'),T.longTarget);
-  return {reels:reels,longs:longs,total:{posted:reels.posted+longs.posted,planned:reels.planned+longs.planned,target:T.reelTarget+T.longTarget}};
+  return {reels:reels,longs:longs,total:{posted:reels.posted+longs.posted,planned:reels.planned+longs.planned,carry:reels.carry+longs.carry,target:T.reelTarget+T.longTarget}};
 }
 function goalBar(label,k,g,segs){
   const tg=Math.max(1,g.target), pc=n=>Math.min(100,n/tg*100);
@@ -1658,7 +1747,8 @@ function goalBar(label,k,g,segs){
   const bars=(segs||[[g.posted,'on '+(k?'k-'+k:'')]]).map(s=>seg(s[0],s[1])).join('')+seg(g.planned,'pl');
   return '<div class="mp'+(k?' k-'+k:'')+'"><div class="mp-top"><span class="mp-l">'+label+'</span><span class="mp-n"><b>'+g.posted+'</b> / '+g.target+'</span></div>'
    +'<div class="mp-bar" role="img" aria-label="'+g.posted+' of '+g.target+' published'+(g.planned?', '+g.planned+' more planned':'')+'">'+bars+'</div>'
-   +'<div class="mp-s">published'+(g.planned?' · '+g.planned+' more planned this month':'')+(g.posted>=g.target&&g.target?' · goal met ✓':'')+'</div></div>';
+   +'<div class="mp-s">published'+(g.planned?' · '+g.planned+' more planned this month':'')+(g.posted>=g.target&&g.target?' · goal met ✓':'')+'</div>'
+   +(g.carry?'<div class="mp-c">'+(g.posted+g.planned)+' / '+g.target+' planned · '+(g.posted+g.planned-g.carry)+' new · '+g.carry+' carryover</div>':'')+'</div>';
 }
 /* Chart 1: how much went out each month, Reels vs long form */
 function chartPublished(){
@@ -1693,6 +1783,59 @@ function insights(){
   if(!out.length)return '';
   return '<div class="ins">'+out.map(x=>'<div>'+(x[3]?'<button class="link-b" data-act="edit" data-id="'+x[3]+'" data-tab="publish">':'')+'<span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b><small>'+esc(x[2])+'</small>'+(x[3]?'</button>':'')+'</div>').join('')+'</div>';
 }
+/* ---------- carryover card + review ---------- */
+function carryInfo(it){
+  const p=shotProg(it), bits=[it.type==='Long Form'?'Long form':'Reel','Planned '+carryMonthName(monthOf(it))];
+  if(it.originalPlannedMonth&&it.originalPlannedMonth!==monthOf(it))bits.push('first planned '+carryMonthName(it.originalPlannedMonth));
+  if(it.publishDate)bits.push((it.publishDate<today()?'Missed publish date ':'Posts ')+fmt(it.publishDate));
+  if(p.n)bits.push('Shots captured '+p.cap+' / '+p.n);
+  return bits.join(' · ');
+}
+function carryActs(it,key){
+  return '<span class="crow-act"><button class="btn ghost sm" data-act="carryMove" data-id="'+it.id+'" data-month="'+key+'">Move to '+esc(carryMonthName(key))+'</button>'
+   +'<button class="btn ghost sm" data-act="carryResched" data-id="'+it.id+'">Reschedule</button>'
+   +'<button class="link sm" data-act="carryBacklog" data-id="'+it.id+'" title="Keep all the work, park it in the Idea Bank">Backlog</button>'
+   +'<button class="link sm" data-act="carryArchive" data-id="'+it.id+'" title="Stop working on it. Nothing is deleted.">Archive</button></span>';
+}
+function carryRow(it,key,sel){
+  return '<li class="crow k-'+(it.type==='Long Form'?'long':'reel')+'">'
+   +(sel?'<label class="chk"><input type="checkbox" data-act="carrySel" data-id="'+it.id+'"'+(ui.carrySel[it.id]?' checked':'')+' aria-label="Select '+esc(title(it))+'"><span></span></label>':'')
+   +'<button class="crow-t" data-act="edit" data-id="'+it.id+'"><b>'+esc(title(it))+'</b><span>'+esc(carryInfo(it))+'</span></button>'+pill(it.status)+carryActs(it,key)+'</li>';
+}
+function carryTitle(list){
+  const ms=Array.from(new Set(list.map(monthOf)));
+  return ms.length===1?'Carryover from '+carryMonthName(ms[0]):'Carryover from earlier months';
+}
+function carryCard(){
+  const list=carryList(), key=curMonth();if(!list.length)return '';
+  return '<section class="card carry"><div class="card-h"><div><h2>'+esc(carryTitle(list))+'</h2><p class="muted sm">'+list.length+(list.length===1?' unfinished video':' unfinished videos')+'. Nothing moves until you choose.</p></div><button class="btn ghost sm" data-act="carryReview">Review carryover</button></div>'
+   +'<ul class="clist">'+list.slice(0,4).map(it=>carryRow(it,key)).join('')+'</ul>'
+   +(list.length>4?'<p class="pad-s"><button class="link" data-act="carryReview">See all '+list.length+'</button></p>':'')+'</section>';
+}
+function carryReviewModal(){
+  const list=carryList(), key=ui.carryTarget||curMonth();
+  Object.keys(ui.carrySel).forEach(id=>{if(!list.some(i=>i.id===id))delete ui.carrySel[id];});
+  const n=list.filter(i=>ui.carrySel[i.id]).length;
+  ui.carryOpen=true;
+  showModal('<div class="modal-h"><h3>'+esc(carryTitle(list))+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p class="muted">These were planned for an earlier month and are not posted yet. Pick what happens to each one. Moving or rescheduling only changes dates. The script, shot list, captions and everything else stay as they are.</p>'
+   +'<div class="cbulk"><label class="chk"><input type="checkbox" data-act="carryAll"'+(n&&n===list.length?' checked':'')+'><span>Select all</span></label><span class="grow"></span>'
+   +'<button class="btn primary sm" data-act="carryMoveSel" data-month="'+key+'"'+(n?'':' disabled')+'>Move '+(n||'')+' selected to '+esc(carryMonthName(key))+'</button></div>'
+   +'<ul class="clist">'+list.map(it=>carryRow(it,key,true)).join('')+'</ul></div>','xl');
+}
+function carryReschedModal(id){
+  const it=getItem(id);if(!it)return;
+  const t=today(), cur=curMonth(), fut=f=>it[f]&&it[f]>=t?it[f]:'', m=monthOf(it);
+  showModal('<div class="modal-h"><h3>Reschedule</h3><button class="icon-btn" data-act="carryBack" aria-label="Close">'+I('x')+'</button></div><div class="modal-b" data-cr="'+id+'">'
+   +'<p><b>'+esc(title(it))+'</b><br><span class="muted sm">'+esc(carryInfo(it))+'</span></p>'
+   +'<div class="form-grid two"><div class="fld"><label for="cr-month">Planned month</label><input id="cr-month" type="month" min="'+cur+'" value="'+(m&&m>=cur?m:cur)+'"></div>'
+   +'<div class="fld"><label for="cr-pub">Publish date (optional)</label><input id="cr-pub" type="date" min="'+t+'" value="'+fut('publishDate')+'"></div>'
+   +'<div class="fld"><label for="cr-film">Filming date (optional)</label><input id="cr-film" type="date" value="'+fut('filmDate')+'"></div>'
+   +'<div class="fld"><label for="cr-edit">Editing deadline (optional)</label><input id="cr-edit" type="date" value="'+fut('editDate')+'"></div></div>'
+   +'<label class="chk"><input id="cr-auto" type="checkbox" checked><span>Fill any other blank dates from the publish date</span></label>'
+   +'<p class="muted sm">A publish date sets the planned month to match. Dates that have already passed for steps not done yet are cleared, so they stop showing as overdue. Nothing else on the video changes.</p>'
+   +'<div class="row-gap"><button class="btn primary" data-act="carryReschedSave" data-id="'+id+'">Save</button><button class="btn ghost" data-act="carryBack">Cancel</button></div></div>');
+}
 function greeting(){const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening';}
 function viewDashboard(){
   const t=today(), key=mk(t), B=taskBuckets(), G=monthGoal(key), due=metricsDue();
@@ -1717,6 +1860,7 @@ function viewDashboard(){
    +'<span class="hg-k k-reel">'+I('phone','xs')+G.reels.posted+'/'+G.reels.target+' Reels</span><span class="hg-k k-long">'+I('play','xs')+G.longs.posted+'/'+G.longs.target+' Long form</span></button></div>'
    +'<div class="home-cols"><div>'+todayCard+'</div><div>'+soonCard+'</div></div>'
    +attn
+   +carryCard()
    +'<section class="card"><div class="card-h"><h2>'+esc(monthName(key))+' progress</h2><button class="link" data-act="nav" data-view="month">This Month</button></div><div class="card-b mp-grid">'
    +goalBar('Reels','reel',G.reels)+goalBar('Long form','long',G.longs)+goalBar('Total','',G.total,[[G.reels.posted,'on k-reel'],[G.longs.posted,'on k-long']])+'</div></section>'
    +'<h2 class="sect">Performance insights</h2>'+ins
@@ -1727,13 +1871,13 @@ function viewDashboard(){
 /* ---------- task actions ---------- */
 function setTaskDate(x,date){
   if(x.src==='manual'){x.task.dueDate=date;return;}
-  const it=x.it, f=GEN[x.type].field;it[f]=date;
-  if(f==='publishDate')it.plannedMonth=mk(date);
+  const it=x.it, f=GEN[x.type].field, from=monthOf(it);it[f]=date;
+  if(f==='publishDate'){it.plannedMonth=mk(date);noteMonthChange(it,from);}
 }
 function taskModal(id,draft){
   const t=id?S.tasks.find(x=>x.id===id):normTask(Object.assign({dueDate:today()},draft||{}));if(!t)return;
   ui.taskEdit=id||null;
-  const vids=S.items.filter(i=>i.status!=='Idea'||i.id===t.contentId).slice().sort((a,b)=>title(a).localeCompare(title(b)));
+  const vids=S.items.filter(i=>(i.status!=='Idea'&&!i.archived)||i.id===t.contentId).slice().sort((a,b)=>title(a).localeCompare(title(b)));
   showModal('<div class="modal-h"><h3>'+(id?'Edit task':'New task')+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><form class="modal-b" data-form="saveTask" autocomplete="off">'
    +'<div class="fld"><label for="tk-title">Task</label><input id="tk-title" value="'+esc(t.title)+'" placeholder="Charge camera batteries"></div>'
    +'<div class="form-grid two"><div class="fld"><label for="tk-date">Due date</label><input id="tk-date" type="date" value="'+esc(t.dueDate)+'"></div>'
@@ -1761,6 +1905,7 @@ function eventsFor(mode){
   const ev={};
   const add=(d,e)=>{if(d)(ev[d]=ev[d]||[]).push(e);};
   S.items.forEach(it=>{
+    if(it.archived)return;
     const x=stIdx(it.status);
     add(it.publishDate,{k:it.type==='Long Form'?'long':'reel',it:it,done:x===7});
     add(it.filmDate,{k:'film',it:it,done:x>=4});
@@ -1958,7 +2103,7 @@ function shareSend(){
 function kcard(it){
   const i=stIdx(it.status);
   return '<article class="kcard '+(it.type==='Long Form'?'is-long':'is-reel')+'" draggable="true" data-act="edit" data-id="'+it.id+'">'
-   +'<div class="kc-top">'+typeTag(it)+'<span class="kc-date">'+(it.publishDate?'Posts '+fmt(it.publishDate):'No publish date')+'</span></div>'
+   +'<div class="kc-top"><span>'+typeTag(it)+' '+carryBadge(it)+'</span><span class="kc-date">'+(it.publishDate?'Posts '+fmt(it.publishDate):'No publish date')+'</span></div>'
    +'<h4>'+esc(title(it))+'</h4>'
    +'<div class="kc-meta"><span class="chip sm">'+esc(it.pillar)+'</span><span>'+esc(platText(it))+'</span></div>'
    +(it.type==='Reel'&&i<2&&scriptReady(it)?'<div class="kc-ready">Script ready ✓</div>':'')
@@ -1967,7 +2112,7 @@ function kcard(it){
 }
 function viewPipeline(){
   const f=ui.pipeMonth;
-  const list=S.items.filter(i=>f==='all'||(f==='none'?!monthOf(i):monthOf(i)===f)).sort(byPub);
+  const list=S.items.filter(i=>!i.archived&&(f==='all'||(f==='none'?!monthOf(i):monthOf(i)===f))).sort(byPub);
   const months=itemsIn(ui.month).length||true;
   const mOpts=[['all','All months'],['none','Unscheduled']].concat(itemMonths().map(k=>[k,monthLabel(k)]));
   return '<div class="page wide">'+head('Production Pipeline','Drag a card to a new column, or tap the arrow to move it one step.',
@@ -1981,7 +2126,7 @@ function viewPipeline(){
 
 /* ================= idea bank ================= */
 function viewIdeas(){
-  let list=S.items.filter(i=>i.status==='Idea'&&(ui.ideaRoadmap||!i.roadmap));
+  let list=S.items.filter(i=>ui.ideaRoadmap?!i.archived&&i.status==='Idea':inIdeaBank(i));
   if(ui.ideaTopic!=='All')list=list.filter(i=>i.topic===ui.ideaTopic);
   const groups=GROUPS.map(g=>({g:g,items:list.filter(i=>i.group===g).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]||a.created-b.created)})).filter(x=>x.items.length);
   const other=list.filter(i=>!GROUPS.includes(i.group));
@@ -1996,7 +2141,7 @@ function viewIdeas(){
    +'<div class="chips" role="group" aria-label="Filter by topic">'+['All'].concat(TOPICS).map(t=>'<button class="chip '+(ui.ideaTopic===t?'on':'')+'" data-act="ideaTopic" data-topic="'+esc(t)+'">'+esc(t)+'</button>').join('')
    +'<label class="chk sm"><input type="checkbox" data-ui="ideaRoadmap" '+(ui.ideaRoadmap?'checked':'')+'><span>Include six-month roadmap items</span></label></div>'
    +(groups.length?groups.map(x=>'<section class="grp"><h2>'+esc(x.g)+' <span class="count">'+x.items.length+'</span></h2><div class="ideas">'
-      +x.items.map(i=>'<article class="idea"><button class="idea-main" data-act="edit" data-id="'+i.id+'"><span class="prio p-'+i.priority+'" title="'+i.priority+' priority"></span><span class="idea-t">'+esc(title(i))+'</span><span class="idea-m"><span class="chip sm">'+esc(i.pillar)+'</span><span class="chip sm">'+esc(i.topic)+'</span><span class="chip sm soft">'+esc(i.ideaFormat||i.type)+'</span>'+(i.roadmap?'<span class="chip sm soft">Roadmap, month '+i.roadmap+'</span>':'')+'</span>'+(i.notes?'<span class="idea-n">'+esc(i.notes)+'</span>':'')+'</button><button class="btn ghost sm" data-act="schedule" data-id="'+i.id+'">Schedule</button></article>').join('')
+      +x.items.map(i=>'<article class="idea"><button class="idea-main" data-act="edit" data-id="'+i.id+'"><span class="prio p-'+i.priority+'" title="'+i.priority+' priority"></span><span class="idea-t">'+esc(title(i))+'</span><span class="idea-m"><span class="chip sm">'+esc(i.pillar)+'</span><span class="chip sm">'+esc(i.topic)+'</span><span class="chip sm soft">'+esc(i.ideaFormat||i.type)+'</span>'+(i.roadmap?'<span class="chip sm soft">Roadmap, month '+i.roadmap+'</span>':'')+(i.backlogFrom?'<span class="cbadge" title="All work is kept. Scheduling it puts it back at '+esc(i.backlogFrom)+'.">Parked at '+esc(i.backlogFrom)+'</span>':'')+'</span>'+(i.notes?'<span class="idea-n">'+esc(i.notes)+'</span>':'')+'</button><button class="btn ghost sm" data-act="schedule" data-id="'+i.id+'">Schedule</button></article>').join('')
       +'</div></section>').join(''):empty('No ideas match this filter.'))
    +'</div>';
 }
@@ -2004,7 +2149,7 @@ function nextOpenSlot(kind){
   const cur=mk(today()), t=today();
   for(let m=0;m<8;m++){
     const k=addMonths(cur,m), sl=rhythmDates(k).filter(s=>kind==='Long Form'?s.kind==='Long Form':s.kind!=='Long Form');
-    for(const s of sl){if(s.date>=t&&!S.items.some(i=>i.publishDate===s.date&&(kind==='Long Form'?i.type==='Long Form':i.type==='Reel')))return s.date;}
+    for(const s of sl){if(s.date>=t&&!S.items.some(i=>!i.archived&&i.publishDate===s.date&&(kind==='Long Form'?i.type==='Long Form':i.type==='Reel')))return s.date;}
   }
   return addDays(t,7);
 }
@@ -2016,7 +2161,8 @@ function scheduleModal(id){
    +'<div class="fld"><label for="sc-type">Content type</label><select id="sc-type">'+opts(['Reel','Long Form'],kind)+'</select></div>'
    +'<div class="fld"><label for="sc-date">Publish date</label><input id="sc-date" type="date" value="'+nextOpenSlot(kind)+'"></div>'
    +'<label class="chk"><input id="sc-auto" type="checkbox" checked><span>Fill in script, filming, and editing dates automatically</span></label>'
-   +'<div class="row-gap"><button class="btn primary" data-act="doSchedule" data-id="'+id+'">Move to Scripting</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
+   +(it.backlogFrom?'<p class="muted sm">This video was parked at '+esc(it.backlogFrom)+'. Scheduling it puts it back there with all its work.</p>':'')
+   +'<div class="row-gap"><button class="btn primary" data-act="doSchedule" data-id="'+id+'">Move to '+esc(it.backlogFrom||'Scripting')+'</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
 }
 
 /* ================= this month ================= */
@@ -2024,12 +2170,16 @@ function viewMonth(){
   const key=ui.month, its=itemsIn(key).sort(byPub);
   const longs=its.filter(i=>i.type==='Long Form'), reels=its.filter(i=>i.type==='Reel');
   const row=i=>'<li class="mrow k-'+(i.type==='Long Form'?'long':'reel')+(i.status==='Posted'?' done':'')+'"><label class="chk"><input type="checkbox" data-act="toggleDone" data-id="'+i.id+'" '+(i.status==='Posted'?'checked':'')+' aria-label="Posted: '+esc(title(i))+'"><span></span></label>'
-    +'<button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'</li>';
+    +'<button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'
+    +(missedPub(i)?'<button class="cbadge warn" data-act="carryResched" data-id="'+i.id+'" title="The publish date has passed. Pick a new one.">Needs reschedule</button>':'')+carryBadge(i)+pill(i.status)+'</li>';
+  const cn=list=>{const c=list.filter(wasCarried).length;return c?' · '+c+' carryover':'';};
+  const waitingC=key===curMonth()?carryList().length:0;
   const summary=STATUSES.map(s=>({s:s,n:its.filter(i=>i.status===s).length})).filter(x=>x.n);
   return '<div class="page">'+head('This Month','The whole month on one screen. Tick a video when it is posted.',monthNav('dash',key))
+   +(waitingC?'<div class="hint carry-hint"><span>'+waitingC+(waitingC===1?' unfinished video':' unfinished videos')+' from earlier months '+(waitingC===1?'is':'are')+' waiting in Carryover. '+(waitingC===1?'It does':'They do')+' not count toward '+esc(monthName(key))+' until you move '+(waitingC===1?'it':'them')+' here.</span><span class="grow"></span><button class="btn ghost sm" data-act="carryReview">Review carryover</button></div>':'')
    +(its.length?'<div class="sumline">'+summary.map(x=>'<span>'+pill(x.s)+' <b>'+x.n+'</b></span>').join('')+'</div>'
-   +'<div class="cols2 even"><section class="card"><div class="card-h"><h2>Long form</h2><span class="count">'+longs.length+' of '+S.settings.longTarget+'</span></div><ul class="mlist">'+(longs.map(row).join('')||'<li class="muted pad">No long-form videos yet.</li>')+'</ul></section>'
-   +'<section class="card"><div class="card-h"><h2>Reels</h2><span class="count">'+reels.length+' of '+S.settings.reelTarget+'</span></div><ul class="mlist">'+(reels.map(row).join('')||'<li class="muted pad">No Reels yet.</li>')+'</ul></section></div>'
+   +'<div class="cols2 even"><section class="card"><div class="card-h"><h2>Long form</h2><span class="count">'+longs.length+' of '+S.settings.longTarget+cn(longs)+'</span></div><ul class="mlist">'+(longs.map(row).join('')||'<li class="muted pad">No long-form videos yet.</li>')+'</ul></section>'
+   +'<section class="card"><div class="card-h"><h2>Reels</h2><span class="count">'+reels.length+' of '+S.settings.reelTarget+cn(reels)+'</span></div><ul class="mlist">'+(reels.map(row).join('')||'<li class="muted pad">No Reels yet.</li>')+'</ul></section></div>'
    :empty('Nothing is scheduled for '+esc(monthLabel(key))+' yet.','<button class="btn primary" data-act="planGo" data-month="'+key+'">Plan this month</button>'))+'</div>';
 }
 
@@ -2288,7 +2438,7 @@ function fcard(it){
 }
 function viewFilm(){
   const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
-  const rtf=S.items.filter(i=>i.status==='Ready to Film').sort(srt), now=S.items.filter(i=>i.status==='Filming').sort(srt);
+  const rtf=S.items.filter(i=>!i.archived&&i.status==='Ready to Film').sort(srt), now=S.items.filter(i=>!i.archived&&i.status==='Filming').sort(srt);
   return '<div class="page narrow">'+head('Need to Film',rtf.length?rtf.length+(rtf.length===1?' video is':' videos are')+' ready to film.':'Nothing is marked Ready to Film.','<button class="btn ghost" data-act="tplGo" data-tab="jobsite">Jobsite checklist</button>')
    +(rtf.length||now.length?'<div class="nf-filter">'+filterBar('filmFilter',ui.filmFilter,FILM_FILTERS)+'</div>':'')
    +(rtf.length?rtf.map(fcard).join(''):empty('Move a video to the Ready to Film column and it will show up here with its shot list.','<button class="btn primary sm" data-act="nav" data-view="pipeline">Open pipeline</button>'))
@@ -2299,7 +2449,7 @@ function viewFilm(){
 function viewPublished(){
   const f=ui.pub;
   const posted=S.items.filter(i=>i.status==='Posted'&&(!f.type||i.type===f.type)&&(!f.pillar||i.pillar===f.pillar)&&(!f.platform||i.platforms.includes(f.platform))).sort((a,b)=>(b.publishedDate||b.publishDate||'').localeCompare(a.publishedDate||a.publishDate||''));
-  const waiting=S.items.filter(i=>i.status==='Scheduled'||i.status==='Ready to Post').sort(byPub);
+  const waiting=S.items.filter(i=>!i.archived&&(i.status==='Scheduled'||i.status==='Ready to Post')).sort(byPub);
   return '<div class="page">'+head('Published Content','Everything that is live, with links and quick results.')
    +(waiting.length?'<section class="card"><div class="card-h"><h2>Waiting to go live</h2><span class="count">'+waiting.length+'</span></div><ul class="mlist">'+waiting.map(i=>'<li class="mrow k-'+(i.type==='Long Form'?'long':'reel')+'"><button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'<button class="btn ghost sm" data-act="capCopyItem" data-id="'+i.id+'">Copy caption</button><button class="btn primary sm" data-act="markPosted" data-id="'+i.id+'">Mark posted</button></li>').join('')+'</ul></section>':'')
    +'<div class="filters"><label>Type<select data-ui="pub.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Pillar<select data-ui="pub.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Platform<select data-ui="pub.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label></div>'
@@ -2582,7 +2732,7 @@ function viewLibrary(){
    +'<button class="btn ghost sm" data-act="clearLib">Clear filters</button></div>'
    +'<p class="muted">'+list.length+' of '+S.items.length+' videos'+(ui.q?' matching “'+esc(ui.q)+'”':'')+'</p>'
    +'<section class="card">'+(list.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Video</th><th>Type</th><th>Pillar</th><th>Topic</th><th>Status</th><th>Priority</th><th>Platform</th><th>Month</th><th>Publish</th></tr></thead><tbody>'
-     +list.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="t">'+(i.winning?'<span class="star">'+I('star')+'</span>':'')+esc(title(i))+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(i.topic)+'</td><td>'+pill(i.status)+'</td><td>'+esc(i.priority)+'</td><td>'+esc(platText(i))+'</td><td class="nw">'+esc(monthOf(i)?monthLabel(monthOf(i)):'–')+'</td><td class="nw">'+(fmt(i.publishDate)||'–')+'</td></tr>').join('')
+     +list.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="t">'+(i.winning?'<span class="star">'+I('star')+'</span>':'')+esc(title(i))+(i.archived?' <span class="cbadge">Archived</span>':'')+(i.backlogFrom?' <span class="cbadge">Parked at '+esc(i.backlogFrom)+'</span>':'')+' '+carryBadge(i)+'</td><td>'+esc(i.type)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(i.topic)+'</td><td>'+pill(i.status)+'</td><td>'+esc(i.priority)+'</td><td>'+esc(platText(i))+'</td><td class="nw">'+esc(monthOf(i)?monthLabel(monthOf(i)):'–')+'</td><td class="nw">'+(fmt(i.publishDate)||'–')+'</td></tr>').join('')
      +'</tbody></table></div>':empty('No videos match. Try clearing a filter.'))+'</section></div>';
 }
 
@@ -2608,20 +2758,29 @@ function planSteps(key){
 function viewPlan(){
   const key=ui.planMonth, its=itemsIn(key).sort(byPub), steps=planSteps(key), done=steps.filter(s=>s.done).length;
   const slots=rhythmDates(key);
-  const ideasFor=kind=>S.items.filter(i=>i.status==='Idea'&&!i.publishDate&&(kind==='Long Form'?(i.ideaFormat==='Long Form'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Long Form')):(i.ideaFormat==='Reel'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Reel'))));
+  const ideasFor=kind=>S.items.filter(i=>!i.archived&&i.status==='Idea'&&(!i.publishDate||i.publishDate<today())&&(kind==='Long Form'?(i.ideaFormat==='Long Form'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Long Form')):(i.ideaFormat==='Reel'||i.ideaFormat==='Both'||(!i.ideaFormat&&i.type==='Reel'))));
+  // Videos already in this month (often carryover) that still need a publish date can take a slot too
+  const undated=kind=>its.filter(i=>!i.publishDate&&i.status!=='Idea'&&i.status!=='Posted'&&(kind==='Long Form'?i.type==='Long Form':i.type==='Reel'));
   const slotRows=slots.map((s,si)=>{
     const match=its.find(x=>x.publishDate===s.date&&(s.kind==='Long Form'?x.type==='Long Form':x.type==='Reel'));
     const label=s.kind==='Long Form'?'Long-form video':(s.kind==='Recap'?'Monthly Recap':'Reel');
     let cell;
     if(match)cell='<button class="link-b" data-act="edit" data-id="'+match.id+'">'+esc(title(match))+'</button> '+pill(match.status);
     else if(s.kind==='Recap')cell='<span class="muted">Open</span> <button class="btn ghost sm" data-act="slotNew" data-kind="recap" data-date="'+s.date+'">Add Monthly Recap</button>';
-    else cell='<span class="slot-pick"><select aria-label="Pick an idea for '+esc(fmtW(s.date))+'">'+opts(ideasFor(s.kind).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]).map(i=>[i.id,i.title]),'','Choose from Idea Bank')+'</select><button class="btn ghost sm" data-act="slotAssign" data-date="'+s.date+'" data-kind="'+s.kind+'">Assign</button><button class="btn ghost sm" data-act="slotNew" data-kind="'+(s.kind==='Long Form'?'long':'reel')+'" data-date="'+s.date+'">New</button></span>';
+    else cell='<span class="slot-pick"><select aria-label="Pick an idea for '+esc(fmtW(s.date))+'">'+opts(undated(s.kind).map(i=>[i.id,title(i)+' ('+(wasCarried(i)?'carryover, ':'')+i.status+', no date yet)']).concat(ideasFor(s.kind).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]).map(i=>[i.id,i.title])),'',undated(s.kind).length?'Choose a video':'Choose from Idea Bank')+'</select><button class="btn ghost sm" data-act="slotAssign" data-date="'+s.date+'" data-kind="'+s.kind+'">Assign</button><button class="btn ghost sm" data-act="slotNew" data-kind="'+(s.kind==='Long Form'?'long':'reel')+'" data-date="'+s.date+'">New</button></span>';
     return '<li class="slot"><span class="slot-d">'+esc(fmtW(s.date))+'</span><span class="slot-k '+(s.kind==='Long Form'?'long':'reel')+'">'+label+'</span><span class="slot-c">'+cell+'</span></li>';
   }).join('');
   const pubs=its.filter(i=>i.publishDate).map(i=>i.publishDate).sort();
   if(!ui.planFilm.a||ui.planFilm.key!==key){const t=today();const a=pubs.length?addDays(pubs[0],-8):t, b=pubs.length?addDays(pubs[Math.floor(pubs.length/2)],-8):t;ui.planFilm={a:a<t?t:a,b:b<t?t:b,key:key};}
   const themes=S.roadmapThemes||{}, rmKeys=Object.keys(themes).sort();
+  const G=monthGoal(key), carry=key>=curMonth()?carryList():[], nSel=carry.filter(i=>ui.carrySel[i.id]).length;
+  const need=(g,noun)=>{const have=g.posted+g.planned, left=Math.max(0,g.target-have);return '<div class="pg"><b>'+noun+'</b><span>Goal '+g.target+' · '+have+' planned'+(g.carry?' ('+g.carry+' carryover)':'')+'</span><em>'+(left?left+' new needed':'Goal covered ✓')+'</em></div>';};
+  const carryPlan='<section class="card carry"><div class="card-h"><div><h2>'+esc(monthName(key))+' plan</h2><p class="muted sm">'+(carry.length?'Carryover available: '+carry.length+'. Decide on these first, then fill the rest with new ideas.':'Goal, what is already planned, and how many new videos are still needed.')+'</p></div>'
+    +(carry.length?'<button class="btn ghost sm" data-act="carryReview" data-month="'+key+'">Review carryover</button>':'')+'</div><div class="card-b"><div class="pg-row">'+need(G.reels,'Reels')+need(G.longs,'Long form')+'</div>'
+    +(carry.length?'<ul class="clist sel">'+carry.map(it=>'<li class="crow k-'+(it.type==='Long Form'?'long':'reel')+'"><label class="chk"><input type="checkbox" data-act="carrySel" data-id="'+it.id+'"'+(ui.carrySel[it.id]?' checked':'')+' aria-label="Select '+esc(title(it))+'"><span></span></label><button class="crow-t" data-act="edit" data-id="'+it.id+'"><b>'+esc(title(it))+'</b><span>'+esc(carryInfo(it))+'</span></button>'+pill(it.status)+'</li>').join('')+'</ul>'
+      +'<div class="row-gap"><button class="btn primary sm" data-act="carryMoveSel" data-month="'+key+'"'+(nSel?'':' disabled')+'>Move '+(nSel||'')+' selected to '+esc(carryMonthName(key))+'</button></div>':'')+'</div></section>';
   return '<div class="page">'+head('Plan Next Month','Finish this at the end of each month so the next one never starts from zero.',monthNav('plan',key))
+   +carryPlan
    +'<div class="cols2 plan"><div><section class="card"><div class="card-h"><h2>'+esc(monthLabel(key))+' checklist</h2><span class="count">'+done+' of 8</span></div><div class="card-b"><div class="pbar"><i class="p1" style="width:'+(done/8*100)+'%"></i></div>'
    +'<ul class="steps">'+steps.map((s,i)=>'<li class="'+(s.done?'done':'')+'"><label class="chk"><input type="checkbox" data-act="planStep" data-i="'+i+'" '+(s.done?'checked':'')+(s.auto?' disabled':'')+'><span>'+esc(s.t)+'</span></label><em>'+esc(s.hint)+'</em></li>').join('')+'</ul><p class="muted sm">Steps 1 to 7 check themselves as you fill in the month.</p></div></section>'
    +'<section class="card"><div class="card-h"><h2>Assign filming dates</h2></div><div class="card-b"><p class="muted">Batch filming keeps you ahead. Pick two filming days and the first half of the month goes to the first, the rest to the second. Script and editing deadlines are filled in around them.</p><div class="form-grid two"><div class="fld"><label for="pf-a">First filming day</label><input id="pf-a" type="date" data-ui="planFilm.a" value="'+ui.planFilm.a+'"></div><div class="fld"><label for="pf-b">Second filming day</label><input id="pf-b" type="date" data-ui="planFilm.b" value="'+ui.planFilm.b+'"></div></div><button class="btn primary sm" data-act="assignFilm" '+(its.length?'':'disabled')+'>Assign filming dates</button></div></section></div>'
@@ -3002,8 +3161,12 @@ function tabShoot(it){
   return h;
 }
 function tabSchedule(it){
-  return '<div class="form-grid">'+F(it,'planDate','Planning day',{t:'date'})+F(it,'scriptDate','Script deadline',{t:'date'})+F(it,'filmDate','Filming date',{t:'date'})+F(it,'editDate','Editing deadline',{t:'date'})+F(it,'publishDate','Publish date',{t:'date'})+F(it,'plannedMonth','Planned month',{t:'month'})+'</div>'
-   +'<div class="row-gap"><button class="btn ghost sm" data-act="autoFill">Fill other dates from the publish date</button></div><p class="muted sm">Lead times come from Settings. Dates that would land in the past are set to today.</p>';
+  const path=carryPath(it), cm=curMonth();
+  const carry=(isCarry(it)?'<div class="hint"><span>Planned for '+esc(monthLabel(monthOf(it)))+' and not posted yet.</span><span class="grow"></span><button class="btn ghost sm" data-act="carryMove" data-id="'+it.id+'" data-month="'+cm+'">Move to '+esc(carryMonthName(cm))+'</button><button class="btn ghost sm" data-act="carryResched" data-id="'+it.id+'">Reschedule</button></div>':'')
+   +(path.length?'<div class="chist"><b>Carryover history</b><span>Originally planned: '+esc(monthLabel(it.originalPlannedMonth))+(monthOf(it)?' · Now planned: '+esc(monthLabel(monthOf(it))):' · Now in the Idea Bank')+'</span><span class="muted sm">'+path.map(esc).join(' → ')+'</span></div>':'');
+  const arch=it.archived?'':it.status!=='Posted'?'<p class="muted sm">Not going ahead with this one? <button class="link sm" data-act="carryArchive" data-id="'+it.id+'">Archive it</button> to stop counting it without deleting anything.</p>':'';
+  return carry+'<div class="form-grid">'+F(it,'planDate','Planning day',{t:'date'})+F(it,'scriptDate','Script deadline',{t:'date'})+F(it,'filmDate','Filming date',{t:'date'})+F(it,'editDate','Editing deadline',{t:'date'})+F(it,'publishDate','Publish date',{t:'date'})+F(it,'plannedMonth','Planned month',{t:'month'})+'</div>'
+   +'<div class="row-gap"><button class="btn ghost sm" data-act="autoFill">Fill other dates from the publish date</button></div><p class="muted sm">Lead times come from Settings. Dates that would land in the past are set to today.</p>'+arch;
 }
 function tabRepurpose(it){
   const others=S.items.filter(i=>i.id!==it.id);
@@ -3034,11 +3197,11 @@ function editorHtml(it){
   const fx=ui.panelFocus;
   return '<div class="scrim" data-act="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-label="Edit video" tabindex="-1" data-item-id="'+it.id+'">'
    +'<div class="dr-resize" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize editor. Arrow keys resize, Home resets." title="Drag to resize · Double-click to reset"></div>'
-   +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+readyChip(it)
+   +'<div class="dr-h"><div class="dr-top">'+typeTag(it)+pill(it.status)+carryBadge(it)+(it.archived?'<span class="cbadge">Archived</span>':'')+readyChip(it)
    +'<span class="dr-ctl"><button class="icon-btn dr-expand" data-act="panelFocus" aria-pressed="'+fx+'" aria-label="'+(fx?'Restore editor width':'Expand editor')+'" title="'+(fx?'Restore editor width':'Expand editor')+'">'+I(fx?'shrink':'expand')+'</button>'
    +'<button class="icon-btn" data-act="close" aria-label="Close">'+I('x')+'</button></span></div><input class="dr-title" data-f="title" value="'+esc(it.title)+'" placeholder="'+(it.type==='Long Form'?'Long-form video title':'Reel title')+'" aria-label="Video title"></div>'
    +'<nav class="dr-tabs" role="tablist">'+TABS.map(t=>'<button role="tab" class="'+(tab===t[0]?'on':'')+'" aria-selected="'+(tab===t[0])+'" data-act="tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</nav>'
-   +'<div class="dr-b">'+body+'</div>'
+   +'<div class="dr-b">'+(it.archived?'<div class="hint"><span>This video is archived. It is not counted in goals and stays out of the pipeline, calendar and tasks. All of its work is kept.</span><span class="grow"></span><button class="btn ghost sm" data-act="carryRestore" data-id="'+it.id+'">Restore</button></div>':'')+body+'</div>'
    +'<div class="dr-f"><button class="btn danger ghost sm" data-act="del" data-id="'+it.id+'">Delete</button><span class="grow"></span>'
    +(it.status!=='Posted'?'<button class="btn ghost sm" data-act="markPosted" data-id="'+it.id+'">Mark posted</button>':'')
    +(i<7?'<button class="btn primary sm" data-act="advance" data-id="'+it.id+'">Move to '+STATUSES[i+1]+'</button>':'')+'</div></div>';
@@ -3124,7 +3287,7 @@ const autoSizeAll=root=>$$('textarea',root||document).forEach(autoSize);
 
 /* ================= modal, toast, confirm ================= */
 function showModal(html,cls){$('#modal-wrap').innerHTML='<div class="scrim show" data-act="modalClose"></div><div class="modal'+(cls?' '+cls:'')+'" role="dialog" aria-modal="true">'+html+'</div>';const m=$('#modal-wrap .modal');const f=$('input,select,button.primary',m);f&&f.focus();}
-function closeModal(){$('#modal-wrap').innerHTML='';}
+function closeModal(){$('#modal-wrap').innerHTML='';ui.carryOpen=false;}
 function askConfirm(msg,label,cb){
   ui.confirmCb=cb;
   showModal('<div class="modal-h"><h3>Are you sure?</h3></div><div class="modal-b"><p>'+msg+'</p><div class="row-gap"><button class="btn danger" data-act="confirmYes">'+esc(label)+'</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
@@ -3133,7 +3296,13 @@ let toastT=null;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
 
 /* ================= actions ================= */
-function setStatus(it,s){it.status=s;if(s==='Posted'&&!it.publishedDate)it.publishedDate=today();}
+// After any carryover action: save, redraw, and stay in the review list while there is still something in it
+function carryDone(msg){
+  save();render();if(ui.edit.id)renderEditor();
+  if(ui.carryOpen&&carryList().length)carryReviewModal();else if($('#modal-wrap .modal'))closeModal();
+  toast(msg);
+}
+function setStatus(it,s){it.status=s;if(s!=='Idea')it.backlogFrom='';if(s==='Posted'&&!it.publishedDate)it.publishedDate=today();}
 function createItem(type,o){
   const it=newItem(type,Object.assign({status:'Scripting'},o||{}));
   if(it.publishDate){it.plannedMonth=mk(it.publishDate);autoDates(it,S.settings);}
@@ -3190,10 +3359,11 @@ const ACTS={
   doSchedule:a=>{
     const it=getItem(a.dataset.id),box=a.closest('[data-sched]');if(!it)return;
     const type=$('#sc-type',box).value,date=$('#sc-date',box).value,auto=$('#sc-auto',box).checked;
+    const parked=!!it.backlogFrom, keep=parked&&it.type===type, from=monthOf(it);
     it.type=type;ensureType(it);if(type==='Reel'&&it.reelKind==='')it.reelKind='Standalone';
-    it.platforms=defaultPlatforms(type);it.status='Scripting';
-    if(date){it.publishDate=date;it.plannedMonth=mk(date);if(auto)autoDates(it,S.settings);}
-    save();closeModal();render();toast('Moved to Scripting'+(date?', posting '+fmt(date):''));
+    if(!keep)it.platforms=defaultPlatforms(type);it.status=unpark(it);
+    if(date){it.publishDate=date;it.plannedMonth=mk(date);if(auto)(parked?fillBlankDates(it):autoDates(it,S.settings));if(parked)noteMonthChange(it,from);}
+    save();closeModal();render();toast('Moved to '+it.status+(date?', posting '+fmt(date):''));
   },
   winToggle:a=>{const it=getItem(a.dataset.id);it.winning=!it.winning;save();render();toast(it.winning?'Added to winning content':'Removed from winning content');},
   autoFill:()=>{const it=getItem(ui.edit.id);if(!it.publishDate){toast('Set a publish date first');return;}autoDates(it,S.settings);save();renderEditor();toast('Dates filled in');},
@@ -3329,8 +3499,11 @@ const ACTS={
   planStep:a=>{const k=ui.planMonth;S.plan[k]=S.plan[k]||{};S.plan[k][+a.dataset.i]=a.checked;save();render();},
   slotAssign:a=>{
     const id=a.parentElement.querySelector('select').value;if(!id){toast('Pick an idea first');return;}
-    const it=getItem(id),kind=a.dataset.kind,date=a.dataset.date;
-    it.type=kind==='Long Form'?'Long Form':'Reel';ensureType(it);it.publishDate=date;it.plannedMonth=mk(date);it.status='Scripting';it.platforms=defaultPlatforms(it.type);autoDates(it,S.settings);
+    const it=getItem(id),kind=a.dataset.kind,date=a.dataset.date,from=monthOf(it);
+    if(it.status!=='Idea'){it.publishDate=date;it.plannedMonth=mk(date);fillBlankDates(it);noteMonthChange(it,from);save();render();toast('Scheduled for '+fmt(date));return;}
+    const parked=!!it.backlogFrom, keep=parked&&it.type===(kind==='Long Form'?'Long Form':'Reel');
+    it.type=kind==='Long Form'?'Long Form':'Reel';ensureType(it);it.publishDate=date;it.plannedMonth=mk(date);it.status=unpark(it);if(!keep)it.platforms=defaultPlatforms(it.type);
+    if(parked){fillBlankDates(it);noteMonthChange(it,from);}else autoDates(it,S.settings);
     save();render();toast('Scheduled for '+fmt(date));
   },
   slotNew:a=>{if(a.dataset.kind==='recap')createRecap(a.dataset.date);else createItem(a.dataset.kind==='long'?'Long Form':'Reel',{publishDate:a.dataset.date});},
@@ -3400,6 +3573,34 @@ const ACTS={
   },
   hintNo:()=>{ui.taskHint=null;render();},
   attnAll:()=>{ui.attnAll=!ui.attnAll;render();},
+  /* monthly carryover */
+  carryReview:a=>{ui.carryTarget=a.dataset.month||curMonth();carryReviewModal();},
+  carrySel:a=>{if(a.checked)ui.carrySel[a.dataset.id]=true;else delete ui.carrySel[a.dataset.id];if(ui.carryOpen)carryReviewModal();else render();},
+  carryAll:a=>{ui.carrySel={};if(a.checked)carryList().forEach(i=>{ui.carrySel[i.id]=true;});carryReviewModal();},
+  carryMove:a=>{const it=getItem(a.dataset.id);if(!it)return;const k=a.dataset.month||curMonth();carryMove(it,k);carryDone('Moved to '+monthLabel(k));},
+  carryMoveSel:a=>{const k=a.dataset.month||curMonth(), list=carryList().filter(i=>ui.carrySel[i.id]);if(!list.length)return;
+    list.forEach(i=>carryMove(i,k));ui.carrySel={};carryDone(list.length+(list.length===1?' video':' videos')+' moved to '+monthLabel(k));},
+  carryResched:a=>carryReschedModal(a.dataset.id),
+  carryBack:()=>{if(ui.carryOpen&&carryList().length)carryReviewModal();else closeModal();},
+  carryReschedSave:a=>{
+    const it=getItem(a.dataset.id);if(!it)return;
+    const t=today(), cur=curMonth(), pub=$('#cr-pub').value, film=$('#cr-film').value, edit=$('#cr-edit').value, auto=$('#cr-auto').checked;
+    if(pub&&pub<t){toast('Pick a publish date from today on');return;}
+    const month=pub?mk(pub):($('#cr-month').value||cur);
+    if(month<cur){toast('Pick this month or a later one');return;}
+    const from=monthOf(it), before=snapDates(it);
+    clearStale(it);
+    if(pub)it.publishDate=pub;
+    if(it.publishDate&&mk(it.publishDate)!==month)it.publishDate='';
+    if(film)it.filmDate=film;if(edit)it.editDate=edit;
+    if(auto&&it.publishDate)fillBlankDates(it);
+    it.plannedMonth=month;
+    if(from&&from<month&&from<cur)logCarry(it,from,month,'move',before);
+    carryDone(pub?'Rescheduled to '+fmtW(pub):'Moved to '+monthLabel(month));
+  },
+  carryBacklog:a=>{const it=getItem(a.dataset.id);if(!it)return;carryBacklog(it);carryDone('Moved to the Idea Bank. All work is kept.');},
+  carryArchive:a=>{const it=getItem(a.dataset.id);if(!it)return;it.archived=true;it.archivedAt=today();carryDone('Archived. Restore it any time from All content.');},
+  carryRestore:a=>{const it=getItem(a.dataset.id);if(!it)return;it.archived=false;it.archivedAt='';carryDone(isCarry(it)?'Restored. It is back in Carryover.':'Restored');},
   /* ---------- performance snapshots ---------- */
   snapDue:a=>metricModal({contentId:a.dataset.id,platform:a.dataset.plat,cp:a.dataset.cp}),
   snapEdit:a=>{const x=S.perfSnapshots.find(s=>s.id===a.dataset.sid);if(x)metricModal({contentId:x.contentId,sid:x.id});},
@@ -3464,7 +3665,7 @@ document.addEventListener('input',e=>{
     const h=el.closest('[data-item-id]'),it=h&&getItem(h.dataset.itemId);if(!it)return;
     const path=el.dataset.f;let v=el.type==='checkbox'?el.checked:el.value;
     if(/^shorts\.\d+\.sectionIdx$/.test(path)){v=v===''?-1:+v;sp(it,path,v);save();renderEditor();return;}
-    const old=gp(it,path);
+    const old=gp(it,path), oldM=monthOf(it);
     sp(it,path,v);
     if(path==='scriptType'){if(!it.captionStyle||it.captionStyle===CAPTION_FROM_SCRIPT[old])it.captionStyle=CAPTION_FROM_SCRIPT[v]||'Educational';save();renderEditor();return;}
     syncDerived(it,path);
@@ -3472,7 +3673,8 @@ document.addEventListener('input',e=>{
     if(path==='script'&&$('.spk .seg')===null&&nonEmpty(v)&&$('#spk-prev')){save();const sc=$('.dr-b').scrollTop;renderEditor();const ta=$('.drawer [data-f="script"]');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}$('.dr-b').scrollTop=sc;return;}
     if(['captionStyle','hashtagGroup','includeHashtags','captionNeeded','ytCover','captionStatus'].includes(path)){if(path==='captionStatus')it.prod.caption=v==='Done';save();renderEditor();return;}
     if(path==='publishDate'&&v){it.plannedMonth=mk(v);const pm=h.querySelector('[data-f="plannedMonth"]');if(pm)pm.value=it.plannedMonth;}
-    if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();save();renderEditor();return;}
+    if(path==='publishDate'||path==='plannedMonth')noteMonthChange(it,oldM);
+    if(path==='status'){if(v==='Posted'&&!it.publishedDate)it.publishedDate=today();if(v!=='Idea')it.backlogFrom='';save();renderEditor();return;}
     if(path==='type'){ensureType(it);it.platforms=defaultPlatforms(it.type);save();renderEditor();return;}
     if(path==='winning'){save();renderEditor();return;}
     if(path==='reelKind'&&v==='Recap'&&!it.recap.month)it.recap.month=monthName(monthOf(it)||ui.month);
