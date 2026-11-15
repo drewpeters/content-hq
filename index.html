@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Content HQ · Deck content planner</title>
+<title>Content HQ</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231F2A28'/%3E%3Crect x='16' y='22' width='16' height='56' rx='3' fill='%23B8742E'/%3E%3Crect x='42' y='22' width='16' height='56' rx='3' fill='%232F6B5B'/%3E%3Crect x='68' y='22' width='16' height='56' rx='3' fill='%23D9DED6'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -124,6 +124,37 @@ h4{font-size:14px}
 .side-foot{padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
 .store-note{font-size:12px;color:var(--sideInk2);margin:10px 4px 0}
 .store-note.warn{color:#F2B8A8}
+/* client switcher: neutral identity only, never the semantic task colors */
+.cwrap{position:relative}
+.side-cw{margin:-6px 0 14px}
+.cl-av{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--surface2);color:var(--ink2);border:1px solid var(--line2);font:600 13px/1 var(--fd);letter-spacing:.5px}
+.client-btn{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px 7px 7px;border-radius:9px;background:var(--side2);color:var(--sideInk);border:1px solid rgba(255,255,255,.08)}
+.client-btn:hover{border-color:rgba(255,255,255,.22)}
+.client-btn .cl-av{background:rgba(255,255,255,.08);color:var(--sideInk);border-color:rgba(255,255,255,.16)}
+.client-btn .cl-n{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.client-btn small{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--sideInk2)}
+.client-btn b{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-btn .ic{color:var(--sideInk2)}
+.client-chip{display:inline-flex;align-items:center;gap:8px;max-width:280px;padding:3px 10px 3px 3px;border:1px solid var(--line2);border-radius:999px;background:var(--surface);color:var(--ink);font-weight:600;font-size:14px}
+.client-chip:hover{border-color:var(--ink3)}
+.client-chip .cl-av{width:28px;height:28px;border-radius:50%}
+.client-chip .cl-n{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-chip .ic{color:var(--ink3)}
+.menu.cmenu{left:0;right:auto;min-width:250px;color:var(--ink)}
+.side-cw .cmenu{width:100%;min-width:0}
+.menu button.cm-i{display:flex;align-items:center;gap:10px}
+.cm-i .cl-av{width:24px;height:24px;font-size:12px}
+.cm-i .cl-n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-i[aria-checked="true"]::after{content:'✓';font-weight:700;color:var(--ink2)}
+.cm-h{padding:6px 12px 4px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3)}
+.cm-sep{height:1px;background:var(--line);margin:6px 4px}
+.cl-rows{list-style:none;margin:0;padding:0}
+.cl-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cl-row-t{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cl-row-t b{font-weight:600}
+.cl-row-t span{font-size:12.5px;color:var(--ink3);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.cl-row.arch .cl-row-t b,.cl-row.arch .cl-av{opacity:.6}
+.cl-act{display:flex;gap:6px;flex-wrap:wrap}
 #content{flex:1;min-width:0;display:flex;flex-direction:column}
 #top{display:flex;gap:12px;align-items:center;padding:14px 28px;position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;color:var(--ink3)}
@@ -569,6 +600,8 @@ body.dr-resizing .drawer{transition:none}
   .nav-i .ic{display:none}
   .nav-sep{display:none}
   .side-foot{display:none}
+  #side .side-cw{display:none}
+  .client-chip{max-width:40vw}
   #top{top:54px;padding:10px 14px}
   .page{padding:18px 14px 50px}
   h1{font-size:28px}.hero h1{font-size:34px}
@@ -594,6 +627,10 @@ body.dr-resizing .drawer{transition:none}
   .shots{grid-template-columns:1fr}
   .chk.big{font-size:16px;padding:13px 14px}
   #addbtn{padding:9px 12px}
+  #top{gap:8px}
+  .client-chip{max-width:30vw;font-size:13px;padding-right:8px}
+  .client-chip .ic{display:none}
+  .top-cw .cmenu{min-width:min(280px,calc(100vw - 28px))}
 }
 
 /* ---------- Scripting 2.0 ---------- */
@@ -982,7 +1019,11 @@ button.cbadge.warn:hover{background:var(--attention-soft)}
   <aside id="side">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="brand-text"><b>Content HQ</b><small id="brandSub">Deck content planner</small></span>
+      <span class="brand-text"><b>Content HQ</b><small>Content planner</small></span>
+    </div>
+    <div class="cwrap side-cw">
+      <button class="client-btn" id="cbSide" data-act="clientMenu" data-menu="cmSide" aria-haspopup="true" aria-expanded="false"></button>
+      <div id="cmSide" class="menu cmenu" role="menu"></div>
     </div>
     <nav id="nav" aria-label="Main"></nav>
     <div class="side-foot">
@@ -992,6 +1033,10 @@ button.cbadge.warn:hover{background:var(--attention-soft)}
   </aside>
   <div id="content">
     <header id="top">
+      <div class="cwrap top-cw">
+        <button class="client-chip" id="cbTop" data-act="clientMenu" data-menu="cmTop" aria-haspopup="true" aria-expanded="false"></button>
+        <div id="cmTop" class="menu cmenu" role="menu"></div>
+      </div>
       <label class="search"><span class="sr">Search all content</span>
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="q" type="search" placeholder="Search all content" autocomplete="off">
@@ -1019,6 +1064,8 @@ button.cbadge.warn:hover{background:var(--attention-soft)}
 
 /* ================= constants ================= */
 const LS_KEY='contentHQ.deck.v1';
+/* The first client's description. It is the text the AI prompts used to hard-code, so its prompts keep the same facts. */
+const DECK_ABOUT='A deck-building company that builds custom decks and outdoor structures for homeowners in North Texas and Southern Oklahoma.';
 const STATUSES=['Idea','Scripting','Ready to Film','Filming','Editing','Ready to Post','Scheduled','Posted'];
 const PRIORITIES=['High','Medium','Low'];
 const PLATFORMS=['YouTube','YouTube Shorts','Instagram','Facebook'];
@@ -1281,7 +1328,7 @@ function defaultPlatforms(type){return type==='Long Form'?['YouTube','Facebook']
 function newItem(type,o){
   type=type||'Reel';
   const base={
-    id:uid(),title:'',workingTitle:'',type:type,reelKind:type==='Reel'?'Standalone':'',
+    id:uid(),clientId:activeId(),title:'',workingTitle:'',type:type,reelKind:type==='Reel'?'Standalone':'',
     pillar:'Education',topic:'Construction',group:'Construction',status:'Scripting',priority:'Medium',notes:'',ideaFormat:'',roadmap:0,
     plannedMonth:'',planDate:'',scriptDate:'',filmDate:'',editDate:'',publishDate:'',
     platforms:defaultPlatforms(type),
@@ -1417,8 +1464,8 @@ const ROADMAP=[
 ];
 
 function seed(){
-  const st={v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},tasks:[],taskDone:{},perfSnapshots:[],metricSkips:{},perfV2:true,
-    settings:{reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks',offsets:{film:7,edit:2,script:3,plan:3},hashtags:Object.assign({},HASHTAG_GROUPS),website:'',quoteUrl:''}};
+  const st={v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},tasks:[],taskDone:{},perfSnapshots:[],metricSkips:{},perfV2:true,deckStarter:true,
+    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},hashtags:Object.assign({},HASHTAG_GROUPS),website:'',quoteUrl:''}};
   IDEAS.forEach(r=>{
     st.items.push(newItem(r[4]==='Long Form'?'Long Form':'Reel',{title:r[0],pillar:r[1],topic:r[2],group:r[3],ideaFormat:r[4],priority:r[5],notes:r[6],status:'Idea',
       reelKind:r[0]==='Monthly recap'?'Recap':(r[4]==='Long Form'?'':'Standalone')}));
@@ -1509,33 +1556,104 @@ function applyCaptionExamples(st){
 }
 
 /* ================= state ================= */
-let S=null, memOnly=false, saveT=null, loadFailed=false;
+/* ROOT is everything saved: { v:2, activeClientId, theme, clients:[ {id,name,about,archived,created,data} ] }.
+   S is always the active client's workspace (the same object as its client's data, never a copy), so every screen
+   that reads S only ever sees the active client. save() writes ROOT. */
+let ROOT=null, S=null, memOnly=false, saveT=null, loadFailed=false;
+const activeId=()=>ROOT?ROOT.activeClientId:'';
+const activeClient=()=>ROOT&&ROOT.clients.find(c=>c.id===ROOT.activeClientId)||null;
+const coName=()=>{const c=activeClient();return c&&c.name||'Untitled client';};
+const coAbout=()=>{const c=activeClient();return c?String(c.about==null?'':c.about).trim():'';};
+const initials=n=>{const w=String(n||'').trim().split(/\s+/).filter(Boolean);if(!w.length)return '?';return (w.length>1?w[0][0]+w[w.length-1][0]:w[0].slice(0,2)).toUpperCase();};
+const slug=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'client';
+const newCid=()=>'c'+uid().slice(1);
+function emptyTags(){const o={};Object.keys(HASHTAG_GROUPS).forEach(g=>{o[g]='';});return o;}
+/* Every record says which client it belongs to, so the data could later move into a database. Re-stamped on every load. */
+function stampClient(st,id){
+  ['items','projects','tasks','perfSnapshots'].forEach(k=>{if(Array.isArray(st[k]))st[k].forEach(x=>{if(x&&typeof x==='object')x.clientId=id;});});
+  return st;
+}
+/* A new client starts completely empty: no ideas, roadmap, examples or hashtags */
+function blankWorkspace(){
+  return {v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},tasks:[],taskDone:{},perfSnapshots:[],metricSkips:{},perfV2:true,examplesV2:true,examplesCap:true,
+    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},hashtags:emptyTags(),website:'',quoteUrl:''}};
+}
+function makeClient(name,about,data){
+  const id=newCid();
+  return {id:id,name:String(name||'').trim()||'Untitled client',about:String(about==null?'':about),archived:false,created:Date.now(),data:stampClient(data,id)};
+}
+function seedRoot(){const c=makeClient('Benchmark Decks',DECK_ABOUT,seed());return {v:2,activeClientId:c.id,theme:'auto',clients:[c]};}
+/* Saved before client profiles: the whole thing becomes the first client, named from its company setting */
+function rootFromFlat(o,theme){
+  const os=o.settings||{};
+  const c=makeClient(os.company||'Benchmark Decks',DECK_ABOUT,fixState(o,{legacy:true}));
+  return {v:2,activeClientId:c.id,theme:theme||(['auto','light','dark'].includes(os.theme)?os.theme:'auto'),clients:[c]};
+}
+/* One client from an exported client file. Always gets a fresh id. */
+function clientFromFile(cf){
+  if(!cf||typeof cf!=='object'||!cf.data||!Array.isArray(cf.data.items))throw new Error('bad client');
+  const id=newCid();
+  return {id:id,name:String(cf.name||'').trim()||'Imported client',about:String(cf.about==null?'':cf.about),archived:!!cf.archived,created:+cf.created||Date.now(),data:stampClient(fixState(cf.data),id)};
+}
+/* Any client that cannot be read fails the whole load, so saving never drops a client silently */
+function fixRoot(o){
+  if(!o||!Array.isArray(o.clients)||!o.clients.length)throw new Error('no clients');
+  const seen={};
+  const clients=o.clients.map(c=>{
+    if(!c||typeof c!=='object'||!c.data||!Array.isArray(c.data.items))throw new Error('bad client');
+    let id=String(c.id||'');if(!id||seen[id])id=newCid();seen[id]=1;
+    return {id:id,name:String(c.name||'').trim()||'Untitled client',about:String(c.about==null?'':c.about),archived:!!c.archived,created:+c.created||Date.now(),data:stampClient(fixState(c.data),id)};
+  });
+  let act=clients.find(c=>c.id===o.activeClientId&&!c.archived)||clients.find(c=>!c.archived);
+  if(!act){act=clients[0];act.archived=false;}
+  return {v:2,activeClientId:act.id,theme:['auto','light','dark'].includes(o.theme)?o.theme:'auto',clients:clients};
+}
 function storageOk(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
+function safetyCopies(o,raw){
+  const keep=k=>{try{if(!localStorage.getItem(LS_KEY+k))localStorage.setItem(LS_KEY+k,raw);}catch(e){}};
+  // First load after numbered talking points arrived: keep an untouched copy of what was saved before anything is converted
+  if(o.items.some(i=>i&&!Array.isArray(i.blocks)))keep('.beforeBlocks');
+  // First load after performance snapshots arrived: same safety copy before old results are copied into a snapshot
+  if(!o.perfV2&&o.items.some(legacyPerfHas))keep('.beforeSnapshots');
+  if(o.items.some(i=>i&&Array.isArray(i.secMeta)&&i.secMeta.some(x=>x&&!Array.isArray(x.blocks))))keep('.beforeSections');
+}
 function load(){
   let raw=null;
   try{raw=localStorage.getItem(LS_KEY);}catch(e){return null;}
   if(!raw)return null;
-  try{const o=JSON.parse(raw);if(o&&Array.isArray(o.items)){
-    // First load after numbered talking points arrived: keep an untouched copy of what was saved before anything is converted
-    if(o.items.some(i=>i&&!Array.isArray(i.blocks))){try{if(!localStorage.getItem(LS_KEY+'.beforeBlocks'))localStorage.setItem(LS_KEY+'.beforeBlocks',raw);}catch(e){}}
-    // First load after performance snapshots arrived: same safety copy before old results are copied into a snapshot
-    if(!o.perfV2&&o.items.some(legacyPerfHas)){try{if(!localStorage.getItem(LS_KEY+'.beforeSnapshots'))localStorage.setItem(LS_KEY+'.beforeSnapshots',raw);}catch(e){}}
-    if(o.items.some(i=>i&&Array.isArray(i.secMeta)&&i.secMeta.some(x=>x&&!Array.isArray(x.blocks)))){try{if(!localStorage.getItem(LS_KEY+'.beforeSections'))localStorage.setItem(LS_KEY+'.beforeSections',raw);}catch(e){}}
-    return fixState(o);}}catch(e){console.error('Content HQ: saved content could not be loaded',e);}
+  try{const o=JSON.parse(raw);
+    if(o&&Array.isArray(o.clients)){
+      o.clients.forEach(c=>{if(c&&c.data&&Array.isArray(c.data.items))safetyCopies(c.data,raw);});
+      return fixRoot(o);
+    }
+    if(o&&Array.isArray(o.items)){
+      // First load after client profiles arrived: keep an untouched copy before the data becomes the first client
+      try{if(!localStorage.getItem(LS_KEY+'.beforeClients'))localStorage.setItem(LS_KEY+'.beforeClients',raw);}catch(e){}
+      safetyCopies(o,raw);
+      return rootFromFlat(o);
+    }
+  }catch(e){console.error('Content HQ: saved content could not be loaded',e);}
   // Saved content exists but could not be read. Leave it untouched, keep a recovery copy, and turn saving off for this session.
   loadFailed=true;
   try{localStorage.setItem(LS_KEY+'.recovery',raw);}catch(e){}
   return null;
 }
-function fixState(o){
+/* One workspace. legacy = data saved before client profiles: it keeps the deck hashtag defaults and its own example flags.
+   Workspaces saved since never get deck defaults or examples merged in. */
+function fixState(o,opt){
+  const legacy=!!(opt&&opt.legacy), isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   const st=Object.assign({v:1,projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}}},o);
-  st.settings=Object.assign({reelTarget:6,longTarget:2,theme:'auto',company:'Benchmark Decks'},o.settings||{});
-  st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},(o.settings||{}).offsets||{});
-  st.settings.hashtags=Object.assign({},HASHTAG_GROUPS,(o.settings||{}).hashtags||{});
+  if(legacy)st.deckStarter=true;else{if(st.examplesV2==null)st.examplesV2=true;if(st.examplesCap==null)st.examplesCap=true;}
+  st.deckStarter=!!st.deckStarter;
+  if(!Array.isArray(st.projects))st.projects=[];
+  const os=isObj(o.settings)?o.settings:{};
+  // The client name lives on the client and the theme is global, so neither stays in the workspace
+  st.settings=Object.assign({reelTarget:6,longTarget:2},os);delete st.settings.company;delete st.settings.theme;
+  st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},os.offsets||{});
+  st.settings.hashtags=Object.assign({},legacy?HASHTAG_GROUPS:emptyTags(),isObj(os.hashtags)?os.hashtags:{});
   if(st.settings.website==null)st.settings.website='';if(st.settings.quoteUrl==null)st.settings.quoteUrl='';
   st.items=o.items.map(normalize);
   // Home tasks and performance snapshots live beside the videos, never inside them
-  const isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   st.tasks=(Array.isArray(o.tasks)?o.tasks:[]).filter(isObj).map(normTask);
   st.taskDone=isObj(o.taskDone)?o.taskDone:{};
   st.perfSnapshots=(Array.isArray(o.perfSnapshots)?o.perfSnapshots:[]).filter(isObj).map(normSnap);
@@ -1548,7 +1666,7 @@ function fixState(o){
 function save(now){
   if(saveT){clearTimeout(saveT);saveT=null;}
   if(loadFailed){updateStoreNote();return;}
-  const go=()=>{saveT=null;try{localStorage.setItem(LS_KEY,JSON.stringify(S));memOnly=false;}catch(e){memOnly=true;}updateStoreNote();};
+  const go=()=>{saveT=null;try{localStorage.setItem(LS_KEY,JSON.stringify(ROOT));memOnly=false;}catch(e){memOnly=true;}updateStoreNote();};
   if(now)go();else saveT=setTimeout(go,250);
 }
 const getItem=id=>S.items.find(i=>i.id===id);
@@ -1664,7 +1782,7 @@ const CAT_LABEL={general:'General',planning:'Planning',filming:'Filming',editing
 const CAT_KIND={general:'general',planning:'plan',filming:'film',editing:'edit',publishing:'pub'};
 const CAT_ICON={general:'dot',planning:'pen',filming:'camera',editing:'scissors',publishing:'share'};
 function normTask(t){
-  return {id:String(t.id||uid()),title:String(t.title==null?'':t.title),dueDate:/^\d{4}-\d{2}-\d{2}$/.test(t.dueDate||'')?t.dueDate:'',
+  return {id:String(t.id||uid()),clientId:String(t.clientId||activeId()),title:String(t.title==null?'':t.title),dueDate:/^\d{4}-\d{2}-\d{2}$/.test(t.dueDate||'')?t.dueDate:'',
     category:CAT_LABEL[t.category]?t.category:'general',contentId:String(t.contentId||''),completed:!!t.completed,completedAt:t.completedAt||null,
     notes:String(t.notes==null?'':t.notes),createdAt:t.createdAt||Date.now()};
 }
@@ -2026,7 +2144,7 @@ async function calCanvas(key,mode){
   ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,W,H);
   // title and legend
   ctx.fillStyle=INK;ctx.font=XF.title;ctx.fillText('Content Calendar — '+monthLabel(key),P,P+44);
-  if(S.settings&&S.settings.company){ctx.font=XF.leg;ctx.fillStyle=MUTED;ctx.textAlign='right';ctx.fillText(S.settings.company,W-P,P+44);ctx.textAlign='left';}
+  ctx.font=XF.leg;ctx.fillStyle=MUTED;ctx.textAlign='right';ctx.fillText(coName(),W-P,P+44);ctx.textAlign='left';
   let lx=P;ctx.font=XF.leg;
   calKinds(mode).forEach(k=>{
     const w=5+12+ctx.measureText(EV_LEGEND[k]).width+14;
@@ -2065,21 +2183,22 @@ async function calCanvas(key,mode){
   ctx.textAlign='right';ctx.fillText('Updated '+fmt(today())+', '+today().slice(0,4),W-P,gridY+gridH+32);ctx.textAlign='left';
   return cv;
 }
-let shareImg=null;
+let shareImg=null, shareTok=0;
 function calShare(){
-  const key=ui.calMonth, label=monthLabel(key);
+  const key=ui.calMonth, label=monthLabel(key), co=coName(), tok=++shareTok;
   if(shareImg){URL.revokeObjectURL(shareImg.url);shareImg=null;}
   showModal('<div class="modal-h"><h3>Share calendar · '+esc(label)+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b" id="share-b"><p class="muted">Building the image…</p></div>','xl');
   calCanvas(key,ui.calMode).then(cv=>new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('no image')),'image/png'))).then(blob=>{
-    const b=$('#share-b');if(!b)return;
-    const name='content-calendar-'+key+'.png';
-    shareImg={blob:blob,name:name,url:URL.createObjectURL(blob),file:null,title:'Content Calendar — '+label};
+    // A newer share (or a client switch) replaced this one while it was drawing
+    const b=$('#share-b');if(!b||tok!==shareTok)return;
+    const name='content-calendar-'+slug(co)+'-'+key+'.png';
+    shareImg={blob:blob,name:name,url:URL.createObjectURL(blob),file:null,title:co+' content calendar — '+label};
     try{shareImg.file=new File([blob],name,{type:'image/png'});}catch(e){}
     const all=canCopyImg()&&canShareImg();
-    b.innerHTML='<div class="share-scroll"><img class="share-prev" src="'+shareImg.url+'" alt="Content calendar for '+esc(label)+'"></div>'
+    b.innerHTML='<div class="share-scroll"><img class="share-prev" src="'+shareImg.url+'" alt="'+esc(co)+' content calendar for '+esc(label)+'"></div>'
      +'<div class="row-gap"><button class="btn primary" data-act="calDl">'+I('download')+'Download PNG</button><button class="btn ghost" data-act="calCopy">'+I('copy')+'Copy image</button><button class="btn ghost" data-act="calSend">'+I('share')+'Share…</button></div>'
      +'<p class="muted sm" style="margin:12px 0 0">This is the '+(ui.calMode==='prod'?'Production':'Content')+' view of '+esc(label)+'.'+(all?'':' Copy and Share depend on the browser. If one is not available here, the image downloads instead.')+'</p>';
-  }).catch(()=>{const b=$('#share-b');if(b)b.innerHTML='<p>The calendar image could not be created in this browser.</p>';});
+  }).catch(()=>{const b=$('#share-b');if(b&&tok===shareTok)b.innerHTML='<p>The calendar image could not be created in this browser.</p>';});
 }
 const canCopyImg=()=>!!(navigator.clipboard&&navigator.clipboard.write&&window.ClipboardItem);
 function canShareImg(){try{return !!(shareImg&&shareImg.file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[shareImg.file]}));}catch(e){return false;}}
@@ -2370,7 +2489,7 @@ function shortsFromCaption(it){
   const topic=cleanTopic(title(it)), src=nonEmpty(it.captionBody)?firstSentence(it.captionBody):firstSentence(socialText(it).split('\n\n').slice(1).join(' ')||it.captionHook||it.hook);
   const line=src?topic+': '+lowerFirst(noEnd(src))+'.':capSentence(topic);
   const c=String(it.captionCTA||it.cta||'').trim();
-  return line+'\n\n'+(c&&c.length<=110?capSentence(c):'Follow for more deck-building tips.');
+  return line+'\n\n'+(c&&c.length<=110?capSentence(c):'Follow for more from '+coName()+'.');
 }
 function coverList(it){return it.sections.map((s,i)=>{const t=(it.secMeta[i]||{}).title;return nonEmpty(t)?t.trim():secText(it,i).split('\n')[0];}).filter(Boolean);}
 function assembleYt(it){
@@ -2477,7 +2596,7 @@ function metricFields(platform){
 }
 const numOrNull=v=>{if(v==null||String(v).trim()==='')return null;const n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?null:n;};
 function normSnap(x){
-  const o={id:String(x.id||uid()),contentId:String(x.contentId||''),platform:String(x.platform||'All'),checkpoint:CP_ORDER[x.checkpoint]!=null?x.checkpoint:'existing',
+  const o={id:String(x.id||uid()),clientId:String(x.clientId||activeId()),contentId:String(x.contentId||''),platform:String(x.platform||'All'),checkpoint:CP_ORDER[x.checkpoint]!=null?x.checkpoint:'existing',
     recordedAt:String(x.recordedAt||''),publishedAt:String(x.publishedAt||''),avgViewDuration:String(x.avgViewDuration==null?'':x.avgViewDuration),notes:String(x.notes==null?'':x.notes),legacy:!!x.legacy};
   NUM_METRICS.forEach(k=>{o[k]=numOrNull(x[k]);});
   return o;
@@ -2790,15 +2909,31 @@ function viewPlan(){
 }
 
 /* ================= settings ================= */
+function clientsCard(){
+  const act=activeId(), one=ROOT.clients.length===1;
+  const rows=ROOT.clients.slice().sort((a,b)=>(a.archived-b.archived)).map(c=>{
+    const on=c.id===act, n=c.data.items.length, id=esc(c.id);
+    return '<li class="cl-row'+(c.archived?' arch':'')+'"><span class="cl-av" aria-hidden="true">'+esc(initials(c.name))+'</span>'
+     +'<div class="cl-row-t"><b>'+esc(c.name)+(on?' <span class="cbadge">Active</span>':'')+(c.archived?' <span class="cbadge">Archived</span>':'')+'</b>'
+     +'<span>'+(nonEmpty(c.about)?esc(c.about):'No description yet')+'</span><span>'+n+(n===1?' video':' videos')+'</span></div>'
+     +'<div class="cl-act"><button class="btn ghost sm" data-act="clientEdit" data-id="'+id+'">Edit</button>'
+     +(c.archived?'<button class="btn ghost sm" data-act="clientRestore" data-id="'+id+'">Restore</button>'
+       :on?'':'<button class="btn ghost sm" data-act="clientSwitch" data-id="'+id+'">Switch to</button><button class="btn ghost sm" data-act="clientArchive" data-id="'+id+'">Archive</button>')
+     +(on?'':'<button class="btn danger ghost sm" data-act="clientDel" data-id="'+id+'">Delete</button>')+'</div></li>';
+  }).join('');
+  return '<section class="card"><div class="card-h"><div><h2>Clients</h2><p class="muted sm">Each client has its own separate workspace. Archived clients are hidden from the switcher until you restore them.</p></div><button class="btn primary sm" data-act="clientAdd">+ Add client</button></div>'
+   +'<ul class="cl-rows">'+rows+'</ul><p class="muted sm pad-s">'+(one?'The only client cannot be archived or deleted.':'To archive or delete the active client, switch to another client first.')+'</p></section>';
+}
 function viewSettings(){
-  const T=S.settings;
-  return '<div class="page narrow">'+head('Settings','Targets, dates, and backups.')
-   +'<section class="card"><div class="card-h"><h2>Monthly targets</h2></div><div class="card-b form-grid two"><div class="fld"><label for="st-r">Reels per month</label><input id="st-r" type="number" min="0" data-s="settings.reelTarget" value="'+T.reelTarget+'"></div><div class="fld"><label for="st-l">Long-form videos per month</label><input id="st-l" type="number" min="0" data-s="settings.longTarget" value="'+T.longTarget+'"></div><div class="fld"><label for="st-c">Company name</label><input id="st-c" data-s="settings.company" value="'+esc(T.company)+'"></div><div class="fld"><label for="st-t">Theme</label><select id="st-t" data-s="settings.theme">'+opts([['auto','Match my device'],['light','Light'],['dark','Dark']],T.theme)+'</select></div></div></section>'
+  const T=S.settings, deck=!!S.deckStarter;
+  return '<div class="page narrow">'+head('Settings','Targets, lead times, links and hashtags are saved separately for each client. You are editing <b>'+esc(coName())+'</b>. Theme, the client list and backups apply to everyone.')
+   +clientsCard()
+   +'<section class="card"><div class="card-h"><h2>Monthly targets</h2></div><div class="card-b form-grid two"><div class="fld"><label for="st-r">Reels per month</label><input id="st-r" type="number" min="0" data-s="settings.reelTarget" value="'+T.reelTarget+'"></div><div class="fld"><label for="st-l">Long-form videos per month</label><input id="st-l" type="number" min="0" data-s="settings.longTarget" value="'+T.longTarget+'"></div><div class="fld"><label for="st-t">Theme (all clients)</label><select id="st-t" data-root="theme">'+opts([['auto','Match my device'],['light','Light'],['dark','Dark']],ROOT.theme)+'</select></div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Default lead times</h2></div><div class="card-b"><p class="muted">Used when dates are filled in automatically. All of them count back from the publish date.</p><div class="form-grid two"><div class="fld"><label for="of-f">Filming, days before publish</label><input id="of-f" type="number" min="0" data-s="settings.offsets.film" value="'+T.offsets.film+'"></div><div class="fld"><label for="of-e">Editing deadline, days before publish</label><input id="of-e" type="number" min="0" data-s="settings.offsets.edit" value="'+T.offsets.edit+'"></div><div class="fld"><label for="of-s">Script deadline, days before filming</label><input id="of-s" type="number" min="0" data-s="settings.offsets.script" value="'+T.offsets.script+'"></div><div class="fld"><label for="of-p">Planning day, days before script</label><input id="of-p" type="number" min="0" data-s="settings.offsets.plan" value="'+T.offsets.plan+'"></div></div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Content pillars</h2></div><div class="card-b pillars">'+PILLARS.map(p=>'<div><h4>'+p.name+'</h4><p>'+esc(p.purpose)+'</p><p class="muted sm">'+esc(p.ex.join(', '))+'</p></div>').join('')+'</div></section>'
-   +'<section class="card"><div class="card-h"><h2>Captions</h2><button class="btn ghost sm" data-act="resetTags">Reset hashtags</button></div><div class="card-b"><p class="muted">Links are added to YouTube descriptions when filled in. Leave them blank if you don\'t want them.</p><div class="form-grid two"><div class="fld"><label for="st-web">Website</label><input id="st-web" type="url" data-s="settings.website" value="'+esc(T.website)+'" placeholder="https://"></div><div class="fld"><label for="st-quote">Quote link</label><input id="st-quote" type="url" data-s="settings.quoteUrl" value="'+esc(T.quoteUrl)+'" placeholder="https://"></div></div>'
+   +'<section class="card"><div class="card-h"><h2>Captions</h2><button class="btn ghost sm" data-act="resetTags">'+(deck?'Reset hashtags':'Clear hashtags')+'</button></div><div class="card-b"><p class="muted">Links are added to YouTube descriptions when filled in. Leave them blank if you don\'t want them.</p><div class="form-grid two"><div class="fld"><label for="st-web">Website</label><input id="st-web" type="url" data-s="settings.website" value="'+esc(T.website)+'" placeholder="https://"></div><div class="fld"><label for="st-quote">Quote link</label><input id="st-quote" type="url" data-s="settings.quoteUrl" value="'+esc(T.quoteUrl)+'" placeholder="https://"></div></div>'
    +'<h3 class="dr-sec">Hashtag groups</h3><p class="muted sm">Hashtags are optional and only added when a video has Include hashtags turned on.</p><div class="form-grid two">'+Object.keys(HASHTAG_GROUPS).map((g,n)=>'<div class="fld"><label for="ht-'+n+'">'+esc(g)+'</label><textarea id="ht-'+n+'" rows="2" data-s="settings.hashtags.'+g+'">'+esc(T.hashtags[g]||'')+'</textarea></div>').join('')+'</div></div></section>'
-   +'<section class="card"><div class="card-h"><h2>Backup and restore</h2></div><div class="card-b"><p class="muted">Your content is saved in this browser only. Export a backup now and then, and use it to move the dashboard to another computer.</p><div class="row-gap"><button class="btn primary" data-act="export">Export backup</button><label class="btn ghost file">Import backup<input type="file" accept="application/json,.json" data-import hidden></label><button class="btn danger" data-act="reset">Reset to starter content</button></div></div></section></div>';
+   +'<section class="card"><div class="card-h"><h2>Backup and restore</h2></div><div class="card-b"><p class="muted">Your content is saved in this browser only. Export a backup now and then, and use it to move the dashboard to another computer. Import works with any Content HQ backup, including ones saved before client profiles, and asks before changing anything.</p><div class="row-gap"><button class="btn primary" data-act="export">Export this client</button><button class="btn ghost" data-act="exportAll">Export all clients</button><label class="btn ghost file">Import backup<input type="file" accept="application/json,.json" data-import hidden></label><button class="btn danger" data-act="reset">Reset this client</button></div></div></section></div>';
 }
 
 const VIEWS={dashboard:viewDashboard,calendar:viewCalendar,pipeline:viewPipeline,ideas:viewIdeas,month:viewMonth,film:viewFilm,published:viewPublished,performance:viewPerformance,templates:viewTemplates,settings:viewSettings,library:viewLibrary,plan:viewPlan};
@@ -2834,7 +2969,7 @@ function speakerSection(it){
   const hasFull=nonEmpty(it.script), v=spkVersion(it);
   return '<section class="spk"><div class="sg-prev-h"><h3>Speaker Script</h3></div>'
    +'<p class="muted sm">A clean version to send to whoever is on camera. No internal notes, B-roll, or strategy.</p>'
-   +'<div class="form-grid">'+F(it,'speaker','Speaker (optional)',{ph:'e.g. Tyler'})
+   +'<div class="form-grid">'+F(it,'speaker','Speaker (optional)',{ph:'Who is on camera'})
    +'<div class="fld"><label>Speaker version</label>'+(hasFull?'<div class="seg"><button class="'+(v==='full'?'on':'')+'" data-act="spkVer" data-v="full">Full Script</button><button class="'+(v==='structured'?'on':'')+'" data-act="spkVer" data-v="structured">Structured Script</button></div>'
      :'<p class="muted sm spk-note">Structured Script. Write a Full Script below to share word-for-word instead.</p>')+'</div></div>'
    +F(it,'speakerLabels','Include section labels',{t:'check'})
@@ -3012,17 +3147,17 @@ function liveScript(it){
   liveCaption(it);
 }
 function aiPrompt(it){
-  const d=scriptDef(it), co=S.settings.company||'Benchmark Decks', line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
+  const d=scriptDef(it), co=coName(), about=coAbout(), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
   const shots=REEL_SHOTS.filter(s=>it.shots[s[0]]).map(s=>s[1]);
   const extra=[['Audience problem',it.audienceProblem],['Main message',it.mainMessage],['Desired takeaway',it.takeaway],['Offer',it.offer],['Notes',it.notes],['Full script draft',it.script]].filter(x=>nonEmpty(x[1]));
-  return ['You are helping write a short-form video (Reel) speaking guide for '+co+', a deck-building company that builds custom decks and outdoor structures for homeowners in Northern Texas and Southern Oklahoma.','',
+  return ['You are helping write a short-form video (Reel) speaking guide for '+co+'.'].concat(about?['About '+co+': '+about]:[],['',
     'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType+' ('+d.flow.join(' > ')+')','Content pillar: '+it.pillar,'Platforms: '+platText(it),'',
-    'WHAT WE HAVE SO FAR',line('Hook',it.hook)].concat(ptLines(it),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', ')].concat(it.blocks.filter(b=>nonEmpty(b.broll)).map(b=>'Point '+(it.blocks.indexOf(b)+1)+': '+b.broll.trim()),[it.broll]).filter(nonEmpty).join('; '))],
+    'WHAT WE HAVE SO FAR',line('Hook',it.hook)]).concat(ptLines(it),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', ')].concat(it.blocks.filter(b=>nonEmpty(b.broll)).map(b=>'Point '+(it.blocks.indexOf(b)+1)+': '+b.broll.trim()),[it.broll]).filter(nonEmpty).join('; '))],
     extra.length?['','FACTS AND CONTEXT FROM '+co.toUpperCase()].concat(extra.map(x=>x[0]+': '+String(x[1]).trim())):[],
     ['','PLEASE WRITE','1. 5 alternative hooks, one sentence each','2. Concise numbered talking points that follow the '+it.scriptType+' structure ('+d.labels.join(', ')+')','3. 2 CTA options','4. One suggested B-roll shot for each talking point','',
     'RULES','- Do not invent construction facts, materials, measurements, or building methods.','- Do not invent financing terms, prices, rates, or approval details.','- Do not invent warranties or guarantees.',
     '- Preserve every factual detail supplied above exactly as given. If something is missing, say what to confirm with '+co+' instead of guessing.',
-    '- Write for homeowners, in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
+    '- Write for '+(about?'the customers described above':co+"'s customers")+', in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
 }
 function copyText(txt,msg){
   msg=msg||'Prompt copied. Paste it into Claude.';
@@ -3116,15 +3251,15 @@ function confirmReplace(msg,cb){
   showModal('<div class="modal-h"><h3>Replace what you have?</h3></div><div class="modal-b"><p>'+msg+'</p><div class="row-gap"><button class="btn primary" data-act="confirmYes">Replace</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
 }
 function aiCaptionPrompt(it){
-  const co=S.settings.company||'Benchmark Decks', line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
-  return ['You are helping write social captions for a '+co+' video. '+co+' builds custom decks and outdoor structures for homeowners in North Texas and Southern Oklahoma.','',
+  const co=coName(), about=coAbout(), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
+  return ['You are helping write social captions for a '+co+' video.'+(about?' About '+co+': '+about:''),'',
    'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType,'Caption style: '+it.captionStyle+' ('+(CAPTION_STYLES[it.captionStyle]||{flow:[]}).flow.join(' > ')+')','Platforms: '+platText(it),'',
    'WHAT THE VIDEO SAYS',line('Hook',it.hook)].concat(ptLines(it),[line('CTA',it.cta)],
    nonEmpty(socialText(it))?['','CURRENT CAPTION DRAFT',socialText(it)]:[],
    ['','PLEASE WRITE','1. An Instagram / Facebook caption','2. A YouTube Shorts description (shorter, topic-focused, searchable first line)','3. 3 to 5 relevant hashtags','4. One shorter alternate caption','',
    'RULES','- Do not invent construction facts.','- Do not invent financing terms.','- Do not invent warranty details.','- Do not invent prices.',
    '- Preserve every fact provided by '+co+' exactly as given.','- Write naturally, the way a person talks.','- Avoid generic corporate marketing language.','- Avoid excessive emojis.','- Avoid excessive hashtags.',
-   '- Write for homeowners in North Texas and Southern Oklahoma.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
+   '- Write for '+(about?'the customers described in About':co+"'s customers")+'.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
 }
 const SHOT_FILTERS=[['all','All'],['a','A-roll'],['b','B-roll'],['manual','Manual'],['todo','Not Captured'],['done','Captured'],['unused','Not Used in Edit']];
 function shotRow(x){
@@ -3321,9 +3456,164 @@ function ensureType(it){
 }
 function refreshPerf(){const c=$('#perf-charts');if(c)c.innerHTML=perfCharts(perfItems());}
 
+/* ================= clients ================= */
+function clientMenuHtml(){
+  const list=ROOT.clients.filter(c=>!c.archived);
+  return '<div class="cm-h">Switch client</div>'+list.map(c=>'<button role="menuitemradio" class="cm-i" aria-checked="'+(c.id===activeId())+'" data-act="clientSwitch" data-id="'+esc(c.id)+'"><span class="cl-av" aria-hidden="true">'+esc(initials(c.name))+'</span><span class="cl-n">'+esc(c.name)+'</span></button>').join('')
+   +'<div class="cm-sep"></div><button role="menuitem" data-act="clientAdd">+ Add client</button><button role="menuitem" data-act="clientManage">Manage clients</button>';
+}
+function renderClientUi(){
+  const n=coName(), av='<span class="cl-av" aria-hidden="true">'+esc(initials(n))+'</span>', lab='Client: '+n+'. Switch client';
+  const sb=$('#cbSide');if(sb){sb.innerHTML=av+'<span class="cl-n"><small>Client</small><b>'+esc(n)+'</b></span>'+I('down','xs');sb.setAttribute('aria-label',lab);sb.title=n;}
+  const tb=$('#cbTop');if(tb){tb.innerHTML=av+'<span class="cl-n">'+esc(n)+'</span>'+I('down','xs');tb.setAttribute('aria-label',lab);tb.title=n;}
+  $$('.cmenu').forEach(m=>{m.innerHTML=clientMenuHtml();});
+}
+function closeClientMenus(){$$('.cmenu.open').forEach(m=>m.classList.remove('open'));$$('[data-act="clientMenu"]').forEach(b=>b.setAttribute('aria-expanded','false'));}
+/* Everything in ui that points at the active client's records goes back to a clean state */
+function resetClientUi(){
+  closeMenu();closeClientMenus();
+  ui.newId=null;
+  if(ui.panelFocus){ui.panelFocus=false;applyPanel();}
+  ui.edit={id:null,tab:'overview'};$('#drawer-wrap').innerHTML='';document.body.classList.remove('drawer-open');
+  closeModal();
+  shareTok++;if(shareImg){URL.revokeObjectURL(shareImg.url);shareImg=null;}
+  Object.assign(ui,{carrySel:{},carryOpen:false,carryTarget:'',calDay:'',focus:null,perfOpen:'',snapCtx:null,taskEdit:null,taskHint:null,confirmCb:null,libCtx:null,importData:null,
+    lib:{},q:'',pub:{type:'',pillar:'',platform:''},perf:{type:'',platform:'',pillar:'',month:''},ideaTopic:'All',ideaRoadmap:false,attnAll:false,
+    projDraft:blankProj(),projResults:false,planFilm:{a:'',b:''},capTab:''});
+  const q=$('#q');if(q)q.value='';
+  ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;ui.planMonth=addMonths(mk(today()),1);
+}
+function switchClient(id){
+  const c=ROOT.clients.find(x=>x.id===id);if(!c||c.archived)return;
+  closeClientMenus();
+  if(id===activeId()){render();return;}
+  discardIfEmpty(null);   // an empty new video belongs to the client being left
+  save(true);             // flush anything pending into the outgoing client first
+  ROOT.activeClientId=id;S=c.data;
+  resetClientUi();
+  save(true);             // remember the active client
+  applyTheme();render();window.scrollTo(0,0);
+  toast('Switched to '+c.name);
+}
+function clientModal(id){
+  const c=id?ROOT.clients.find(x=>x.id===id):null;if(id&&!c)return;
+  showModal('<div class="modal-h"><h3>'+(c?'Edit client':'Add client')+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><form class="modal-b" data-form="saveClient" data-id="'+(c?esc(c.id):'')+'" autocomplete="off">'
+   +'<div class="fld"><label for="cl-name">Client name</label><input id="cl-name" value="'+esc(c?c.name:'')+'" placeholder="Business name"></div>'
+   +'<div class="fld"><label for="cl-about">About the business</label><textarea id="cl-about" rows="4" placeholder="What the business does, who it serves, and the area it works in">'+esc(c?c.about:'')+'</textarea><small class="help">Used in the AI script and caption prompts. Write it the way you would describe the business to a copywriter.</small></div>'
+   +(c?'':'<p class="muted sm">A new client starts empty: no videos, ideas, roadmap, tasks or hashtags. Pillars, topics, the hook and CTA libraries and the templates are shared by all clients.</p>')
+   +'<div class="row-gap"><button class="btn primary" type="submit">'+(c?'Save client':'Add client')+'</button><button class="btn ghost" type="button" data-act="modalClose">Cancel</button></div></form>');
+}
+function saveClientForm(form){
+  const name=$('#cl-name').value.trim(), about=$('#cl-about').value.trim();
+  if(!name){toast('Give the client a name');$('#cl-name').focus();return;}
+  const id=form.dataset.id;
+  if(id){const c=ROOT.clients.find(x=>x.id===id);if(!c)return;c.name=name;c.about=about;save(true);closeModal();applyTheme();render();toast('Client saved');return;}
+  const c=makeClient(name,about,blankWorkspace());ROOT.clients.push(c);
+  closeModal();switchClient(c.id);toast('Added '+c.name+'. This workspace is empty and ready.');
+}
+function clientCounts(c){
+  const d=c.data, p=(n,w)=>n+' '+w+(n===1?'':'s');
+  return [p(d.items.length,'video'),p(d.tasks.length,'task'),p(d.perfSnapshots.length,'performance snapshot'),p(d.projects.length,'saved project')].join(', ');
+}
+function clientDelModal(id){
+  const c=ROOT.clients.find(x=>x.id===id);if(!c)return;
+  if(id===activeId()||ROOT.clients.length<2){toast(ROOT.clients.length<2?'The only client cannot be deleted':'Switch to another client first');return;}
+  showModal('<div class="modal-h"><h3>Delete '+esc(c.name)+'?</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p>This permanently deletes the client <b>'+esc(c.name)+'</b> and everything in its workspace: '+esc(clientCounts(c))+'. Other clients are not affected.</p>'
+   +'<p><b>This cannot be undone.</b> Export the client first if you might need it again.</p>'
+   +'<div class="row-gap"><button class="btn danger" data-act="clientDelYes" data-id="'+esc(c.id)+'">Delete '+esc(c.name)+'</button><button class="btn ghost" data-act="clientExport" data-id="'+esc(c.id)+'">Export it first</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');
+}
+function downloadJson(obj,name){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function exportClient(id){
+  save(true);
+  const c=ROOT.clients.find(x=>x.id===id)||activeClient();
+  downloadJson({app:'Content HQ',kind:'client',v:2,exportedAt:new Date().toISOString(),client:c},'content-hq-'+slug(c.name)+'-'+today()+'.json');
+  toast(c.name+' backup downloaded');
+}
+function exportAll(){
+  save(true);
+  downloadJson(Object.assign({app:'Content HQ',kind:'all',exportedAt:new Date().toISOString()},ROOT),'content-hq-all-clients-'+today()+'.json');
+  toast('Backup of all clients downloaded');
+}
+/* Import asks what to do before anything changes */
+function importKind(o){
+  if(o&&Array.isArray(o.clients))return 'all';
+  if(o&&o.client&&o.client.data&&Array.isArray(o.client.data.items))return 'client';
+  if(o&&Array.isArray(o.items))return 'flat';
+  return '';
+}
+function importModal(){
+  const d=ui.importData;if(!d)return;
+  const o=d.o, act=esc(coName()), cancel='<button class="btn ghost" data-act="modalClose">Cancel</button>';
+  const one=d.kind==='client'?(o.client.name||'Imported client'):d.kind==='flat'?((o.settings||{}).company||'Imported client'):'';
+  const names=d.kind==='all'?o.clients.map(c=>c&&c.name||'Untitled client'):[one];
+  const what=d.kind==='all'?'This backup has '+names.length+(names.length===1?' client':' clients')+': <b>'+names.map(esc).join(', ')+'</b>.'
+    :'This backup holds one client: <b>'+esc(one)+'</b>'+(d.kind==='flat'?' (saved before client profiles)':'')+'.';
+  let btns;
+  if(loadFailed)btns='<button class="btn primary" data-act="importDo" data-mode="restore">Restore this backup</button>'+cancel;
+  else if(d.kind==='all')btns='<button class="btn primary" data-act="importDo" data-mode="add">Add '+(names.length===1?'it as a new client':'these '+names.length+' clients')+'</button><button class="btn danger ghost" data-act="importDo" data-mode="replaceAll">Replace everything</button>'+cancel;
+  else btns='<button class="btn primary" data-act="importDo" data-mode="add">Add as a new client</button><button class="btn ghost" data-act="importDo" data-mode="replace">Replace '+act+'’s content</button>'+cancel;
+  showModal('<div class="modal-h"><h3>Import backup</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b"><p>'+what+'</p>'
+   +(loadFailed?'<p class="muted sm">Your saved content could not be loaded, so restoring replaces the starter content you are looking at. The unreadable copy stays in this browser as a recovery copy.</p>'
+     :'<p class="muted sm">Adding keeps every current client as it is. Replacing removes what is there now, so export first if you might need it.</p>')
+   +'<div class="row-gap">'+btns+'</div></div>');
+}
+function importDo(mode,confirmed){
+  const d=ui.importData;if(!d)return;
+  if((mode==='replace'||mode==='replaceAll')&&!confirmed){
+    const msg=mode==='replace'?'This replaces everything in <b>'+esc(coName())+'</b> with the backup. Its name and description stay. Other clients are not touched.'
+      :'This replaces all '+ROOT.clients.length+(ROOT.clients.length===1?' client':' clients')+' in this browser with the clients in the backup.';
+    askConfirm(msg+' This cannot be undone.',mode==='replace'?'Replace content':'Replace everything',()=>{ui.importData=d;importDo(mode,true);});
+    return;
+  }
+  let newRoot=null, added=null, data=null;
+  try{
+    if(mode==='restore'||mode==='replaceAll')newRoot=d.kind==='all'?fixRoot(d.o):d.kind==='client'?(c=>({v:2,activeClientId:c.id,theme:ROOT.theme,clients:[c]}))(clientFromFile(d.o.client)):rootFromFlat(d.o,ROOT.theme);
+    else if(mode==='add'){
+      added=d.kind==='all'?fixRoot(d.o).clients:[d.kind==='client'?clientFromFile(d.o.client):rootFromFlat(d.o).clients[0]];
+      const taken=ROOT.clients.map(c=>c.name.toLowerCase());
+      added.forEach(c=>{c.id=newCid();stampClient(c.data,c.id);if(d.kind!=='all')c.archived=false;if(taken.includes(c.name.toLowerCase()))c.name+=' (imported)';taken.push(c.name.toLowerCase());});
+    }else if(mode==='replace')data=d.kind==='client'?fixState(d.o.client.data):fixState(d.o,{legacy:true});
+    else return;
+  }catch(err){console.error(err);closeModal();ui.importData=null;toast('That backup could not be read. Nothing was changed.');return;}
+  ui.importData=null;
+  discardIfEmpty(null);save(true);
+  let msg;
+  if(newRoot){ROOT=newRoot;loadFailed=false;msg='Backup restored';}
+  else if(added){ROOT.clients=ROOT.clients.concat(added);const f=added.find(c=>!c.archived);if(f)ROOT.activeClientId=f.id;msg=added.length===1?'Added '+added[0].name:added.length+' clients added';}
+  else{const c=activeClient();c.data=stampClient(data,c.id);msg=c.name+' restored from the backup';}
+  S=activeClient().data;
+  resetClientUi();save(true);applyTheme();render();toast(msg);
+}
+
 const ACTS={
   nav:a=>go(a.dataset.view),
-  addmenu:()=>{const m=$('#addmenu'),o=m.classList.toggle('open');$('#addbtn').setAttribute('aria-expanded',String(o));},
+  clientMenu:a=>{
+    const m=$('#'+a.dataset.menu);if(!m)return;const open=!m.classList.contains('open');
+    closeMenu();closeClientMenus();
+    if(open){m.innerHTML=clientMenuHtml();m.classList.add('open');a.setAttribute('aria-expanded','true');const f=$('[aria-checked="true"]',m)||$('button',m);f&&f.focus();}
+  },
+  clientSwitch:a=>switchClient(a.dataset.id),
+  clientAdd:()=>{closeClientMenus();clientModal(null);},
+  clientManage:()=>{closeClientMenus();go('settings');},
+  clientEdit:a=>clientModal(a.dataset.id),
+  clientArchive:a=>{const c=ROOT.clients.find(x=>x.id===a.dataset.id);if(!c)return;if(c.id===activeId()){toast('Switch to another client first');return;}
+    c.archived=true;save(true);render();toast(c.name+' archived. Restore it any time in Settings.');},
+  clientRestore:a=>{const c=ROOT.clients.find(x=>x.id===a.dataset.id);if(!c)return;c.archived=false;save(true);render();toast(c.name+' restored');},
+  clientDel:a=>clientDelModal(a.dataset.id),
+  clientDelYes:a=>{
+    const id=a.dataset.id, c=ROOT.clients.find(x=>x.id===id);if(!c)return;
+    if(id===activeId()||ROOT.clients.length<2){closeModal();return;}
+    ROOT.clients=ROOT.clients.filter(x=>x.id!==id);save(true);closeModal();render();toast(c.name+' deleted');
+  },
+  clientExport:a=>exportClient(a.dataset.id),
+  exportAll:()=>exportAll(),
+  importDo:a=>importDo(a.dataset.mode),
+  addmenu:()=>{closeClientMenus();const m=$('#addmenu'),o=m.classList.toggle('open');$('#addbtn').setAttribute('aria-expanded',String(o));},
   add:a=>{closeMenu();const k=a.dataset.kind;
     if(k==='reel')createItem('Reel');else if(k==='long')createItem('Long Form');else if(k==='recap')createRecap();
     else if(k==='idea'){ui.view='ideas';ui.focus='#qa-title';render();}
@@ -3449,7 +3739,8 @@ const ACTS={
   },
   capComplete:()=>{const it=getItem(ui.edit.id);if(!captionReady(it)){toast('Still needed: '+captionMissing(it).join(', '));return;}it.captionStatus='Done';it.prod.caption=true;save();renderEditor();toast('Caption marked complete');},
   toReadyToPost:()=>{const it=getItem(ui.edit.id);if(!it||postMissing(it).length)return;if(stIdx(it.status)>=5){toast('Already at '+it.status);return;}setStatus(it,'Ready to Post');save();render();renderEditor();toast('Moved to Ready to Post');},
-  resetTags:()=>{S.settings.hashtags=Object.assign({},HASHTAG_GROUPS);save();render();toast('Hashtag groups reset');},
+  // Only the first (deck) client has default hashtags to go back to. Everyone else starts empty.
+  resetTags:()=>{const deck=!!S.deckStarter;S.settings.hashtags=deck?Object.assign({},HASHTAG_GROUPS):emptyTags();save();render();toast(deck?'Hashtag groups reset':'Hashtag groups cleared');},
   shotFilter:a=>{ui.shotFilter=a.dataset.f;renderEditor();},
   filmFilter:a=>{ui.filmFilter=a.dataset.f;render();},
   shotAdd:()=>{
@@ -3518,7 +3809,7 @@ const ACTS={
   projSave:()=>{
     const d=ui.projDraft;if(!d.name.trim()){toast('Add a project name first');return;}
     if(d.id){const p=S.projects.find(x=>x.id===d.id);if(p)Object.assign(p,d);else S.projects.push(Object.assign({},d));}
-    else{d.id=uid();S.projects.push(Object.assign({},d));}
+    else{d.id=uid();S.projects.push(Object.assign({},d,{clientId:activeId()}));}
     save();render();toast('Project saved');
   },
   projLoad:a=>{const p=S.projects.find(x=>x.id===a.dataset.id);if(!p)return;ui.projDraft=Object.assign(blankProj(),p);ui.projResults=true;render();window.scrollTo(0,0);},
@@ -3540,13 +3831,12 @@ const ACTS={
     render();
   },
   clearLib:()=>{ui.lib={};ui.q='';const q=$('#q');if(q)q.value='';render();},
-  export:()=>{
-    save(true);
-    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);a.download='content-hq-backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('Backup downloaded');
-  },
-  reset:()=>askConfirm('This replaces everything in the dashboard with the starter content. Export a backup first if you want to keep your work.','Reset everything',()=>{S=seed();loadFailed=false;ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;save(true);applyTheme();render();toast('Starter content restored');}),
+  export:()=>exportClient(activeId()),
+  // Resets only the active client: the first (deck) client goes back to the starter content, any other client to empty
+  reset:()=>{const c=activeClient(), deck=!!S.deckStarter;
+    askConfirm('This replaces everything in <b>'+esc(c.name)+'</b> with '+(deck?'the starter content':'an empty workspace')+'. Its name and description stay, and other clients are not touched. Export this client first if you want to keep its work.','Reset this client',()=>{
+      discardIfEmpty(null);const data=stampClient(deck?seed():blankWorkspace(),c.id);c.data=data;S=data;loadFailed=false;
+      resetClientUi();save(true);applyTheme();render();toast(deck?'Starter content restored':'Client reset');});},
   /* ---------- Home tasks ---------- */
   taskToggle:a=>{
     const x=findTask(a.dataset.key);if(!x||x.auto){render();return;}
@@ -3619,6 +3909,7 @@ const ACTS={
 /* ================= events ================= */
 document.addEventListener('click',e=>{
   if($('#addmenu').classList.contains('open')&&!e.target.closest('#addwrap'))closeMenu();
+  if(!e.target.closest('.cwrap'))closeClientMenus();
   if(e.target.closest('[data-stop]'))return;
   const sm=e.target.closest('summary[data-adv]');if(sm){ui.advOpen[sm.dataset.adv]=!sm.parentElement.open;return;}
   const a=e.target.closest('[data-act]');
@@ -3645,11 +3936,10 @@ document.addEventListener('input',e=>{
     if(el.tagName==='SELECT'||el.type==='checkbox'||el.type==='date')render();
     return;
   }
+  if(el.dataset.root==='theme'){ROOT.theme=el.value;applyTheme();save();return;}
   if(el.dataset.s){
     const v=el.type==='checkbox'?el.checked:(el.type==='number'?Math.max(0,num(el.value)):el.value);
     sp(S,el.dataset.s,v);
-    if(el.dataset.s==='settings.theme')applyTheme();
-    if(el.dataset.s==='settings.company')applyTheme();
     if(el.dataset.s.indexOf('jobsite.checks')===0)render();
     save();return;
   }
@@ -3687,7 +3977,10 @@ document.addEventListener('change',e=>{
   if(el.matches&&el.matches('input[data-import]')){
     const f=el.files&&el.files[0];if(!f)return;
     const r=new FileReader();
-    r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.items))throw new Error('bad');S=fixState(o);loadFailed=false;save(true);applyTheme();ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;render();toast('Backup restored');}catch(err){toast('That file is not a Content HQ backup');}};
+    // Nothing changes until a choice is made in the import dialog
+    r.onload=()=>{let o=null;try{o=JSON.parse(r.result);}catch(err){}
+      const kind=importKind(o);if(!kind){toast('That file is not a Content HQ backup');return;}
+      ui.importData={kind:kind,o:o};importModal();};
     r.readAsText(f);el.value='';
   }
 });
@@ -3710,6 +4003,7 @@ document.addEventListener('submit',e=>{
     ui.taskEdit=null;save();closeModal();const q=$('#tq-title');if(q)q.value='';render();toast(ex?'Task saved':'Task added');return;
   }
   if(form&&form.dataset.form==='saveSnap'){e.preventDefault();saveSnap();return;}
+  if(form&&form.dataset.form==='saveClient'){e.preventDefault();saveClientForm(form);return;}
   const f=e.target.closest('[data-form="addIdea"]');if(!f)return;
   e.preventDefault();
   const t=$('#qa-title').value.trim();if(!t){toast('Type the idea first');$('#qa-title').focus();return;}
@@ -3728,6 +4022,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if($('#modal-wrap .modal'))closeModal();
     else if($('#addmenu').classList.contains('open'))closeMenu();
+    else if($('.cmenu.open')){const b=$('.cmenu.open').parentElement.querySelector('[data-act="clientMenu"]');closeClientMenus();b&&b.focus();}
     else if(ui.edit.id)closeEditor();
   }
 });
@@ -3745,13 +4040,16 @@ document.addEventListener('drop',e=>{
 });
 
 /* ================= render + init ================= */
+/* Theme is shared by every client. The page title and switcher follow the active client. */
 function applyTheme(){
-  document.documentElement.setAttribute('data-theme',S.settings.theme||'auto');
-  const b=$('#brandSub');if(b)b.textContent=S.settings.company||'Deck content planner';
+  document.documentElement.setAttribute('data-theme',ROOT.theme||'auto');
+  document.title='Content HQ · '+coName();
+  renderClientUi();
 }
 function updateStoreNote(){const n=$('#storeNote');if(n)n.textContent=loadFailed?'Your saved content could not be loaded. It has not been changed, and saving is paused.':memOnly?'Saving is off in this browser. Export a backup before you leave.':'Saved in this browser.';n&&n.classList.toggle('warn',memOnly||loadFailed);}
 function render(){
   const kb=$('.kanban'),sl=kb?kb.scrollLeft:0;
+  renderClientUi();
   $('#nav').innerHTML=navHtml();
   $('#main').innerHTML=VIEWS[ui.view]();
   const kb2=$('.kanban');if(kb2)kb2.scrollLeft=sl;
@@ -3761,7 +4059,8 @@ function render(){
 }
 function init(){
   memOnly=!storageOk();
-  S=load()||seed();
+  ROOT=load()||seedRoot();
+  S=activeClient().data;
   save(true);
   applyTheme();
   loadPrefs();applyPanel();
@@ -3773,7 +4072,7 @@ init();
 /* Home is built around today's date. If the page stays open past midnight, catch up when it comes back into view. */
 let shownDay=today();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&today()!==shownDay){shownDay=today();if(!$('#modal-wrap .modal'))render();}});
-window.__hq={get S(){return S;},ui:ui,render:render,ACTS:ACTS,VIEWS:VIEWS,openEditor:openEditor};
+window.__hq={get S(){return S;},get ROOT(){return ROOT;},switchClient:switchClient,ui:ui,render:render,ACTS:ACTS,VIEWS:VIEWS,openEditor:openEditor};
 })();
 
 </script>
