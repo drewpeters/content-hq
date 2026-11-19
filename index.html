@@ -1012,6 +1012,33 @@ button.cbadge.warn:hover{background:var(--attention-soft)}
 .pg{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r1);background:var(--surface2)}
 .pg span{font-size:13px;color:var(--ink2)}.pg em{font-style:normal;font-weight:600;font-size:13.5px}
 @media (max-width:700px){.pg-row{grid-template-columns:1fr}.crow-act{width:100%}}
+
+/* client wording (language packs) */
+.pk-cur{display:flex;flex-direction:column;gap:3px;margin-bottom:2px}
+.pk-cur b{font-size:16px}
+.pk-prevname{margin:10px 0 0}
+.pk-list,.pk-opts{display:flex;flex-direction:column;gap:8px}
+.pk-i{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-size:14.5px}
+.pk-i:hover{border-color:var(--ink3)}
+.pk-i span{font-size:13px;color:var(--ink3)}
+.pk-start{margin-top:4px}
+.pk-o{width:100%}
+.pk-o>span{display:flex;flex-direction:column;gap:2px}
+.pk-o small{font-size:12.5px;color:var(--ink3);font-weight:400}
+.chk input[type=radio]{border-radius:50%}
+.pk-file{padding:0 0 2px 34px}
+.pk-err,.pk-warn{border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin:12px 0;background:var(--surface);font-size:14px}
+.pk-warn{border-color:var(--amber)}
+.pk-err p{margin:4px 0 0}
+.pk-err ul,.pk-warn ul{margin:6px 0 0;padding-left:18px}
+.pk-prev{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;background:var(--surface2);overflow-wrap:anywhere}
+.pk-prev h3{margin:0 0 4px}.pk-prev h4{margin:10px 0 4px;font-size:13px}.pk-prev p{margin:4px 0}
+.pk-prev ul{margin:0;padding-left:18px}
+.pk-diff tr.chg td{font-weight:600}
+.pk-notes{padding-left:18px;margin:12px 0;font-size:14px}
+.pk-notes li{margin-bottom:6px}
+.wd textarea{min-height:0}
+@media (max-width:700px){.pk-btns .btn,.pk-btns .file{width:100%}.pk-file{padding-left:0}.pk-i{padding:14px}}
 </style>
 </head>
 <body>
@@ -1070,10 +1097,11 @@ const STATUSES=['Idea','Scripting','Ready to Film','Filming','Editing','Ready to
 const PRIORITIES=['High','Medium','Low'];
 const PLATFORMS=['YouTube','YouTube Shorts','Instagram','Facebook'];
 const PLAT_SHORT={'YouTube':'YouTube','YouTube Shorts':'Shorts','Instagram':'Instagram','Facebook':'Facebook'};
+/* Benchmark Decks' original wording. Screens never read these directly: they are folded into DECK_PACK below, and every
+   screen reads the active client's own copy of its wording through P(). */
 const TOPICS=['Construction','Materials','Payments','Buying Process','Company','Deck Options','Maintenance','Roofs','Pool Decks','FAQs','Customer Pain Points'];
 const GROUPS=['Buying / Sales','Construction','Materials','Products / Options','Company / Trust'];
 const GROUP_FOR={'Payments':'Buying / Sales','Buying Process':'Buying / Sales','Customer Pain Points':'Buying / Sales','Construction':'Construction','Materials':'Materials','Maintenance':'Materials','Deck Options':'Products / Options','Roofs':'Products / Options','Pool Decks':'Products / Options','Company':'Company / Trust','FAQs':'Company / Trust'};
-const groupFor=t=>GROUP_FOR[t]||'Company / Trust';
 const PILLARS=[
  {name:'Projects',purpose:'Show craftsmanship and finished work.',ex:['Finished deck walkthrough','Before and after','Construction progress','Project reveal','Customer project story']},
  {name:'Education',purpose:'Teach homeowners about decks.',ex:['Composite vs treated wood','Maintenance','Deck lifespan','Materials','Fasteners','Construction methods']},
@@ -1083,7 +1111,6 @@ const PILLARS=[
  {name:'Payments',purpose:'Explain ways customers can pay.',ex:['Cash','Rent-to-own','Traditional financing / HFS','Payment comparisons']},
  {name:'Local',purpose:'Content relevant to customers in North Texas and Southern Oklahoma.',ex:['Texas heat','Storms','Weather','Deck maintenance in this climate','Outdoor living']}
 ];
-const PILLAR_NAMES=PILLARS.map(p=>p.name);
 const REEL_SHOTS=[['talking','Talking head'],['wide','Wide deck footage'],['detail','Detail shots'],['before','Before footage'],['after','After footage'],['construction','Construction B-roll'],['product','Product / material close-up'],['other','Other']];
 const PROD_STEPS=[['script','Script finished'],['filmed','Filmed'],['uploaded','Footage uploaded'],['edited','Edited'],['captions','Captions added'],['cover','Cover / thumbnail finished'],['caption','Caption written'],['scheduled','Scheduled'],['posted','Posted']];
 const JOBSITE=[
@@ -1127,16 +1154,20 @@ const CTA_LIBRARY=[
  {cat:'Follow',items:['Follow us to see more of how these decks are actually built.','Follow along for more deck-building tips and project walkthroughs.']},
  {cat:'Consultative',items:["If you're deciding between these options, send us your project and we'll help you figure out what makes sense.","If you're not sure which option fits your project, reach out and we can walk you through it."]}
 ];
+/* The topic and pillar names that suggest a script type come from the client's wording. Names that don't match fall back to Educational. */
 function inferScriptType(it){
-  const t=String(it.title||'').toLowerCase();
+  const t=String(it.title||'').toLowerCase(), m=P().scriptTypeFor;
   if(/\bvs\.?\b/.test(t))return 'Comparison';
-  if(it.topic==='FAQs')return 'FAQ';
-  if(it.reelKind==='Recap'||it.pillar==='Projects')return 'Project Showcase';
-  if(it.pillar==='Problems')return 'Problem / Solution';
-  if(it.pillar==='Trust')return 'Trust / Company';
+  if(own(m.topics,it.topic))return m.topics[it.topic];
+  if(it.reelKind==='Recap')return 'Project Showcase';
+  if(own(m.pillars,it.pillar))return m.pillars[it.pillar];
   return 'Educational';
 }
-const scriptDef=it=>SCRIPT_TYPES[it.scriptType]||SCRIPT_TYPES.Educational;
+/* Flow and labels are the same for every client. The placeholder hints come from the client's wording. */
+const scriptDef=it=>{
+  const n=own(SCRIPT_TYPES,it.scriptType)?it.scriptType:'Educational', h=P().scriptHints[n]||NEUTRAL_PACK.scriptHints[n];
+  return Object.assign({},SCRIPT_TYPES[n],{ph:h.ph,hookPh:h.hookPh});
+};
 const blankShort=()=>({hook:'',section:'',reelId:'',angle:'',sectionIdx:-1});
 const blankSec=()=>({title:'',visual:'',blocks:[blankBlock()]});
 
@@ -1238,8 +1269,482 @@ const HASHTAG_GROUPS={
  'Outdoor Living':'#OutdoorLiving #BackyardLiving #BackyardIdeas #PatioIdeas',
  'Project Showcase':'#DeckInspiration #BackyardTransformation #OutdoorLiving'
 };
-const HASHTAG_GROUP_NAMES=Object.keys(HASHTAG_GROUPS).concat(['Custom']);
 const captionStyleFor=it=>CAPTION_FROM_SCRIPT[it.scriptType]||(it.reelKind==='Recap'?'Project Showcase':'Educational');
+
+/* ================= language packs =================
+   A pack is plain JSON: all the wording one client uses (pillars, topics, the hook / CTA / caption libraries, hashtags,
+   shot lists, checklists, labels and the AI prompt rules). Every client workspace keeps its own full copy in S.pack, so
+   editing one client never changes another. Screens read the active client's pack through P(). Anything a pack leaves
+   out falls back to the NEUTRAL wording below, never to the deck wording. */
+const PACK_FORMAT='content-hq-pack';
+const PACK_SOURCES=['deck','construction','restaurant','realestate','blank','import','ai','custom'];
+const LABEL_KEYS=['capture','captureTitle','captureProject','captureProjectPh','footageField','planCollect','projectTab','addProject','projectHeading','projectIntro','customHashtagsPh'];
+const LABEL_HELP={capture:'Name of the filming checklist button and tab',captureTitle:'Heading on the filming checklist',captureProject:'Label for the "what are you filming" box',captureProjectPh:'Placeholder for that box',
+  footageField:'Label for the extra footage notes on a video',planCollect:'Monthly plan step about collecting B-roll',projectTab:'Tab that turns a project into content',addProject:'Add menu item for a project',
+  projectHeading:'Heading on that tab',projectIntro:'One sentence under that heading',customHashtagsPh:'Placeholder for custom hashtags'};
+const PHRASE_KEYS=['showcaseOpen','showcaseGoal','showcaseMade','showcaseFeature'];
+/* Project form fields in the pack, and the saved project field each one fills. The saved name for "type" is deckType, from before packs. */
+const PROJ_FIELDS=['name','city','type','materials','features','challenges','goal'];
+const PROJ_TOKENS={name:'name',city:'city',type:'deckType',materials:'materials',features:'features',challenges:'challenges',goal:'goal'};
+const PROJ_AREA={features:1,challenges:1,goal:1};
+
+/* Benchmark Decks' wording, built from the original constants above so nothing changes for it. Not offered as a starter. */
+const DECK_PACK={format:PACK_FORMAT,version:1,name:'Deck builder',description:'The original Content HQ wording: custom decks for homeowners in North Texas and Southern Oklahoma.',source:'deck',
+  voice:'',terms:{audience:''},
+  pillars:PILLARS,topics:TOPICS,groups:GROUPS,groupFor:GROUP_FOR,
+  defaults:{pillar:'Education',topic:'Construction',group:'Company / Trust',recapPillar:'Trust',recapTopic:'Company'},
+  scriptTypeFor:{topics:{'FAQs':'FAQ'},pillars:{'Projects':'Project Showcase','Problems':'Problem / Solution','Trust':'Trust / Company'}},
+  hookLibrary:HOOK_LIBRARY,ctaLibrary:CTA_LIBRARY,captionOpenings:CAPTION_OPENINGS,hashtagGroups:HASHTAG_GROUPS,
+  shotList:REEL_SHOTS,captureChecklist:JOBSITE,recapFields:RECAP_FIELDS,
+  scriptHints:(()=>{const o={};SCRIPT_TYPE_NAMES.forEach(n=>{o[n]={ph:SCRIPT_TYPES[n].ph,hookPh:SCRIPT_TYPES[n].hookPh};});return o;})(),
+  labels:{capture:'Jobsite checklist',captureTitle:'Jobsite content capture',captureProject:'Project or address',captureProjectPh:'Which job are you filming?',footageField:'Jobsite footage needed',
+    planCollect:'Begin collecting jobsite B-roll throughout the month',projectTab:'Project to content',addProject:'Add Project',projectHeading:'Generate content from a project',
+    projectIntro:'One finished deck can become more than a dozen pieces of content. Enter the project and get a starting list.',customHashtagsPh:'#DeckBuilder #YourTag'},
+  phrases:{showcaseOpen:"Here's a look at one of our latest builds.",showcaseGoal:'The goal on this project was',showcaseMade:'We built',showcaseFeature:'One of the standout features is'},
+  promptRules:{script:['Do not invent construction facts, materials, measurements, or building methods.','Do not invent financing terms, prices, rates, or approval details.','Do not invent warranties or guarantees.'],
+    caption:['Do not invent construction facts.','Do not invent financing terms.','Do not invent warranty details.','Do not invent prices.']},
+  projectForm:{name:{label:'Project name',ph:'The Henderson deck',fallback:'this project'},city:{label:'City',ph:'Burleson',fallback:''},type:{label:'Deck type',ph:'Covered composite deck',fallback:'deck'},
+    materials:{label:'Materials',ph:'Composite boards, treated framing',fallback:'the materials we used'},features:{label:'Features',ph:'Pergola, lighting, wide steps',fallback:'the standout features'},
+    challenges:{label:'Interesting challenges',ph:'Sloped backyard',fallback:'the biggest challenge on this job'},goal:{label:'Customer goal',ph:'A shaded place to host family',fallback:'what the customer wanted'}},
+  projectIdeas:[
+   {label:'Before video',format:'Reel',pillar:'Projects',topic:'Deck Options',title:'Before: {name}{inCity}',note:'Show the existing space and the problems the homeowner wanted solved.'},
+   {label:'Construction progress Reel',format:'Reel',pillar:'Projects',topic:'Construction',title:'Building {name}: construction progress',note:'Show the build coming together from footings to boards.'},
+   {label:'Framing explanation',format:'Reel',pillar:'Education',topic:'Construction',title:'How we framed {name}',note:'Explain the framing{usingMaterials} and why it helps the {type} last.'},
+   {label:'Material explanation',format:'Reel',pillar:'Education',topic:'Materials',title:'The materials on {name}',note:'Close-ups and a quick explanation of {materials}.'},
+   {label:'Design-feature Reel',format:'Reel',pillar:'Design',topic:'Deck Options',title:'Design details on {name}',note:'Feature {features}.'},
+   {label:'Finished reveal',format:'Reel',pillar:'Projects',topic:'Deck Options',title:'Reveal: {name}{inCity}',note:'Hero shots of the finished {type}.'},
+   {label:'Before-and-after Reel',format:'Reel',pillar:'Projects',topic:'Deck Options',title:'Before and after: {name}',note:'Side-by-side of the same angle, before and after.'},
+   {label:'Customer testimonial',format:'Reel',pillar:'Trust',topic:'Company',title:'Customer story: {name}{inCity}',note:'Ask the customer about {goal} and how it turned out.'},
+   {label:'Photo carousel',format:'',pillar:'',topic:'',title:'Photo carousel: {name}',note:'Best finished photos, in order. Not a video.'},
+   {label:'Project walkthrough',format:'Long Form',pillar:'Projects',topic:'Deck Options',title:'Walkthrough: {name}{inCity}',note:'Vertical and horizontal walkthroughs of the finished {type}.'},
+   {label:'Why we designed it this way',format:'Reel',pillar:'Design',topic:'Deck Options',title:'Why we designed {name} this way',note:'Connect the design to {goal}.'},
+   {label:'FAQ inspired by the project',format:'Reel',pillar:'Trust',topic:'FAQs',title:'Question from {name}: {challenges}',note:'Turn {challenges} into a question homeowners actually ask.'},
+   {label:'Website portfolio entry',format:'',pillar:'',topic:'',title:'Portfolio page: {name}',note:'Add photos, a short description, and the city to the website. Not a video.'},
+   {label:'Clips for the Monthly Recap',format:'',pillar:'',topic:'',title:'Recap clips from {name}',note:"Save the best clips for this month's Monthly Recap. Not a separate video."}
+  ],
+  postedPreset:{label:'Payment videos already made',pillar:'Payments'}};
+
+/* Neutral wording: what any missing part of a pack falls back to, and the Blank starter. Lists start empty. */
+const NEUTRAL_PACK={format:PACK_FORMAT,version:1,name:'Blank',description:'Empty lists and neutral labels. Start from scratch with your own wording.',source:'blank',
+  voice:'',terms:{audience:''},pillars:[],topics:[],groups:[],groupFor:{},defaults:{pillar:'',topic:'',group:'',recapPillar:'',recapTopic:''},scriptTypeFor:{topics:{},pillars:{}},
+  hookLibrary:[],ctaLibrary:[],captionOpenings:[],hashtagGroups:{},shotList:[],captureChecklist:[],recapFields:[],
+  scriptHints:{
+   'Educational':{ph:['The direct answer or main point','Why this matters to the viewer','A real example from your work'],hookPh:'Grab attention in one sentence'},
+   'FAQ':{ph:['Answer the question in one sentence','The reason behind the answer','A situation where this came up'],hookPh:'The question, the way a customer would ask it'},
+   'Comparison':{ph:['The first option and its main tradeoff','The second option and its main tradeoff','Who should pick which option'],hookPh:'Frame the choice the viewer is making'},
+   'Process':{ph:['What happens first','What happens next','The final step and the result'],hookPh:"Tell them what you're about to show"},
+   'Problem / Solution':{ph:['The problem, stated plainly','What it affects for the customer','How you handle it, with proof if you have it'],hookPh:'Name the problem without fear-selling'},
+   'Project Showcase':{ph:['What the customer wanted','What you made or did for them','One detail worth pointing out on camera'],hookPh:'Open on the finished result'},
+   'Trust / Company':{ph:['Who you are or what you believe','How you work with customers','A real example that backs it up'],hookPh:'A question or statement that invites trust'},
+   'Promotional':{ph:['The frustration the customer has','How you solve it (and the offer)','What they get out of it'],hookPh:'Lead with the pain point'}},
+  labels:{capture:'Shoot checklist',captureTitle:'Content capture checklist',captureProject:'Shoot or location',captureProjectPh:'What are you filming today?',footageField:'Extra footage needed',
+    planCollect:'Begin collecting B-roll throughout the month',projectTab:'Project to content',addProject:'Add Project',projectHeading:'Generate content from a project',
+    projectIntro:'One project can become more than a dozen pieces of content. Enter the details and get a starting list.',customHashtagsPh:'#YourBusiness #YourTag'},
+  phrases:{showcaseOpen:"Here's a look at one of our latest projects.",showcaseGoal:'The goal on this project was',showcaseMade:"Here's what we did:",showcaseFeature:'One of the standout details is'},
+  promptRules:{script:['Do not invent facts, details, or methods about the business.','Do not invent prices, terms, or offers.','Do not invent guarantees, awards, or credentials.'],
+    caption:['Do not invent facts about the business.','Do not invent prices or offers.','Do not invent guarantees or credentials.']},
+  projectForm:{name:{label:'Project name',ph:'Name of the project',fallback:'this project'},city:{label:'City',ph:'Where it happened',fallback:''},type:{label:'Type of project',ph:'What kind of project it was',fallback:'project'},
+    materials:{label:'Materials or products',ph:'What was used',fallback:'what we used'},features:{label:'Features',ph:'What stands out',fallback:'the standout details'},
+    challenges:{label:'Interesting challenges',ph:'Anything tricky about it',fallback:'the biggest challenge on this one'},goal:{label:'Customer goal',ph:'What the customer wanted',fallback:'what the customer wanted'}},
+  projectIdeas:[],postedPreset:null};
+
+/* ---------- built-in starter packs ---------- */
+const RECAP_IDEA={label:'Clips for the Monthly Recap',format:'',pillar:'',topic:'',title:'Recap clips from {name}',note:"Save the best clips for this month's Monthly Recap. Not a separate video."};
+const CONSTRUCTION_PACK={format:PACK_FORMAT,version:1,name:'Construction',description:'For a general contractor, builder, or remodeler. No trade-specific wording.',source:'construction',
+  voice:'Straightforward and helpful, like explaining the job to a neighbor. No hype.',terms:{audience:'homeowners planning a building or remodeling project'},
+  pillars:[
+   {name:'Projects',purpose:'Show the work and how it turned out.',ex:['Finished project walkthrough','Before and after','Progress update','Project reveal','Customer project story']},
+   {name:'Education',purpose:'Explain how things are built and why.',ex:['Materials','Construction methods','Maintenance','How long things last','Common terms explained']},
+   {name:'Problems',purpose:'Help people spot problems early. Keep it helpful, not fear-based.',ex:['Water damage','Cracks and settling','Poor drainage','Shortcuts to watch for','Signs something needs repair']},
+   {name:'Design',purpose:'Help people picture what their space could become.',ex:['Layout options','Finishes','Lighting','Storage','Outdoor spaces']},
+   {name:'Process',purpose:'Show what working with the company looks like.',ex:['First visit','Estimates','Scheduling','Permits and inspections','Final walkthrough']},
+   {name:'Trust',purpose:'Make it easier to choose the company.',ex:['Meet the team','Why the company started','How we communicate','Customer experience','FAQs']},
+   {name:'Local',purpose:'Content that fits the area you work in.',ex:['Weather and seasons','Local building styles','Seasonal maintenance','Community projects']}],
+  topics:['Remodeling','New Construction','Materials','Maintenance','Design Options','Budget & Planning','Our Process','Company','FAQs','Customer Questions'],
+  groups:['Planning / Buying','Building','Materials','Design / Options','Company / Trust'],
+  groupFor:{'Remodeling':'Building','New Construction':'Building','Materials':'Materials','Maintenance':'Materials','Design Options':'Design / Options','Budget & Planning':'Planning / Buying',
+    'Our Process':'Planning / Buying','Company':'Company / Trust','FAQs':'Company / Trust','Customer Questions':'Planning / Buying'},
+  defaults:{pillar:'Education',topic:'Remodeling',group:'Company / Trust',recapPillar:'Trust',recapTopic:'Company'},
+  scriptTypeFor:{topics:{'FAQs':'FAQ','Customer Questions':'FAQ'},pillars:{'Projects':'Project Showcase','Problems':'Problem / Solution','Trust':'Trust / Company','Process':'Process'}},
+  hookLibrary:[
+   {cat:'Question',items:['Should you spend the extra money on ___?','How long does ___ actually take?','Do you need ___ before ___?','Which makes more sense: ___ or ___?']},
+   {cat:'Curiosity',items:["There's a part of this project most people will never see.","Here's something most people don't think about before they remodel.",'This small detail makes a big difference later.',"Here's what's behind the walls on this job."]},
+   {cat:'Demonstration',items:["Here's exactly how we ___.","Here's what ___ actually looks like.",'Let me show you how we ___.','Watch this come together.']},
+   {cat:'Mistake / problem',items:['One mistake we see with ___ is ___.',"This is something you don't want to overlook when ___.","Here's a problem that can cause issues with ___.","If you notice ___, here's what it could mean."]},
+   {cat:'Comparison',items:["Here's the difference between ___ and ___.","These two options look similar, but they're built differently.","If you're deciding between ___ and ___, here's what to know.",'___ or ___? It depends on a few things.']},
+   {cat:'Planning / buying',items:["Here's what happens after you ask us for an estimate.",'There are a few ways to plan a project like this.','Before you start a remodel, think about ___.',"Here's how we keep a project on schedule."]}],
+  ctaLibrary:[
+   {cat:'Estimate',items:["If you're planning a project, you can request an estimate through our website.",'Ready to get started? Reach out through our website.']},
+   {cat:'Website',items:['See more of our work on our website.','You can find more examples and options on our website.']},
+   {cat:'Comment',items:['Got a building question you want us to answer? Leave it in the comments.','What should we cover next?']},
+   {cat:'Follow',items:['Follow along to see how this project turns out.','Follow us for more project walkthroughs and tips.']},
+   {cat:'Consultative',items:["Not sure which option fits your project? Send us the details and we'll talk it through.","If you're weighing your options, reach out and we'll walk you through them."]}],
+  captionOpenings:[
+   {cat:'Educational',items:["Here's something most people don't think about before a project like this.",'One part of a project that often gets overlooked is ___.',"Here's why ___ matters."]},
+   {cat:'FAQ',items:['One question we get all the time is ___.','A common question we hear is ___.',"Wondering whether ___? Here's the answer."]},
+   {cat:'Comparison',items:["If you're deciding between ___ and ___, here's what to know.",'___ or ___? Both can make sense depending on the project.']},
+   {cat:'Project',items:["Here's a look at one of our latest projects.",'Another project wrapped up.',"Here's how this one came together."]},
+   {cat:'Promotional',items:['If ___ is holding you back from starting your project, this may help.','There are a few ways to get a project like this started.']},
+   {cat:'Company / trust',items:["Here's a little more about how we work.",'We want the building process to feel simple.',"Here's what to expect when you work with us."]}],
+  hashtagGroups:{'General':'#Contractor #Construction #HomeImprovement','Local':'#LocalBusiness #SupportLocal #HomeImprovement','Remodeling':'#Remodeling #HomeRenovation #BeforeAndAfter',
+    'Building':'#ConstructionLife #Building #BuildingProcess','Project Showcase':'#ProjectReveal #HomeTransformation #Craftsmanship'},
+  shotList:[['talking','Talking head'],['wide','Wide project footage'],['detail','Detail shots'],['before','Before footage'],['after','After footage'],['construction','Work-in-progress B-roll'],['product','Material / product close-up'],['other','Other']],
+  captureChecklist:[
+   {g:'Before',items:['Wide shot of the space','Existing conditions','Problem areas','Surrounding context','Before walkthrough']},
+   {g:'During',items:['Demolition','Prep or foundation work','Framing','Rough-in work','Installation','Crew working','Material close-ups','Interesting construction detail']},
+   {g:'After',items:['Wide hero shot','Front angle','Side angle','Detail close-ups','Vertical walkthrough','Horizontal walkthrough','Before / after comparison','Customer reaction if available']}],
+  recapFields:[['month','Month'],['projects','Projects completed'],['bestClips','Best finished project clips'],['team','Team footage'],['construction','Construction footage'],['beforeAfter','Before / afters'],
+    ['funny','Funny / human moments'],['customer','Customer moments'],['bestProject','Best project of the month'],['cta','CTA']],
+  scriptHints:{
+   'Educational':{ph:['The direct answer or main point','Why this matters to a homeowner','A real example from one of our projects'],hookPh:'Grab attention in one sentence'},
+   'FAQ':{ph:['Answer the question in one sentence','The reason behind the answer','A project or situation where this came up'],hookPh:'The question, the way a customer would ask it'},
+   'Comparison':{ph:['The first option and its main tradeoff','The second option and its main tradeoff','Who should pick which option'],hookPh:'Frame the choice the homeowner is making'},
+   'Process':{ph:['What happens first','What happens next','The final step and the result'],hookPh:"Tell them what you're about to show"},
+   'Problem / Solution':{ph:['The problem, stated plainly','What it affects for the homeowner','How we handle it, with proof if you have it'],hookPh:'Name the problem without fear-selling'},
+   'Project Showcase':{ph:['What the customer wanted','What we built or changed','One detail worth pointing out on camera'],hookPh:'Open on the finished result'},
+   'Trust / Company':{ph:['Who we are or what we believe','How we work with homeowners','A real example that backs it up'],hookPh:'A question or statement that invites trust'},
+   'Promotional':{ph:['The frustration the homeowner has','How we solve it (and the offer)','What they get out of it'],hookPh:'Lead with the pain point'}},
+  labels:{capture:'Jobsite checklist',captureTitle:'Jobsite content capture',captureProject:'Project or address',captureProjectPh:'Which job are you filming?',footageField:'Jobsite footage needed',
+    planCollect:'Begin collecting jobsite B-roll throughout the month',projectTab:'Project to content',addProject:'Add Project',projectHeading:'Generate content from a project',
+    projectIntro:'One finished project can become more than a dozen pieces of content. Enter the project and get a starting list.',customHashtagsPh:'#YourCompany #YourTag'},
+  phrases:{showcaseOpen:"Here's a look at one of our latest projects.",showcaseGoal:'The goal on this project was',showcaseMade:'We built',showcaseFeature:'One of the standout features is'},
+  promptRules:{script:['Do not invent construction facts, materials, measurements, codes, or building methods.','Do not invent prices, financing terms, or timelines.','Do not invent warranties, licenses, or guarantees.'],
+    caption:['Do not invent construction facts.','Do not invent prices or timelines.','Do not invent warranty or license details.']},
+  projectForm:{name:{label:'Project name',ph:'The Miller kitchen remodel',fallback:'this project'},city:{label:'City',ph:'Where the job was',fallback:''},type:{label:'Project type',ph:'Kitchen remodel, addition, new build',fallback:'project'},
+    materials:{label:'Materials',ph:'Quartz counters, new flooring',fallback:'the materials we used'},features:{label:'Features',ph:'Open layout, new lighting, built-ins',fallback:'the standout features'},
+    challenges:{label:'Interesting challenges',ph:'Load-bearing wall, tight timeline',fallback:'the biggest challenge on this job'},goal:{label:'Customer goal',ph:'More room for a growing family',fallback:'what the customer wanted'}},
+  projectIdeas:[
+   {label:'Before video',format:'Reel',pillar:'Projects',topic:'Remodeling',title:'Before: {name}{inCity}',note:'Show the existing space and what the customer wanted to change.'},
+   {label:'Progress Reel',format:'Reel',pillar:'Projects',topic:'Remodeling',title:'Building {name}: progress update',note:'Show the work coming together, step by step.'},
+   {label:'How it was built',format:'Reel',pillar:'Education',topic:'Our Process',title:'How we built {name}',note:'Explain one construction step{usingMaterials} and why it matters for the {type}.'},
+   {label:'Material explanation',format:'Reel',pillar:'Education',topic:'Materials',title:'The materials on {name}',note:'Close-ups and a quick explanation of {materials}.'},
+   {label:'Design-feature Reel',format:'Reel',pillar:'Design',topic:'Design Options',title:'Design details on {name}',note:'Feature {features}.'},
+   {label:'Finished reveal',format:'Reel',pillar:'Projects',topic:'Remodeling',title:'Reveal: {name}{inCity}',note:'Hero shots of the finished {type}.'},
+   {label:'Before-and-after Reel',format:'Reel',pillar:'Projects',topic:'Remodeling',title:'Before and after: {name}',note:'Side-by-side of the same angle, before and after.'},
+   {label:'Customer story',format:'Reel',pillar:'Trust',topic:'Company',title:'Customer story: {name}{inCity}',note:'Ask the customer about {goal} and how it turned out.'},
+   {label:'Photo carousel',format:'',pillar:'',topic:'',title:'Photo carousel: {name}',note:'Best finished photos, in order. Not a video.'},
+   {label:'Project walkthrough',format:'Long Form',pillar:'Projects',topic:'Remodeling',title:'Walkthrough: {name}{inCity}',note:'Vertical and horizontal walkthroughs of the finished {type}.'},
+   {label:'Question from the project',format:'Reel',pillar:'Trust',topic:'FAQs',title:'Question from {name}: {challenges}',note:'Turn {challenges} into a question customers actually ask.'},
+   {label:'Website portfolio entry',format:'',pillar:'',topic:'',title:'Portfolio page: {name}',note:'Add photos, a short description, and the city to the website. Not a video.'},
+   RECAP_IDEA],
+  postedPreset:{label:'Process videos already made',pillar:'Process'}};
+
+const RESTAURANT_PACK={format:PACK_FORMAT,version:1,name:'Restaurant',description:'For a restaurant, cafe, or food business: the food, the kitchen, the team, and guests.',source:'restaurant',
+  voice:'Warm and welcoming, like talking to a regular. Simple, no food-magazine hype.',terms:{audience:'local diners and regulars'},
+  pillars:[
+   {name:'Food',purpose:'Show the food and what goes into it.',ex:['Signature dishes','New menu items','Specials','Plating','Ingredient close-ups']},
+   {name:'Behind the kitchen',purpose:'Show how the food is made and the people making it.',ex:['Prep','The line during service','Recipe development','Kitchen routines','Closing up']},
+   {name:'Team',purpose:'Introduce the people guests will meet.',ex:['Meet the chef','Front of house','Staff favorites','Team traditions']},
+   {name:'Guest experience',purpose:'Help people picture their visit.',ex:['The dining room','What to expect','Reservations','Takeout and ordering','Private events']},
+   {name:'Story',purpose:'Share where the restaurant came from and what it cares about.',ex:['How it started','Family recipes','What the name means','Local suppliers']},
+   {name:'Events',purpose:'Let people know what is coming up.',ex:['Seasonal menus','Holiday hours','Live music','Special nights']},
+   {name:'Community',purpose:'Show the restaurant as part of the neighborhood.',ex:['Local partners','Neighborhood events','Regulars','Giving back']}],
+  topics:['Menu','Specials','Drinks','Kitchen','Team','Dining Room','Ordering & Reservations','Events','Our Story','FAQs'],
+  groups:['Menu / Food','Behind the Scenes','Visiting / Ordering','Events / Seasonal','Story / Trust'],
+  groupFor:{'Menu':'Menu / Food','Specials':'Menu / Food','Drinks':'Menu / Food','Kitchen':'Behind the Scenes','Team':'Behind the Scenes','Dining Room':'Visiting / Ordering',
+    'Ordering & Reservations':'Visiting / Ordering','Events':'Events / Seasonal','Our Story':'Story / Trust','FAQs':'Story / Trust'},
+  defaults:{pillar:'Food',topic:'Menu',group:'Story / Trust',recapPillar:'Team',recapTopic:'Team'},
+  scriptTypeFor:{topics:{'FAQs':'FAQ'},pillars:{'Behind the kitchen':'Process','Story':'Trust / Company','Team':'Trust / Company','Events':'Promotional'}},
+  hookLibrary:[
+   {cat:'Question',items:['Have you tried our ___ yet?',"What's the best thing to order on your first visit?",'___ or ___? Our team is split.','Ever wondered how we make ___?']},
+   {cat:'Curiosity',items:["There's one step in this dish most people never see.","Here's what happens in our kitchen before we open.",'This is the part of ___ that takes the longest.',"Here's why ___ tastes the way it does."]},
+   {cat:'Demonstration',items:["Here's how we make ___.",'Watch our ___ come together.','From prep to plate: ___.',"Here's what a busy ___ looks like in our kitchen."]},
+   {cat:'Behind the scenes',items:['A day in our kitchen starts with ___.','Meet the person who makes ___.',"Here's what our team eats after service.",'This is how we get ready for ___.']},
+   {cat:'Comparison',items:["Here's the difference between our ___ and ___.","Can't decide between ___ and ___? Here's how to choose.","Here's how ___ and ___ are different."]},
+   {cat:'Visit / ordering',items:["Here's what to expect on your first visit.","Here's the easiest way to order ___.","Planning a ___? Here's how we can help.",'This is our ___ for the week.']}],
+  ctaLibrary:[
+   {cat:'Visit',items:['Come see us and try it for yourself.','Stop in this week and say hi.']},
+   {cat:'Order',items:['You can order through our website.',"Order ahead through our website and we'll have it ready."]},
+   {cat:'Comment',items:['What should we make next? Tell us in the comments.',"What's your go-to order? Let us know below."]},
+   {cat:'Follow',items:['Follow along for more from our kitchen.','Follow us so you never miss a new special.']},
+   {cat:'Reservations / events',items:['Planning a get-together? Reach out about reservations.','Ask us about hosting your next event.']}],
+  captionOpenings:[
+   {cat:'Menu',items:["Here's a closer look at ___.",'Meet our newest dish: ___.','___ is on the menu this week.']},
+   {cat:'Behind the scenes',items:["Here's what goes into ___.",'A quick look behind the kitchen.','Before the doors open, ___.']},
+   {cat:'FAQ',items:['One question we hear a lot is ___.',"Wondering whether ___? Here's the answer."]},
+   {cat:'Team',items:['Meet ___, part of the team behind ___.','This is the crew that makes it happen.']},
+   {cat:'Events',items:['Mark your calendar: ___.',"Here's what's coming up this ___."]},
+   {cat:'Story',items:["Here's a little more about how we started.","Here's why we do ___ the way we do."]}],
+  hashtagGroups:{'General':'#Restaurant #FoodLover #LocalEats','Local':'#SupportLocal #EatLocal #ShopLocal','Behind the kitchen':'#BehindTheScenes #ChefLife #KitchenLife',
+    'Menu':'#NewMenu #DailySpecial #FoodPhotography','Events':'#DateNight #WeekendPlans #FoodEvents'},
+  shotList:[['talking','Talking head'],['dish','Plated dish close-up'],['kitchen','Kitchen action'],['prep','Prep / ingredients'],['room','Dining room'],['guests','Guests (with permission)'],['exterior','Exterior / sign'],['other','Other']],
+  captureChecklist:[
+   {g:'Before service',items:['Exterior and sign','Empty dining room','Prep station','Ingredient close-ups','Team arriving','Chef or owner intro']},
+   {g:'During service',items:['Line cooking','Plating','Dish hero shots','Drinks being made','Servers in motion','Dining room atmosphere','Guests enjoying food (with permission)','Kitchen sounds']},
+   {g:'After service',items:['Closing routine','Team meal','Clean kitchen','Quick team interview','Best dish of the night','Vertical walkthrough']}],
+  recapFields:[['month','Month'],['dishes','New dishes or specials'],['bestClips','Best food clips'],['team','Team / kitchen footage'],['events','Events and busy nights'],['guests','Guest moments (with permission)'],
+    ['funny','Funny / human moments'],['behind','Behind the scenes'],['bestDish','Dish of the month'],['cta','CTA']],
+  scriptHints:{
+   'Educational':{ph:['The main point or tip','Why this matters to a guest','An example from our kitchen'],hookPh:'Grab attention in one sentence'},
+   'FAQ':{ph:['Answer the question in one sentence','The reason behind the answer','A time a guest asked this'],hookPh:'The question, the way a guest would ask it'},
+   'Comparison':{ph:['The first option and what it is like','The second option and what it is like','Who should order which'],hookPh:'Frame the choice a guest is making'},
+   'Process':{ph:['What happens first','What happens next','The last step and the finished dish'],hookPh:"Tell them what you're about to show"},
+   'Problem / Solution':{ph:['The problem, stated plainly','Why it matters to a guest','How we handle it'],hookPh:'Name the problem in a friendly way'},
+   'Project Showcase':{ph:['The idea behind the dish or event','What we made','One detail worth pointing out on camera'],hookPh:'Open on the finished dish'},
+   'Trust / Company':{ph:['Who we are or what we care about','How we do things','A real example that backs it up'],hookPh:'A question or statement that invites people in'},
+   'Promotional':{ph:['What guests are looking for','What we are offering','What they get out of it'],hookPh:'Lead with what the guest wants'}},
+  labels:{capture:'Service checklist',captureTitle:'Behind the kitchen',captureProject:'Service or event',captureProjectPh:'Which service or event are you filming?',footageField:'Kitchen footage needed',
+    planCollect:'Begin collecting kitchen and dining room B-roll throughout the month',projectTab:'Dish or event to content',addProject:'Add Dish or Event',projectHeading:'Generate content from a dish or event',
+    projectIntro:'One new dish or event can become a dozen pieces of content. Enter the details and get a starting list.',customHashtagsPh:'#YourRestaurant #YourTag'},
+  phrases:{showcaseOpen:"Here's a look at something new from our kitchen.",showcaseGoal:'The idea behind this one was',showcaseMade:'We made',showcaseFeature:'One of our favorite details is'},
+  promptRules:{script:['Do not invent menu items, ingredients, or recipes.','Do not invent prices, hours, specials, or deals.','Do not invent allergen, dietary, or health claims.','Do not invent awards, reviews, or press.'],
+    caption:['Do not invent menu items or ingredients.','Do not invent prices, hours, or deals.','Do not invent allergen or dietary claims.','Do not invent awards or reviews.']},
+  projectForm:{name:{label:'Dish or event',ph:'Spring menu launch',fallback:'this dish'},city:{label:'Location',ph:'Which location, if you have more than one',fallback:''},type:{label:'Type',ph:'New dish, special, event, catering',fallback:'dish'},
+    materials:{label:'Key ingredients',ph:'What goes into it',fallback:'the ingredients'},features:{label:'What makes it special',ph:'Technique, presentation, the story behind it',fallback:'what makes it special'},
+    challenges:{label:'Behind-the-scenes story',ph:'How it was developed, what changed along the way',fallback:'how it came together'},goal:{label:'Who it is for',ph:'Date night, families, the lunch crowd',fallback:'our guests'}},
+  projectIdeas:[
+   {label:'Teaser',format:'Reel',pillar:'Food',topic:'Menu',title:'Coming soon: {name}',note:'A quick look at {name} before it is ready.'},
+   {label:'How it is made',format:'Reel',pillar:'Behind the kitchen',topic:'Kitchen',title:'How we make {name}',note:'Show the steps from prep to plate, featuring {materials}.'},
+   {label:'Ingredient spotlight',format:'Reel',pillar:'Food',topic:'Menu',title:'What goes into {name}',note:'Close-ups and a quick explanation of {materials}.'},
+   {label:'What makes it special',format:'Reel',pillar:'Food',topic:'Menu',title:'Why {name} is different',note:'Feature {features}.'},
+   {label:'Hero shots',format:'Reel',pillar:'Food',topic:'Specials',title:'Meet {name}{inCity}',note:'Clean hero shots of the finished {type}.'},
+   {label:'The story behind it',format:'Reel',pillar:'Team',topic:'Team',title:'The story behind {name}',note:'Talk about {challenges}.'},
+   {label:'Guest reaction',format:'Reel',pillar:'Guest experience',topic:'Dining Room',title:'First bites: {name}',note:'Film guests trying it, only with their permission.'},
+   {label:'Photo carousel',format:'',pillar:'',topic:'',title:'Photo carousel: {name}',note:'Best photos of the {type}, in order. Not a video.'},
+   {label:'Behind the kitchen',format:'Long Form',pillar:'Behind the kitchen',topic:'Kitchen',title:'Behind the kitchen: {name}',note:'A longer look at how {name} comes together, start to finish.'},
+   {label:'Who it is for',format:'Reel',pillar:'Guest experience',topic:'Ordering & Reservations',title:'{name}, made for {goal}',note:'Show when and how to order it.'},
+   {label:'Questions from guests',format:'Reel',pillar:'Story',topic:'FAQs',title:'Your questions about {name}',note:'Answer the questions guests ask most about the {type}.'},
+   {label:'Website and menu update',format:'',pillar:'',topic:'',title:'Menu update: {name}',note:'Add photos and a short description to the website and online menu. Not a video.'},
+   RECAP_IDEA],
+  postedPreset:{label:'Food videos already made',pillar:'Food'}};
+
+const REALESTATE_PACK={format:PACK_FORMAT,version:1,name:'Real estate agent',description:'For a real estate agent or small team: listings, buyers, sellers, and the local area.',source:'realestate',
+  voice:'Calm, clear, and helpful, like a friend who knows the process. No pressure, no hype.',terms:{audience:'people thinking about buying or selling a home'},
+  pillars:[
+   {name:'Listings',purpose:'Show homes for sale and what makes each one stand out.',ex:['Listing tours','Feature highlights','Just listed','Open house preview','Sold recap']},
+   {name:'Buying',purpose:'Explain the buying process in plain language.',ex:['First steps','Pre-approval','Making an offer','Inspections','Closing']},
+   {name:'Selling',purpose:'Help sellers know what to expect.',ex:['Pricing conversations','Getting a home ready','Photos and showings','Reviewing offers','Timelines']},
+   {name:'Market',purpose:'Share what is happening in the market, using numbers you can confirm.',ex:['Monthly market notes','Rates in the news','What changed this season','Questions to ask']},
+   {name:'Local',purpose:'Show the area so people can picture living there.',ex:['Parks and places','Local businesses','Events','Getting around']},
+   {name:'Trust',purpose:'Help people feel comfortable working with you.',ex:['Meet the agent','How I work','Client stories','FAQs']},
+   {name:'Tips',purpose:'Quick, useful advice people can use right away.',ex:['Moving checklists','Small fixes before listing','Common mistakes','Paperwork basics']}],
+  topics:['Listings','Buying','Selling','Financing Basics','Market Updates','Neighborhoods','Open Houses','Moving','Working Together','FAQs'],
+  groups:['Listings','Buyers','Sellers','Local / Market','Trust / About'],
+  groupFor:{'Listings':'Listings','Open Houses':'Listings','Buying':'Buyers','Financing Basics':'Buyers','Moving':'Buyers','Selling':'Sellers','Market Updates':'Local / Market',
+    'Neighborhoods':'Local / Market','Working Together':'Trust / About','FAQs':'Trust / About'},
+  defaults:{pillar:'Buying',topic:'Buying',group:'Trust / About',recapPillar:'Trust',recapTopic:'Working Together'},
+  scriptTypeFor:{topics:{'FAQs':'FAQ'},pillars:{'Listings':'Project Showcase','Trust':'Trust / Company'}},
+  hookLibrary:[
+   {cat:'Question',items:['Do you really need ___ before you start looking?','How long does ___ usually take?','Should you ___ or ___ first?','What happens after ___?']},
+   {cat:'Curiosity',items:["Here's one thing buyers often miss on a showing.","Here's what most sellers don't expect about ___.",'This detail in this home is easy to walk past.',"Here's what I look at first when ___."]},
+   {cat:'Tour / walkthrough',items:["Let's walk through ___.","Here's what ___ actually looks like inside.",'Come with me to see ___.',"Here's how ___ works, step by step."]},
+   {cat:'Mistake / problem',items:['One mistake I see with ___ is ___.',"Here's something you don't want to overlook when ___.","If you're ___, watch out for ___.",'A common worry I hear is ___.']},
+   {cat:'Comparison',items:["Here's the difference between ___ and ___.","If you're deciding between ___ and ___, here's what to think about.",'___ or ___? It depends on a few things.']},
+   {cat:'Buying / selling',items:["Here's what happens after you ___.","Thinking about selling? Here's where to start.",'Buying your first home? Start with ___.',"Here's what to have ready before ___."]}],
+  ctaLibrary:[
+   {cat:'Reach out',items:["If you're thinking about buying or selling, send me a message.",'Have questions about your next move? Reach out any time.']},
+   {cat:'Website',items:['You can see more listings on my website.','Find more resources on my website.']},
+   {cat:'Comment',items:['What question should I answer next? Leave it in the comments.','What would you want to know about ___? Tell me below.']},
+   {cat:'Follow',items:['Follow along for more home tours and tips.','Follow for more real estate questions answered in plain language.']},
+   {cat:'Consultative',items:["Not sure where to start? Let's talk through your options.","If you're weighing your options, I'm happy to walk you through them."]}],
+  captionOpenings:[
+   {cat:'Listing',items:["Here's a look at ___.",'Just listed: ___.',"Here's what stood out to me about ___."]},
+   {cat:'Buying',items:["Here's what to know about ___ before you buy.","Buying a home? Here's one step to understand: ___."]},
+   {cat:'Selling',items:['Thinking about selling? Start with ___.',"Here's what sellers can expect when ___."]},
+   {cat:'FAQ',items:['One question I get all the time is ___.',"Wondering whether ___? Here's the answer."]},
+   {cat:'Local',items:["Here's a spot I love in ___.",'A quick look around ___.']},
+   {cat:'About',items:["Here's a little more about how I work.",'I want buying or selling to feel simple.']}],
+  hashtagGroups:{'General':'#RealEstate #Realtor #HomesForSale','Buyers':'#FirstTimeHomeBuyer #HomeBuying #HouseHunting','Sellers':'#SellingAHome #ListingAgent #HomeSelling',
+    'Local':'#LocalRealEstate #NeighborhoodGuide','Tours':'#HomeTour #JustListed #OpenHouse'},
+  shotList:[['talking','Talking head'],['exterior','Exterior / curb view'],['rooms','Room walkthrough'],['detail','Detail shots'],['area','Neighborhood / area'],['drone','Drone (where allowed)'],['agent','Agent on camera at the property'],['other','Other']],
+  captureChecklist:[
+   {g:'Outside',items:['Front exterior','Street view','Yard or outdoor space','Entry','Drone (where allowed)']},
+   {g:'Inside',items:['Walking in the front door','Living areas','Kitchen','Primary bedroom','Bathrooms','Storage and closets','Natural light','Standout features']},
+   {g:'Wrap-up',items:['Agent intro at the property','Vertical walkthrough','Horizontal walkthrough','Places nearby','Sign or open house setup','Client moment (with permission)']}],
+  recapFields:[['month','Month'],['listings','New listings'],['sold','Closed / sold'],['bestClips','Best property clips'],['clients','Client moments (with permission)'],['market','Market notes to confirm'],
+    ['community','Community / local moments'],['funny','Funny / human moments'],['bestListing','Listing of the month'],['cta','CTA']],
+  scriptHints:{
+   'Educational':{ph:['The direct answer or main point','Why this matters to a buyer or seller','A real example from my work'],hookPh:'Grab attention in one sentence'},
+   'FAQ':{ph:['Answer the question in one sentence','The reason behind the answer','A situation where this came up'],hookPh:'The question, the way a client would ask it'},
+   'Comparison':{ph:['The first option and its main tradeoff','The second option and its main tradeoff','Who each option fits'],hookPh:'Frame the choice the client is making'},
+   'Process':{ph:['What happens first','What happens next','The final step and what it means'],hookPh:"Tell them what you're about to walk through"},
+   'Problem / Solution':{ph:['The problem, stated plainly','What it affects for the buyer or seller','How I help handle it'],hookPh:'Name the worry without fear-selling'},
+   'Project Showcase':{ph:['What the client wanted','The home or the sale','One detail worth pointing out on camera'],hookPh:'Open on the home'},
+   'Trust / Company':{ph:['Who I am or what I believe','How I work with clients','A real example that backs it up'],hookPh:'A question or statement that invites trust'},
+   'Promotional':{ph:['What the client is struggling with','How I can help (and any offer)','What they get out of it'],hookPh:'Lead with the problem'}},
+  labels:{capture:'Listing shoot checklist',captureTitle:'Listing content capture',captureProject:'Listing or address',captureProjectPh:'Which listing are you filming?',footageField:'Property footage needed',
+    planCollect:'Begin collecting listing and local B-roll throughout the month',projectTab:'Listing to content',addProject:'Add Listing',projectHeading:'Generate content from a listing',
+    projectIntro:'One listing can become more than a dozen pieces of content. Enter the details and get a starting list.',customHashtagsPh:'#YourName #YourTag'},
+  phrases:{showcaseOpen:"Here's a look at one of my latest listings.",showcaseGoal:'The goal here was',showcaseMade:"Here's what we did:",showcaseFeature:'One of the standout features is'},
+  promptRules:{script:['Do not invent prices, square footage, room counts, or property details.','Do not invent market statistics, rates, or predictions.','Do not invent sales results, awards, or rankings.','Do not describe an area by who lives there, and make no promises about schools or safety. Follow fair housing rules.'],
+    caption:['Do not invent prices or property details.','Do not invent market statistics or rates.','Do not invent sales results or awards.','Follow fair housing rules when describing a home or an area.']},
+  projectForm:{name:{label:'Listing name',ph:'The Maple Street listing',fallback:'this listing'},city:{label:'Area or city',ph:'Where the home is',fallback:''},type:{label:'Property type',ph:'Single-family home, condo, townhome',fallback:'home'},
+    materials:{label:'Key details',ph:'Beds, baths, recent updates',fallback:'the key details'},features:{label:'Standout features',ph:'Big yard, updated kitchen',fallback:'the standout features'},
+    challenges:{label:'Interesting story',ph:'Multiple offers, a quick close, a tricky inspection',fallback:'the most interesting part of this sale'},goal:{label:'Client goal',ph:'Sell before relocating, find a first home',fallback:'what the client wanted'}},
+  projectIdeas:[
+   {label:'Just listed',format:'Reel',pillar:'Listings',topic:'Listings',title:'Just listed: {name}{inCity}',note:'A quick first look at the {type}.'},
+   {label:'Full tour',format:'Long Form',pillar:'Listings',topic:'Listings',title:'Tour: {name}{inCity}',note:'Walk through the {type} room by room. Mention {materials}.'},
+   {label:'Feature spotlight',format:'Reel',pillar:'Listings',topic:'Listings',title:'The best feature of {name}',note:'Feature {features}.'},
+   {label:'Detail video',format:'Reel',pillar:'Listings',topic:'Listings',title:'The details on {name}',note:'Close-ups and a quick explanation of {materials}.'},
+   {label:'Area spotlight',format:'Reel',pillar:'Local',topic:'Neighborhoods',title:'Around {name}',note:'Show places nearby{inCity}. Describe places, not who lives there.'},
+   {label:'Open house preview',format:'Reel',pillar:'Listings',topic:'Open Houses',title:'Open house: {name}',note:'Invite people to see the {type} in person. Confirm the date and time first.'},
+   {label:'Client story',format:'Reel',pillar:'Trust',topic:'Working Together',title:'Client story: {name}',note:'Ask the client, with permission, about {goal} and how it went.'},
+   {label:'Photo carousel',format:'',pillar:'',topic:'',title:'Photo carousel: {name}',note:'Best listing photos, in order. Not a video.'},
+   {label:'Lesson from the sale',format:'Reel',pillar:'Selling',topic:'Selling',title:'What we learned from {name}',note:'Turn {challenges} into a tip for buyers or sellers.'},
+   {label:'Question from the listing',format:'Reel',pillar:'Trust',topic:'FAQs',title:'Question from {name}',note:'Answer a question people asked about the {type}.'},
+   {label:'Sold recap',format:'Reel',pillar:'Listings',topic:'Listings',title:'Sold: {name}',note:'Share the result once it closes. Only use numbers you can confirm.'},
+   {label:'Website listing page',format:'',pillar:'',topic:'',title:'Listing page: {name}',note:'Add photos and a short description to the website. Not a video.'},
+   RECAP_IDEA],
+  postedPreset:{label:'Listing videos already made',pillar:'Listings'}};
+
+/* What Add client and Change pack offer, in this order. The deck pack is not one of them. */
+const STARTER_PACKS=[CONSTRUCTION_PACK,RESTAURANT_PACK,REALESTATE_PACK,NEUTRAL_PACK];
+
+/* ---------- pack helpers ---------- */
+const own=(o,k)=>!!o&&typeof o==='object'&&Object.prototype.hasOwnProperty.call(o,k);
+const isPlain=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+const pclone=o=>JSON.parse(JSON.stringify(o));
+const BAD_KEY=/^(__proto__|constructor|prototype)$/i;
+/* Keys that end up in saved paths (shots.<key>, recap.<key>) are letters, numbers, - and _ only */
+function keyOf(k,label){
+  let x=String(k==null?'':k).replace(/[^A-Za-z0-9_-]/g,'').slice(0,30);
+  if(!x)x=String(label||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+  if(BAD_KEY.test(x))x='k-'+x;
+  return x;
+}
+/* Every pack that comes in (saved data, a file, an AI answer, Edit wording) goes through here. It strips HTML, caps lengths,
+   drops duplicates and unsafe keys, and fills anything missing from NEUTRAL_PACK. A missing list stays empty, never deck wording. */
+function cleanPack(raw){
+  const W=[], src=isPlain(raw)?raw:{}, N=NEUTRAL_PACK, missing=[];
+  let html=false, cut=false, dups=0;
+  const str=(v,max,multi)=>{
+    if(typeof v!=='string'&&typeof v!=='number')return '';
+    let s=String(v);const t=s.replace(/<[^>]*>/g,'');if(t!==s)html=true;
+    s=multi?t.replace(/\r\n?/g,'\n').replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g,''):t.replace(/[\u0000-\u001f\u007f]+/g,' ');
+    s=s.trim();if(s.length>max){cut=true;s=s.slice(0,max).trim();}
+    return s;
+  };
+  const cap=(list,max,label)=>{if(list.length>max){W.push(label+': kept the first '+max+' of '+list.length+'.');return list.slice(0,max);}return list;};
+  const uniq=(list,keyFn)=>{const seen=Object.create(null);return list.filter(x=>{const k=String(keyFn?keyFn(x):x).toLowerCase();if(!k)return false;if(seen[k]){dups++;return false;}seen[k]=1;return true;});};
+  const strs=(v,max,n,label)=>cap(uniq((Array.isArray(v)?v:[]).map(x=>str(x,max)).filter(Boolean)),n,label);
+  // A section that is missing comes from NEUTRAL_PACK. One that is there but is not a list is left empty.
+  const listOr=(k,label,fn)=>{
+    if(!own(src,k)||src[k]==null){missing.push(label);return pclone(N[k]);}
+    if(!Array.isArray(src[k])){W.push(label+' was not a list, so it was left empty.');return [];}
+    return fn(src[k]);
+  };
+  const mapOf=(v,n,valFn)=>{const o={};if(isPlain(v))Object.keys(v).slice(0,n).forEach(k=>{const kk=str(k,40), val=valFn(v[k]);if(kk&&!BAD_KEY.test(kk)&&val)o[kk]=val;});return o;};
+  const pillars=listOr('pillars','Pillars',v=>cap(uniq(v.map(p=>isPlain(p)?{name:str(p.name,40),purpose:str(p.purpose,200),ex:strs(p.ex,60,12,'Pillar examples')}:{name:str(p,40),purpose:'',ex:[]}).filter(p=>p.name),p=>p.name),15,'Pillars'));
+  const topics=listOr('topics','Topics',v=>strs(v,40,30,'Topics'));
+  const groups=listOr('groups','Groups',v=>strs(v,40,12,'Groups'));
+  const groupFor=mapOf(src.groupFor,80,g=>str(g,40));
+  const dsrc=isPlain(src.defaults)?src.defaults:{}, defaults={};
+  ['pillar','topic','group','recapPillar','recapTopic'].forEach(k=>{defaults[k]=str(dsrc[k],40);});
+  const sx=isPlain(src.scriptTypeFor)?src.scriptTypeFor:{}, isType=t=>typeof t==='string'&&own(SCRIPT_TYPES,t)?t:'';
+  const scriptTypeFor={topics:mapOf(sx.topics,40,isType),pillars:mapOf(sx.pillars,40,isType)};
+  const lib=(k,label)=>listOr(k,label,v=>{
+    const byCat=Object.create(null), out=[];
+    v.forEach(g=>{
+      if(!isPlain(g))return;
+      const cat=str(g.cat,40)||'Other', ck=cat.toLowerCase(), items=(Array.isArray(g.items)?g.items:[]).map(x=>str(x,240)).filter(Boolean);
+      if(!byCat[ck]){byCat[ck]={cat:cat,items:[]};out.push(byCat[ck]);}
+      byCat[ck].items=byCat[ck].items.concat(items);
+    });
+    return cap(out.map(e=>({cat:e.cat,items:cap(uniq(e.items),15,label+' ('+e.cat+')')})).filter(e=>e.items.length),12,label+' categories');
+  });
+  const hookLibrary=lib('hookLibrary','Hooks'), ctaLibrary=lib('ctaLibrary','CTAs'), captionOpenings=lib('captionOpenings','Caption openings');
+  let hashtagGroups={};
+  if(!own(src,'hashtagGroups')||src.hashtagGroups==null)missing.push('Hashtag groups');
+  else{
+    const v=src.hashtagGroups;let pairs=[];
+    if(Array.isArray(v))pairs=v.map(x=>Array.isArray(x)?[x[0],x[1]]:isPlain(x)?[x.name,x.tags]:null).filter(Boolean);
+    else if(isPlain(v))pairs=Object.keys(v).map(k=>[k,v[k]]);
+    else W.push('Hashtag groups were not in the right format, so they were left empty.');
+    const seen=Object.create(null);let n=0;
+    pairs.forEach(p=>{
+      let g=str(p[0],40).replace(/\./g,'').trim();if(!g||BAD_KEY.test(g))return;
+      if(g.toLowerCase()==='custom')g='Custom tags';   // "Custom" is the built-in choice for typing tags per video
+      const k=g.toLowerCase();if(seen[k]){dups++;return;}seen[k]=1;
+      if(++n>10){if(n===11)W.push('Hashtag groups: kept the first 10.');return;}
+      hashtagGroups[g]=str(p[1],2000,true);
+    });
+  }
+  const pairList=(k,label,max)=>listOr(k,label,v=>{
+    const used=Object.create(null);
+    return cap(uniq(v.map(x=>{
+      let key='',lab=x;
+      if(Array.isArray(x)){key=x[0];lab=x[1];}else if(isPlain(x)){key=x.key;lab=x.label;}
+      lab=str(lab,60);if(!lab)return null;
+      const base=keyOf(key,lab)||'item';let kk=base,i=2;while(used[kk.toLowerCase()])kk=base+'-'+(i++);used[kk.toLowerCase()]=1;
+      return [kk,lab];
+    }).filter(Boolean),x=>x[1]),max,label);
+  });
+  const shotList=pairList('shotList','Shot list',16), recapFields=pairList('recapFields','Recap fields',16);
+  const captureChecklist=listOr('captureChecklist','Capture checklist',v=>{
+    const byG=Object.create(null), out=[];
+    v.forEach(x=>{
+      if(!isPlain(x))return;
+      const g=str(x.g!=null?x.g:x.name,40).replace(/\./g,'').trim()||'Shots', gk=g.toLowerCase(), items=(Array.isArray(x.items)?x.items:[]).map(i=>str(i,80)).filter(Boolean);
+      if(!byG[gk]){byG[gk]={g:g,items:[]};out.push(byG[gk]);}
+      byG[gk].items=byG[gk].items.concat(items);
+    });
+    return cap(out.map(e=>({g:e.g,items:cap(uniq(e.items),30,'Checklist ('+e.g+')')})).filter(e=>e.items.length),6,'Checklist sections');
+  });
+  const shv=isPlain(src.scriptHints)?src.scriptHints:{}, scriptHints={};let hintsFilled=false;
+  SCRIPT_TYPE_NAMES.forEach(n=>{
+    const x=own(shv,n)&&isPlain(shv[n])?shv[n]:{}, nn=N.scriptHints[n], ph=Array.isArray(x.ph)?x.ph:[];
+    scriptHints[n]={ph:[0,1,2].map(i=>str(ph[i],160)||(hintsFilled=true,nn.ph[i])),hookPh:str(x.hookPh,160)||(hintsFilled=true,nn.hookPh)};
+  });
+  let textFilled=false;
+  const textSet=(k,keys,max)=>{const v=isPlain(src[k])?src[k]:{}, o={};keys.forEach(x=>{const s=own(v,x)?str(v[x],max):'';if(!s)textFilled=true;o[x]=s||N[k][x];});return o;};
+  const labels=textSet('labels',LABEL_KEYS,200), phrases=textSet('phrases',PHRASE_KEYS,120);
+  const prv=isPlain(src.promptRules)?src.promptRules:{}, promptRules={};
+  ['script','caption'].forEach(k=>{promptRules[k]=Array.isArray(prv[k])?strs(prv[k],200,8,'AI rules'):pclone(N.promptRules[k]);});
+  const pfv=isPlain(src.projectForm)?src.projectForm:{}, projectForm={};
+  PROJ_FIELDS.forEach(k=>{
+    const x=isPlain(pfv[k])?pfv[k]:{}, nn=N.projectForm[k];
+    projectForm[k]={label:str(x.label,40)||nn.label,ph:own(x,'ph')?str(x.ph,80):nn.ph,fallback:own(x,'fallback')?str(x.fallback,80):nn.fallback};
+  });
+  const projectIdeas=listOr('projectIdeas','Project ideas',v=>cap(v.filter(isPlain).map(x=>{
+    const o={label:str(x.label,60),format:x.format==='Reel'||x.format==='Long Form'?x.format:'',pillar:str(x.pillar,40),topic:str(x.topic,40),title:str(x.title,160),note:str(x.note,240)};
+    if(!o.label)o.label=o.title;if(!o.title)o.title=o.label;return o;
+  }).filter(x=>x.title),20,'Project ideas'));
+  const pp=src.postedPreset, postedPreset=isPlain(pp)&&str(pp.label,60)&&str(pp.pillar,40)?{label:str(pp.label,60),pillar:str(pp.pillar,40)}:null;
+  const pack={format:PACK_FORMAT,version:1,name:str(src.name,60)||'Untitled wording',description:str(src.description,300),
+    source:typeof src.source==='string'&&PACK_SOURCES.includes(src.source)?src.source:'custom',
+    voice:str(src.voice,400),terms:{audience:str(isPlain(src.terms)?src.terms.audience:'',200)},
+    pillars:pillars,topics:topics,groups:groups,groupFor:groupFor,defaults:defaults,scriptTypeFor:scriptTypeFor,
+    hookLibrary:hookLibrary,ctaLibrary:ctaLibrary,captionOpenings:captionOpenings,hashtagGroups:hashtagGroups,
+    shotList:shotList,captureChecklist:captureChecklist,recapFields:recapFields,scriptHints:scriptHints,
+    labels:labels,phrases:phrases,promptRules:promptRules,projectForm:projectForm,projectIdeas:projectIdeas,postedPreset:postedPreset};
+  if(missing.length)W.unshift('Missing, so left empty: '+missing.join(', ')+'.');
+  if(hintsFilled)W.push('Some script hints were missing and use neutral wording.');
+  if(textFilled)W.push('Some labels were missing and use neutral wording.');
+  if(dups)W.push('Removed '+dups+' duplicate'+(dups===1?'':'s')+'.');
+  if(html)W.push('Removed HTML from some text.');
+  if(cut)W.push('Shortened some text that was too long.');
+  return {pack:pack,warnings:W};
+}
+/* Benchmark Decks (and every client saved before packs) gets the deck wording, keeping the hashtags it already has */
+function deckPack(tags){
+  const p=pclone(DECK_PACK);
+  if(isPlain(tags))Object.keys(p.hashtagGroups).forEach(g=>{if(own(tags,g)&&typeof tags[g]==='string')p.hashtagGroups[g]=tags[g];});
+  return cleanPack(p).pack;
+}
+function starterPack(id){return cleanPack(pclone(STARTER_PACKS.find(x=>x.source===id)||NEUTRAL_PACK)).pack;}
+
+/* The active client's pack. While a workspace is loading, PK points at that workspace's pack instead. */
+let PK=null;
+const P=()=>PK||(S&&S.pack)||NEUTRAL_PACK;
+function withPack(p,fn){const was=PK;PK=p;try{return fn();}finally{PK=was;}}
+const pillarNames=()=>P().pillars.map(p=>p.name);
+const pickIn=(list,v)=>list.includes(v)?v:(list[0]||'');
+const defPillar=()=>pickIn(pillarNames(),P().defaults.pillar);
+const defTopic=()=>pickIn(P().topics,P().defaults.topic);
+function groupFor(t){const p=P();return own(p.groupFor,t)?p.groupFor[t]:(p.defaults.group||p.groups[0]||'');}
+const hashNames=()=>Object.keys(P().hashtagGroups).concat(['Custom']);
+const defHashGroup=()=>Object.keys(P().hashtagGroups)[0]||'Custom';
+const libCount=l=>l.reduce((t,g)=>t+g.items.length,0);
+/* A value an item already has stays selectable even when the current wording does not include it */
+const NOT_IN=' (not in this pack)';
+const keepOpts=(list,cur)=>cur&&!list.includes(cur)?[[cur,cur+NOT_IN]].concat(list):list;
+const selOpts=(list,cur)=>({t:'select',opts:keepOpts(list,cur),blank:list.length||cur?null:'None'});
+/* Filter lists: the pack's values plus any other value an item actually uses */
+function usedOpts(list,field){
+  const extra=Array.from(new Set(S.items.map(i=>i[field]).filter(v=>typeof v==='string'&&v&&!list.includes(v)))).sort();
+  return list.concat(extra.map(v=>[v,v+NOT_IN]));
+}
+const optVals=o=>o.map(x=>Array.isArray(x)?x[0]:x);
 
 /* Semantic task colors (light theme). These mirror the CSS variables at the top of the stylesheet and are only used where CSS can't reach, like the shared calendar image. */
 const SEM={reel:['#C2621B','#FBE9DA'],long:['#1F7A54','#DDF0E6'],film:['#2563A8','#DFEAF7'],edit:['#7B4BB3','#ECE3F6'],plan:['#6B7672','#EEF0EE']};
@@ -1325,11 +1830,12 @@ function rhythmDates(key){
 
 /* ================= data model ================= */
 function defaultPlatforms(type){return type==='Long Form'?['YouTube','Facebook']:['YouTube Shorts','Instagram','Facebook'];}
+function recapBlank(){const o={};P().recapFields.forEach(r=>{o[r[0]]='';});return o;}
 function newItem(type,o){
   type=type||'Reel';
   const base={
     id:uid(),clientId:activeId(),title:'',workingTitle:'',type:type,reelKind:type==='Reel'?'Standalone':'',
-    pillar:'Education',topic:'Construction',group:'Construction',status:'Scripting',priority:'Medium',notes:'',ideaFormat:'',roadmap:0,
+    pillar:defPillar(),topic:defTopic(),group:groupFor(defTopic()),status:'Scripting',priority:'Medium',notes:'',ideaFormat:'',roadmap:0,
     plannedMonth:'',planDate:'',scriptDate:'',filmDate:'',editDate:'',publishDate:'',
     platforms:defaultPlatforms(type),
     mainTopic:'',audienceProblem:'',mainMessage:'',takeaway:'',cta:'',offer:'',
@@ -1337,10 +1843,10 @@ function newItem(type,o){
     thumbNeeded:true,thumbStatus:'Not started',captionNeeded:true,captionStatus:'Not started',
     captionStyle:'',captionHook:'',captionBody:'',captionCTA:'',socialCaption:'',socialManual:false,shortsDescription:'',
     ytSummary:'',ytCover:true,ytCTA:'',ytDescription:'',ytManual:false,ytLinks:{website:'',quote:'',related:'',other:''},
-    hashtagGroup:'General Deck',includeHashtags:false,customHashtags:'',
+    hashtagGroup:defHashGroup(),includeHashtags:false,customHashtags:'',
     goal:'',points:['','',''],blocks:[blankBlock()],legacyPoints:[],shotMeta:{},manualShots:[],shotArchive:[],
     finalTitle:'',mainQuestion:'',targetViewer:'',sections:['','','','',''],secMeta:[blankSec(),blankSec(),blankSec(),blankSec(),blankSec()],conclusion:'',thumbIdea:'',
-    recap:{month:'',projects:'',bestClips:'',team:'',construction:'',beforeAfter:'',funny:'',customer:'',bestProject:'',cta:''},
+    recap:recapBlank(),
     shots:{},prod:{},
     shorts:type==='Long Form'?[blankShort(),blankShort(),blankShort()]:[],
     parentId:'',repurposedFrom:'',relatedId:'',
@@ -1385,7 +1891,8 @@ function normalize(it){
   if(it.scriptType==null||(m.type==='Reel'&&!SCRIPT_TYPES[m.scriptType]))m.scriptType=m.type==='Reel'?inferScriptType(m):'';
   // Caption system: older items get a caption style that follows their script type
   if(it.captionStyle==null||!CAPTION_STYLES[m.captionStyle])m.captionStyle=m.type==='Reel'?captionStyleFor(m):'';
-  if(!HASHTAG_GROUP_NAMES.includes(m.hashtagGroup))m.hashtagGroup='General Deck';
+  // An item keeps its hashtag group even if the client's wording no longer has it. Only a blank one gets the default.
+  if(typeof m.hashtagGroup!=='string'||!m.hashtagGroup.trim())m.hashtagGroup=defHashGroup();
   if(!Array.isArray(m.platforms))m.platforms=defaultPlatforms(m.type);
   // Monthly carryover: older items start with no history, no parked stage and not archived
   const isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
@@ -1465,7 +1972,10 @@ const ROADMAP=[
 
 function seed(){
   const st={v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},tasks:[],taskDone:{},perfSnapshots:[],metricSkips:{},perfV2:true,deckStarter:true,
-    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},hashtags:Object.assign({},HASHTAG_GROUPS),website:'',quoteUrl:''}};
+    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},website:'',quoteUrl:''},pack:deckPack(),packPrev:null,packPrevChecks:null};
+  return withPack(st.pack,()=>seedItems(st));
+}
+function seedItems(st){
   IDEAS.forEach(r=>{
     st.items.push(newItem(r[4]==='Long Form'?'Long Form':'Reel',{title:r[0],pillar:r[1],topic:r[2],group:r[3],ideaFormat:r[4],priority:r[5],notes:r[6],status:'Idea',
       reelKind:r[0]==='Monthly recap'?'Recap':(r[4]==='Long Form'?'':'Standalone')}));
@@ -1556,7 +2066,8 @@ function applyCaptionExamples(st){
 }
 
 /* ================= state ================= */
-/* ROOT is everything saved: { v:2, activeClientId, theme, clients:[ {id,name,about,archived,created,data} ] }.
+/* ROOT is everything saved: { v:3, activeClientId, theme, clients:[ {id,name,about,archived,created,data} ] }.
+   v:3 added language packs: each client's data holds its own wording in data.pack (plus data.packPrev, one earlier pack).
    S is always the active client's workspace (the same object as its client's data, never a copy), so every screen
    that reads S only ever sees the active client. save() writes ROOT. */
 let ROOT=null, S=null, memOnly=false, saveT=null, loadFailed=false;
@@ -1567,27 +2078,28 @@ const coAbout=()=>{const c=activeClient();return c?String(c.about==null?'':c.abo
 const initials=n=>{const w=String(n||'').trim().split(/\s+/).filter(Boolean);if(!w.length)return '?';return (w.length>1?w[0][0]+w[w.length-1][0]:w[0].slice(0,2)).toUpperCase();};
 const slug=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'client';
 const newCid=()=>'c'+uid().slice(1);
+/* The deck hashtag group names with no tags. Only used to read hashtags saved before language packs. */
 function emptyTags(){const o={};Object.keys(HASHTAG_GROUPS).forEach(g=>{o[g]='';});return o;}
 /* Every record says which client it belongs to, so the data could later move into a database. Re-stamped on every load. */
 function stampClient(st,id){
   ['items','projects','tasks','perfSnapshots'].forEach(k=>{if(Array.isArray(st[k]))st[k].forEach(x=>{if(x&&typeof x==='object')x.clientId=id;});});
   return st;
 }
-/* A new client starts completely empty: no ideas, roadmap, examples or hashtags */
-function blankWorkspace(){
+/* A new client starts completely empty: no ideas, roadmap, examples or videos. Its wording is a copy of the pack it starts with. */
+function blankWorkspace(pack){
   return {v:1,items:[],projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}},tasks:[],taskDone:{},perfSnapshots:[],metricSkips:{},perfV2:true,examplesV2:true,examplesCap:true,
-    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},hashtags:emptyTags(),website:'',quoteUrl:''}};
+    settings:{reelTarget:6,longTarget:2,offsets:{film:7,edit:2,script:3,plan:3},website:'',quoteUrl:''},pack:cleanPack(pclone(pack||NEUTRAL_PACK)).pack,packPrev:null,packPrevChecks:null};
 }
 function makeClient(name,about,data){
   const id=newCid();
   return {id:id,name:String(name||'').trim()||'Untitled client',about:String(about==null?'':about),archived:false,created:Date.now(),data:stampClient(data,id)};
 }
-function seedRoot(){const c=makeClient('Benchmark Decks',DECK_ABOUT,seed());return {v:2,activeClientId:c.id,theme:'auto',clients:[c]};}
+function seedRoot(){const c=makeClient('Benchmark Decks',DECK_ABOUT,seed());return {v:3,activeClientId:c.id,theme:'auto',clients:[c]};}
 /* Saved before client profiles: the whole thing becomes the first client, named from its company setting */
 function rootFromFlat(o,theme){
   const os=o.settings||{};
   const c=makeClient(os.company||'Benchmark Decks',DECK_ABOUT,fixState(o,{legacy:true}));
-  return {v:2,activeClientId:c.id,theme:theme||(['auto','light','dark'].includes(os.theme)?os.theme:'auto'),clients:[c]};
+  return {v:3,activeClientId:c.id,theme:theme||(['auto','light','dark'].includes(os.theme)?os.theme:'auto'),clients:[c]};
 }
 /* One client from an exported client file. Always gets a fresh id. */
 function clientFromFile(cf){
@@ -1606,7 +2118,7 @@ function fixRoot(o){
   });
   let act=clients.find(c=>c.id===o.activeClientId&&!c.archived)||clients.find(c=>!c.archived);
   if(!act){act=clients[0];act.archived=false;}
-  return {v:2,activeClientId:act.id,theme:['auto','light','dark'].includes(o.theme)?o.theme:'auto',clients:clients};
+  return {v:3,activeClientId:act.id,theme:['auto','light','dark'].includes(o.theme)?o.theme:'auto',clients:clients};
 }
 function storageOk(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
 function safetyCopies(o,raw){
@@ -1616,6 +2128,8 @@ function safetyCopies(o,raw){
   // First load after performance snapshots arrived: same safety copy before old results are copied into a snapshot
   if(!o.perfV2&&o.items.some(legacyPerfHas))keep('.beforeSnapshots');
   if(o.items.some(i=>i&&Array.isArray(i.secMeta)&&i.secMeta.some(x=>x&&!Array.isArray(x.blocks))))keep('.beforeSections');
+  // First load after language packs arrived: keep an untouched copy before any client is given the deck wording
+  if(!o.pack||typeof o.pack!=='object')keep('.beforePacks');
 }
 function load(){
   let raw=null;
@@ -1639,7 +2153,9 @@ function load(){
   return null;
 }
 /* One workspace. legacy = data saved before client profiles: it keeps the deck hashtag defaults and its own example flags.
-   Workspaces saved since never get deck defaults or examples merged in. */
+   Workspaces saved since never get deck defaults or examples merged in.
+   Language packs: a workspace saved before packs (Benchmark, any other existing client, an old backup or client file) gets a
+   copy of the deck wording with the hashtags it already had, so nothing visibly changes until a new pack is chosen. */
 function fixState(o,opt){
   const legacy=!!(opt&&opt.legacy), isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   const st=Object.assign({v:1,projects:[],roadmapThemes:{},plan:{},jobsite:{project:'',checks:{}}},o);
@@ -1650,8 +2166,20 @@ function fixState(o,opt){
   // The client name lives on the client and the theme is global, so neither stays in the workspace
   st.settings=Object.assign({reelTarget:6,longTarget:2},os);delete st.settings.company;delete st.settings.theme;
   st.settings.offsets=Object.assign({film:7,edit:2,script:3,plan:3},os.offsets||{});
-  st.settings.hashtags=Object.assign({},legacy?HASHTAG_GROUPS:emptyTags(),isObj(os.hashtags)?os.hashtags:{});
+  // Hashtags now live in the pack. A saved settings.hashtags is kept exactly as it was, and only read to build the first pack.
+  const oldTags=Object.assign({},legacy?HASHTAG_GROUPS:emptyTags(),isObj(os.hashtags)?os.hashtags:{});
+  if(legacy||isObj(os.hashtags))st.settings.hashtags=oldTags;else delete st.settings.hashtags;
   if(st.settings.website==null)st.settings.website='';if(st.settings.quoteUrl==null)st.settings.quoteUrl='';
+  st.pack=isObj(o.pack)?cleanPack(o.pack).pack:deckPack(oldTags);
+  st.packPrev=isObj(o.packPrev)?cleanPack(o.packPrev).pack:null;
+  st.packPrevChecks=st.packPrev&&isObj(o.packPrevChecks)?o.packPrevChecks:null;
+  if(!isObj(st.jobsite))st.jobsite={project:'',checks:{}};
+  if(!isObj(st.jobsite.checks))st.jobsite.checks={};
+  // Items are read with this workspace's own wording, never the active client's
+  return withPack(st.pack,()=>fixItems(st,o));
+}
+function fixItems(st,o){
+  const isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   st.items=o.items.map(normalize);
   // Home tasks and performance snapshots live beside the videos, never inside them
   st.tasks=(Array.isArray(o.tasks)?o.tasks:[]).filter(isObj).map(normTask);
@@ -2247,17 +2775,19 @@ function viewPipeline(){
 function viewIdeas(){
   let list=S.items.filter(i=>ui.ideaRoadmap?!i.archived&&i.status==='Idea':inIdeaBank(i));
   if(ui.ideaTopic!=='All')list=list.filter(i=>i.topic===ui.ideaTopic);
-  const groups=GROUPS.map(g=>({g:g,items:list.filter(i=>i.group===g).sort((a,b)=>prioRank[a.priority]-prioRank[b.priority]||a.created-b.created)})).filter(x=>x.items.length);
-  const other=list.filter(i=>!GROUPS.includes(i.group));
-  if(other.length)groups.push({g:'Other',items:other});
+  const G=P().groups, byPrio=(a,b)=>prioRank[a.priority]-prioRank[b.priority]||a.created-b.created;
+  const groups=G.map(g=>({g:g,items:list.filter(i=>i.group===g).sort(byPrio)})).filter(x=>x.items.length);
+  // Ideas in a group the client's wording doesn't have still show, under their own group name
+  const other=list.filter(i=>!G.includes(i.group));
+  Array.from(new Set(other.map(i=>i.group||''))).forEach(g=>groups.push({g:g?g+NOT_IN:'Other',items:other.filter(i=>(i.group||'')===g)}));
   return '<div class="page">'+head('Idea Bank','Every idea lives here until you schedule it.')
    +'<form class="qa card" data-form="addIdea" autocomplete="off"><div class="qa-row"><label class="grow"><span class="sr">Idea</span><input id="qa-title" placeholder="Type a video idea and press Enter"></label>'
-   +'<select id="qa-pillar" aria-label="Content pillar">'+opts(PILLAR_NAMES,'Education')+'</select>'
+   +'<select id="qa-pillar" aria-label="Content pillar">'+opts(pillarNames(),defPillar(),pillarNames().length?null:'No pillar')+'</select>'
    +'<select id="qa-format" aria-label="Works best as">'+opts(['Reel','Long Form','Both'],'Reel')+'</select>'
-   +'<select id="qa-topic" aria-label="Topic">'+opts(TOPICS,'Construction')+'</select>'
+   +'<select id="qa-topic" aria-label="Topic">'+opts(P().topics,defTopic(),P().topics.length?null:'No topic')+'</select>'
    +'<select id="qa-prio" aria-label="Priority">'+opts(PRIORITIES,'Medium')+'</select>'
    +'<button class="btn primary" type="submit">Add idea</button></div></form>'
-   +'<div class="chips" role="group" aria-label="Filter by topic">'+['All'].concat(TOPICS).map(t=>'<button class="chip '+(ui.ideaTopic===t?'on':'')+'" data-act="ideaTopic" data-topic="'+esc(t)+'">'+esc(t)+'</button>').join('')
+   +'<div class="chips" role="group" aria-label="Filter by topic">'+['All'].concat(usedOpts(P().topics,'topic')).map(x=>{const t=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return '<button class="chip '+(ui.ideaTopic===t?'on':'')+'" data-act="ideaTopic" data-topic="'+esc(t)+'">'+esc(l)+'</button>';}).join('')
    +'<label class="chk sm"><input type="checkbox" data-ui="ideaRoadmap" '+(ui.ideaRoadmap?'checked':'')+'><span>Include six-month roadmap items</span></label></div>'
    +(groups.length?groups.map(x=>'<section class="grp"><h2>'+esc(x.g)+' <span class="count">'+x.items.length+'</span></h2><div class="ideas">'
       +x.items.map(i=>'<article class="idea"><button class="idea-main" data-act="edit" data-id="'+i.id+'"><span class="prio p-'+i.priority+'" title="'+i.priority+' priority"></span><span class="idea-t">'+esc(title(i))+'</span><span class="idea-m"><span class="chip sm">'+esc(i.pillar)+'</span><span class="chip sm">'+esc(i.topic)+'</span><span class="chip sm soft">'+esc(i.ideaFormat||i.type)+'</span>'+(i.roadmap?'<span class="chip sm soft">Roadmap, month '+i.roadmap+'</span>':'')+(i.backlogFrom?'<span class="cbadge" title="All work is kept. Scheduling it puts it back at '+esc(i.backlogFrom)+'.">Parked at '+esc(i.backlogFrom)+'</span>':'')+'</span>'+(i.notes?'<span class="idea-n">'+esc(i.notes)+'</span>':'')+'</button><button class="btn ghost sm" data-act="schedule" data-id="'+i.id+'">Schedule</button></article>').join('')
@@ -2459,26 +2989,26 @@ const cleanTopic=t=>String(t||'').replace(/\s*[:—–]\s.*$/,'').replace(/\s+(i
 const vsParts=t=>{const m=cleanTopic(t).split(/\s+vs\.?\s+/i);return m.length===2?m:null;};
 /* Deterministic draft from the script. No AI: it reorders and lightly rephrases what is already written. */
 function captionFromScript(it){
-  const P=pointTexts(it), hook=capSentence(it.hook), cta=capSentence(it.cta);
+  const ph=P().phrases, P_=pointTexts(it), hook=capSentence(it.hook), cta=capSentence(it.cta);
   let h=hook;const body=[];
   const lead=(x,start,phrase)=>{const s=noEnd(x);return new RegExp('^'+start,'i').test(s)?capSentence(s):capSentence(phrase+lowerFirst(s));};
   switch(it.captionStyle){
     case 'Comparison':{const v=vsParts(title(it));if(v)h=v[0]+' or '+titleLc(v[1])+'?';
-      if(P[0]&&P[1])body.push(capSentence(P[0])+' '+capSentence(P[1]));else P.slice(0,2).forEach(x=>body.push(capSentence(x)));
-      if(P[2])body.push(capSentence(P[2]));break;}
+      if(P_[0]&&P_[1])body.push(capSentence(P_[0])+' '+capSentence(P_[1]));else P_.slice(0,2).forEach(x=>body.push(capSentence(x)));
+      if(P_[2])body.push(capSentence(P_[2]));break;}
     case 'FAQ':{if(h&&!/\?$/.test(h)&&/^(do|does|is|are|can|should|how|what|why|when|which|will)\b/i.test(h))h=h.replace(/[.!]$/,'?');
-      if(P[0])body.push(capSentence(P[0]));if(P[1]||P[2])body.push(P.slice(1).map(capSentence).join(' '));break;}
-    case 'Project Showcase':{h=h||"Here's a look at one of our latest builds.";
-      if(P[0])body.push(lead(P[0],'the goal','The goal on this project was '));
-      if(P[1])body.push(lead(P[1],'we ','We built '));
-      if(P[2])body.push(lead(P[2],'one of','One of the standout features is '));break;}
-    case 'Promotional':{if(!h&&P[0]){h=capSentence(P[0]);P.shift();}else if(P[0]&&h){body.push(capSentence(P[0]));P.shift();}
-      P.forEach(x=>body.push(capSentence(x)));break;}
-    case 'Company / Trust':{if(P[0]||P[1])body.push(P.slice(0,2).map(capSentence).join(' '));if(P[2])body.push(capSentence(P[2]));break;}
-    case 'Process':{if(P.length)body.push("Here's how it works:\n"+P.map((x,i)=>(i+1)+'. '+noEnd(x)).join('\n'));
+      if(P_[0])body.push(capSentence(P_[0]));if(P_[1]||P_[2])body.push(P_.slice(1).map(capSentence).join(' '));break;}
+    case 'Project Showcase':{h=h||ph.showcaseOpen;
+      if(P_[0])body.push(lead(P_[0],'the goal',ph.showcaseGoal+' '));
+      if(P_[1])body.push(lead(P_[1],'we ',ph.showcaseMade+' '));
+      if(P_[2])body.push(lead(P_[2],'one of',ph.showcaseFeature+' '));break;}
+    case 'Promotional':{if(!h&&P_[0]){h=capSentence(P_[0]);P_.shift();}else if(P_[0]&&h){body.push(capSentence(P_[0]));P_.shift();}
+      P_.forEach(x=>body.push(capSentence(x)));break;}
+    case 'Company / Trust':{if(P_[0]||P_[1])body.push(P_.slice(0,2).map(capSentence).join(' '));if(P_[2])body.push(capSentence(P_[2]));break;}
+    case 'Process':{if(P_.length)body.push("Here's how it works:\n"+P_.map((x,i)=>(i+1)+'. '+noEnd(x)).join('\n'));
       const why=it.mainMessage||it.takeaway;if(nonEmpty(why))body.push(capSentence(why));break;}
-    case 'Short & Simple':{h=h||capSentence(it.mainMessage)||capSentence(P[0]);break;}
-    default:{if(P[0])body.push(capSentence(P[0])+(P[1]?' '+capSentence(P[1]):''));if(P[2])body.push(capSentence(P[2]));}
+    case 'Short & Simple':{h=h||capSentence(it.mainMessage)||capSentence(P_[0]);break;}
+    default:{if(P_[0])body.push(capSentence(P_[0])+(P_[1]?' '+capSentence(P_[1]):''));if(P_[2])body.push(capSentence(P_[2]));}
   }
   if(!h)h=capSentence(it.mainMessage);
   return {hook:h,body:body.filter(nonEmpty).join('\n\n'),cta:cta};
@@ -2501,7 +3031,7 @@ function assembleYt(it){
   return [it.ytSummary,it.ytCover&&cov.length?'In this video we cover:\n'+cov.map(t=>'- '+t).join('\n'):'',it.ytCTA,links.join('\n')].map(x=>String(x||'').trim()).filter(Boolean).join('\n\n');
 }
 const ytText=it=>it.ytManual?it.ytDescription:assembleYt(it);
-const hashText=it=>String(it.hashtagGroup==='Custom'?it.customHashtags:(S.settings.hashtags[it.hashtagGroup]||'')).trim();
+const hashText=it=>{const h=P().hashtagGroups;return String(it.hashtagGroup==='Custom'?it.customHashtags:(own(h,it.hashtagGroup)?h[it.hashtagGroup]:'')).trim();};
 const withTags=(txt,it)=>it.includeHashtags&&nonEmpty(hashText(it))&&nonEmpty(txt)?txt.replace(/\s+$/,'')+'\n\n'+hashText(it):txt;
 const needsSocial=it=>{const p=it.platforms||[];return p.includes('Instagram')||p.includes('Facebook')||!p.some(x=>x==='YouTube Shorts'||x==='YouTube');};
 const needsShorts=it=>{const p=it.platforms||[];return p.includes('YouTube Shorts')||(it.type==='Reel'&&p.includes('YouTube'));};
@@ -2551,14 +3081,14 @@ function fcard(it){
    +(L&&nonEmpty(it.talking)?blk('Custom talking points','<p class="pre">'+esc(it.talking)+'</p>'):'')
    +(it.location?blk('Location / project','<p>'+esc(it.location)+'</p>'):'')
    +(notes?'<details class="adv nf-more"><summary>Other shoot notes</summary><div class="adv-b">'
-     +'<div class="shots">'+REEL_SHOTS.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+s[0]+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+s[1]+'</span></label>').join('')+'</div>'
-     +(it.shotText?blk('Shot notes','<p class="pre">'+esc(it.shotText)+'</p>'):'')+(it.broll?blk('Other B-roll','<p class="pre">'+esc(it.broll)+'</p>'):'')+(it.jobsite?blk('Jobsite footage needed','<p class="pre">'+esc(it.jobsite)+'</p>'):'')+'</div></details>':'')
+     +'<div class="shots">'+P().shotList.map(s=>'<label class="chk big"><input type="checkbox" data-f="shots.'+esc(s[0])+'" '+(it.shots[s[0]]?'checked':'')+'><span>'+esc(s[1])+'</span></label>').join('')+'</div>'
+     +(it.shotText?blk('Shot notes','<p class="pre">'+esc(it.shotText)+'</p>'):'')+(it.broll?blk('Other B-roll','<p class="pre">'+esc(it.broll)+'</p>'):'')+(it.jobsite?blk(esc(P().labels.footageField),'<p class="pre">'+esc(it.jobsite)+'</p>'):'')+'</div></details>':'')
    +'<div class="fc-f"><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="shoot">Open shot list</button><button class="btn ghost sm" data-act="edit" data-id="'+it.id+'" data-tab="script">Open script</button>'+(it.status==='Ready to Film'?'<button class="btn ghost sm" data-act="startFilming" data-id="'+it.id+'">Start filming</button>':'')+'<button class="btn ghost sm" data-act="spkShare" data-id="'+it.id+'">Share script</button><button class="btn primary sm" data-act="doneFilming" data-id="'+it.id+'">Done filming, move to Editing</button></div></article>';
 }
 function viewFilm(){
   const srt=(a,b)=>(a.filmDate||'9999').localeCompare(b.filmDate||'9999')||byPub(a,b);
   const rtf=S.items.filter(i=>!i.archived&&i.status==='Ready to Film').sort(srt), now=S.items.filter(i=>!i.archived&&i.status==='Filming').sort(srt);
-  return '<div class="page narrow">'+head('Need to Film',rtf.length?rtf.length+(rtf.length===1?' video is':' videos are')+' ready to film.':'Nothing is marked Ready to Film.','<button class="btn ghost" data-act="tplGo" data-tab="jobsite">Jobsite checklist</button>')
+  return '<div class="page narrow">'+head('Need to Film',rtf.length?rtf.length+(rtf.length===1?' video is':' videos are')+' ready to film.':'Nothing is marked Ready to Film.','<button class="btn ghost" data-act="tplGo" data-tab="jobsite">'+esc(P().labels.capture)+'</button>')
    +(rtf.length||now.length?'<div class="nf-filter">'+filterBar('filmFilter',ui.filmFilter,FILM_FILTERS)+'</div>':'')
    +(rtf.length?rtf.map(fcard).join(''):empty('Move a video to the Ready to Film column and it will show up here with its shot list.','<button class="btn primary sm" data-act="nav" data-view="pipeline">Open pipeline</button>'))
    +(now.length?'<h2 class="sect">Filming now</h2>'+now.map(fcard).join(''):'')+'</div>';
@@ -2571,7 +3101,7 @@ function viewPublished(){
   const waiting=S.items.filter(i=>!i.archived&&(i.status==='Scheduled'||i.status==='Ready to Post')).sort(byPub);
   return '<div class="page">'+head('Published Content','Everything that is live, with links and quick results.')
    +(waiting.length?'<section class="card"><div class="card-h"><h2>Waiting to go live</h2><span class="count">'+waiting.length+'</span></div><ul class="mlist">'+waiting.map(i=>'<li class="mrow k-'+(i.type==='Long Form'?'long':'reel')+'"><button class="mrow-t" data-act="edit" data-id="'+i.id+'"><b>'+esc(title(i))+'</b><span>'+(i.publishDate?fmtW(i.publishDate):'No publish date')+' · '+esc(platText(i))+'</span></button>'+pill(i.status)+'<button class="btn ghost sm" data-act="capCopyItem" data-id="'+i.id+'">Copy caption</button><button class="btn primary sm" data-act="markPosted" data-id="'+i.id+'">Mark posted</button></li>').join('')+'</ul></section>':'')
-   +'<div class="filters"><label>Type<select data-ui="pub.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Pillar<select data-ui="pub.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Platform<select data-ui="pub.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label></div>'
+   +'<div class="filters"><label>Type<select data-ui="pub.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Pillar<select data-ui="pub.pillar">'+opts(usedOpts(pillarNames(),'pillar'),f.pillar,'All')+'</select></label><label>Platform<select data-ui="pub.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label></div>'
    +'<section class="card">'+(posted.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Posted</th><th>Video</th><th>Type</th><th>Pillar</th><th>Platform</th><th class="r">Views</th><th class="r">Leads</th><th>Link</th></tr></thead><tbody>'
      +posted.map(i=>'<tr data-act="edit" data-id="'+i.id+'"><td class="nw">'+fmt(i.publishedDate||i.publishDate)+'</td><td class="t">'+(i.winning?'<span class="star" title="Winning content">'+I('star')+'</span>':'')+esc(title(i))+'</td><td>'+typeTag(i)+'</td><td>'+esc(i.pillar)+'</td><td>'+esc(platText(i))+'</td><td class="r">'+vtShow(i,'views')+'</td><td class="r">'+vtShow(i,'leads')+'</td><td>'+(i.publishedLink?'<a href="'+esc(i.publishedLink)+'" target="_blank" rel="noopener" data-stop>Open '+I('ext','xs')+'</a>':'–')+'</td></tr>').join('')
      +'</tbody></table></div>':empty('Posted videos will appear here. Use Mark posted on a video when it goes live.'))+'</section></div>';
@@ -2761,7 +3291,7 @@ function viewPerformance(){
   return '<div class="page wide perf-page">'+head('Performance','Record each platform at 24 hours, 7 days and 30 days, then look for patterns.',tabs)
    +'<section class="card"><div class="card-h"><div><h2>Metrics to update</h2><p class="muted sm">Snapshots come due 1, 7 and 30 days after a video is published.</p></div><span class="count">'+due.length+'</span></div>'
    +(due.length?dueList(due):'<p class="muted pad">All caught up. Nothing is due right now.</p>')+'</section>'
-   +'<div class="filters"><label>Type<select data-ui="perf.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Platform<select data-ui="perf.platform">'+opts(SNAP_PLATS.map(p=>[p,SNAP_LABEL[p]]),f.platform,'All')+'</select></label><label>Pillar<select data-ui="perf.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Month<select data-ui="perf.month">'+opts(months.map(k=>[k,monthLabel(k)]),f.month,'All')+'</select></label></div>'
+   +'<div class="filters"><label>Type<select data-ui="perf.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label><label>Platform<select data-ui="perf.platform">'+opts(SNAP_PLATS.map(p=>[p,SNAP_LABEL[p]]),f.platform,'All')+'</select></label><label>Pillar<select data-ui="perf.pillar">'+opts(usedOpts(pillarNames(),'pillar'),f.pillar,'All')+'</select></label><label>Month<select data-ui="perf.month">'+opts(months.map(k=>[k,monthLabel(k)]),f.month,'All')+'</select></label></div>'
    +'<div id="perf-charts">'+perfCharts(items)+'</div>'
    +'<section class="card"><div class="card-h"><h2>Posted videos</h2><span class="muted sm">Select a row to see its snapshot history</span></div>'
    +(items.length?'<div class="table-wrap"><table class="tbl perf clickable"><thead><tr><th>Video</th><th>Published</th><th>Snapshots</th><th class="r">Views</th><th class="r">Leads</th><th class="c">Winning</th><th></th></tr></thead><tbody>'
@@ -2777,54 +3307,46 @@ function viewPerformance(){
 function tplList(title_,arr,check){return '<div class="tpl-col"><h4>'+title_+'</h4><ul class="'+(check?'tpl-check':'')+'">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';}
 function viewTemplates(){
   const tab=ui.tplTab;
-  const tabs=[['reel','Reel'],['long','Long-form video'],['recap','Monthly recap'],['jobsite','Jobsite checklist'],['project','Project to content']];
+  const L=P().labels, tabs=[['reel','Reel'],['long','Long-form video'],['recap','Monthly recap'],['jobsite',L.capture],['project',L.projectTab]];
   let body='';
   if(tab==='reel')body='<section class="card"><div class="card-h"><h2>Reel template</h2><button class="btn primary sm" data-act="tplNew" data-kind="reel">Create Reel from template</button></div><div class="card-b"><p class="muted">Every new Reel starts with these fields, this shot list, and this production checklist.</p><div class="tpl">'
-      +tplList('Speaking guide',['Script type','Goal','Hook','Numbered talking points','Visual / B-roll for each point','CTA'])+tplList('Shot list',REEL_SHOTS.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div>'
+      +tplList('Speaking guide',['Script type','Goal','Hook','Numbered talking points','Visual / B-roll for each point','CTA'])+tplList('Shot list',P().shotList.map(s=>s[1]),true)+tplList('Production',PROD_STEPS.map(s=>s[1]),true)+'</div>'
       +'<h3 class="dr-sec" style="margin-top:22px">Script types</h3><p class="muted">Pick one per Reel. The first talking points suggest what to cover for that type. A full script is optional.</p><div class="st-grid">'+SCRIPT_TYPE_NAMES.map(n=>'<div class="st-i"><h4>'+esc(n)+'</h4><p class="flow">'+SCRIPT_TYPES[n].flow.map(esc).join(' <span>›</span> ')+'</p></div>').join('')+'</div></div></section>';
   if(tab==='long')body='<section class="card"><div class="card-h"><h2>Long-form video template</h2><button class="btn primary sm" data-act="tplNew" data-kind="long">Create long-form video</button></div><div class="card-b"><p class="muted">Long-form videos are source content. Plan the Shorts and Reels you will cut from each one, then create them with one click and keep them linked.</p><div class="tpl">'
       +tplList('Plan',['Working title','Final title','Main question','Target viewer','Audience problem','Main takeaway'])+tplList('Script',['Intro / hook','Section 1','Section 2','Section 3','Section 4','Section 5','Conclusion','CTA'])+tplList('Production',['Shot list','B-roll','Thumbnail idea','Shorts / Reels to create (hook + timestamp for each)'])+'</div></div></section>';
-  if(tab==='recap')body='<section class="card"><div class="card-h"><h2>Monthly recap template</h2><button class="btn primary sm" data-act="tplNew" data-kind="recap">Create Monthly Recap</button></div><div class="card-b"><p class="muted">A recurring Reel that leans on visual storytelling and company personality more than education.</p><div class="tpl">'+tplList('Fields',RECAP_FIELDS.map(r=>r[1]))+'</div></div></section>';
+  if(tab==='recap')body='<section class="card"><div class="card-h"><h2>Monthly recap template</h2><button class="btn primary sm" data-act="tplNew" data-kind="recap">Create Monthly Recap</button></div><div class="card-b"><p class="muted">A recurring Reel that leans on visual storytelling and company personality more than education.</p><div class="tpl">'+tplList('Fields',P().recapFields.map(r=>r[1]))+'</div></div></section>';
   if(tab==='jobsite'){
-    const c=S.jobsite.checks, total=JOBSITE.reduce((n,g)=>n+g.items.length,0), done=Object.values(c).filter(Boolean).length;
-    body='<section class="card"><div class="card-h"><h2>Jobsite content capture</h2><button class="btn ghost sm" data-act="jsReset">Clear checks</button></div><div class="card-b"><div class="fld"><label for="js-proj">Project or address</label><input id="js-proj" data-s="jobsite.project" value="'+esc(S.jobsite.project)+'" placeholder="Which job are you filming?"></div>'
-      +'<div class="pbar"><i class="p1" style="width:'+(done/total*100)+'%"></i></div><p class="muted">'+done+' of '+total+' shots captured</p>'
-      +JOBSITE.map(g=>'<h3 class="js-h">'+g.g+'</h3><div class="js-list">'+g.items.map((x,n)=>'<label class="chk big"><input type="checkbox" data-s="jobsite.checks.'+g.g+'_'+n+'" '+(c[g.g+'_'+n]?'checked':'')+'><span>'+esc(x)+'</span></label>').join('')+'</div>').join('')+'</div></section>';
+    const c=S.jobsite.checks, CL=P().captureChecklist, keys=[];CL.forEach(g=>g.items.forEach((x,n)=>keys.push(g.g+'_'+n)));
+    const total=keys.length, done=keys.filter(k=>c[k]).length;
+    body='<section class="card"><div class="card-h"><h2>'+esc(L.captureTitle)+'</h2><button class="btn ghost sm" data-act="jsReset">Clear checks</button></div><div class="card-b"><div class="fld"><label for="js-proj">'+esc(L.captureProject)+'</label><input id="js-proj" data-s="jobsite.project" value="'+esc(S.jobsite.project)+'" placeholder="'+esc(L.captureProjectPh)+'"></div>'
+      +(total?'<div class="pbar"><i class="p1" style="width:'+(done/total*100)+'%"></i></div><p class="muted">'+done+' of '+total+' shots captured</p>'
+      +CL.map(g=>'<h3 class="js-h">'+esc(g.g)+'</h3><div class="js-list">'+g.items.map((x,n)=>'<label class="chk big"><input type="checkbox" data-s="jobsite.checks.'+esc(g.g+'_'+n)+'" '+(c[g.g+'_'+n]?'checked':'')+'><span>'+esc(x)+'</span></label>').join('')+'</div>').join('')
+      :'<p class="muted">This checklist is empty. Add items in Settings › Client wording › Edit wording.</p>')+'</div></section>';
   }
   if(tab==='project')body=projectTab();
-  return '<div class="page">'+head('Templates','Reusable starting points, so every video begins with a plan.')+'<div class="seg wrap">'+tabs.map(t=>'<button class="'+(tab===t[0]?'on':'')+'" data-act="tplTab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</div>'+body+'</div>';
+  return '<div class="page">'+head('Templates','Reusable starting points, so every video begins with a plan.')+'<div class="seg wrap">'+tabs.map(t=>'<button class="'+(tab===t[0]?'on':'')+'" data-act="tplTab" data-tab="'+t[0]+'">'+esc(t[1])+'</button>').join('')+'</div>'+body+'</div>';
 }
-const PROJECT_IDEAS=[
- ['Before video','Reel','Projects','Deck Options',false],['Construction progress Reel','Reel','Projects','Construction',false],['Framing explanation','Reel','Education','Construction',false],['Material explanation','Reel','Education','Materials',false],
- ['Design-feature Reel','Reel','Design','Deck Options',false],['Finished reveal','Reel','Projects','Deck Options',false],['Before-and-after Reel','Reel','Projects','Deck Options',false],['Customer testimonial','Reel','Trust','Company',false],
- ['Photo carousel',null],['Project walkthrough','Long Form','Projects','Deck Options',false],['Why we designed it this way','Reel','Design','Deck Options',false],['FAQ inspired by the project','Reel','Trust','FAQs',false],['Website portfolio entry',null],['Clips for the Monthly Recap',null]
-];
+/* Fills a project idea template. {inCity} and {usingMaterials} disappear when blank; every other token uses the pack's fallback. */
+function fillTpl(t,p,form){
+  return String(t||'').replace(/\{(\w+)\}/g,(m,k)=>{
+    if(k==='inCity')return p.city?' in '+p.city:'';
+    if(k==='usingMaterials')return p.materials?' using '+p.materials:'';
+    if(!own(PROJ_TOKENS,k))return m;
+    return p[PROJ_TOKENS[k]]||(form[k]||{}).fallback||'';
+  });
+}
 function suggestions(p){
-  const n=p.name||'this project', c=p.city?' in '+p.city:'', dt=p.deckType||'deck', mats=p.materials?' using '+p.materials:'', feat=p.features||'the standout features', ch=p.challenges||'the biggest challenge on this job', g=p.goal||'what the customer wanted';
-  const T=[
-   ['Before: '+n+c,'Show the existing space and the problems the homeowner wanted solved.'],
-   ['Building '+n+': construction progress','Show the build coming together from footings to boards.'],
-   ['How we framed '+n,'Explain the framing'+mats+' and why it helps the '+dt+' last.'],
-   ['The materials on '+n,'Close-ups and a quick explanation of '+(p.materials||'the materials we used')+'.'],
-   ['Design details on '+n,'Feature '+feat+'.'],
-   ['Reveal: '+n+c,'Hero shots of the finished '+dt+'.'],
-   ['Before and after: '+n,'Side-by-side of the same angle, before and after.'],
-   ['Customer story: '+n+c,'Ask the customer about '+g+' and how it turned out.'],
-   ['Photo carousel: '+n,'Best finished photos, in order. Not a video.'],
-   ['Walkthrough: '+n+c,'Vertical and horizontal walkthroughs of the finished '+dt+'.'],
-   ['Why we designed '+n+' this way','Connect the design to '+g+'.'],
-   ['Question from '+n+': '+ch,'Turn '+ch+' into a question homeowners actually ask.'],
-   ['Portfolio page: '+n,'Add photos, a short description, and the city to the website. Not a video.'],
-   ['Recap clips from '+n,'Save the best clips for this month\'s Monthly Recap. Not a separate video.']
-  ];
-  return PROJECT_IDEAS.map((x,i)=>({title:T[i][0],note:T[i][1],fmt:x[1],pillar:x[2],topic:x[3],label:x[0]}));
+  const pk=P();
+  return pk.projectIdeas.map(x=>({title:fillTpl(x.title,p,pk.projectForm),note:fillTpl(x.note,p,pk.projectForm),fmt:x.format||null,pillar:x.pillar,topic:x.topic,label:x.label}));
 }
 function projectTab(){
-  const d=ui.projDraft, f=(k,l,ph,ta)=>'<div class="fld"><label for="pj-'+k+'">'+l+'</label>'+(ta?'<textarea id="pj-'+k+'" rows="2" data-ui="projDraft.'+k+'" placeholder="'+ph+'">'+esc(d[k])+'</textarea>':'<input id="pj-'+k+'" data-ui="projDraft.'+k+'" value="'+esc(d[k])+'" placeholder="'+ph+'">')+'</div>';
+  const d=ui.projDraft, PF=P().projectForm, L=P().labels;
+  const f=k=>{const l=esc(PF[k].label),ph=esc(PF[k].ph),fk=PROJ_TOKENS[k];return '<div class="fld"><label for="pj-'+fk+'">'+l+'</label>'+(PROJ_AREA[k]?'<textarea id="pj-'+fk+'" rows="2" data-ui="projDraft.'+fk+'" placeholder="'+ph+'">'+esc(d[fk])+'</textarea>':'<input id="pj-'+fk+'" data-ui="projDraft.'+fk+'" value="'+esc(d[fk])+'" placeholder="'+ph+'">')+'</div>';};
   const sug=ui.projResults?suggestions(d):[];
-  return '<section class="card"><div class="card-h"><h2>Generate content from a project</h2></div><div class="card-b"><p class="muted">One finished deck can become more than a dozen pieces of content. Enter the project and get a starting list.</p>'
-   +'<div class="form-grid">'+f('name','Project name','The Henderson deck')+f('city','City','Burleson')+f('deckType','Deck type','Covered composite deck')+f('materials','Materials','Composite boards, treated framing')+f('features','Features','Pergola, lighting, wide steps',true)+f('challenges','Interesting challenges','Sloped backyard',true)+f('goal','Customer goal','A shaded place to host family',true)+'</div>'
+  return '<section class="card"><div class="card-h"><h2>'+esc(L.projectHeading)+'</h2></div><div class="card-b"><p class="muted">'+esc(L.projectIntro)+'</p>'
+   +'<div class="form-grid">'+PROJ_FIELDS.map(f).join('')+'</div>'
    +'<div class="row-gap"><button class="btn primary" data-act="projSuggest">Suggest content</button><button class="btn ghost" data-act="projSave">Save project</button></div>'
+   +(ui.projResults&&!sug.length?'<p class="muted">This wording has no project ideas yet. Add some in Settings › Client wording › Edit wording.</p>':'')
    +(sug.length?'<div class="sug">'+sug.map((s,i)=>'<article class="sug-i"><div><h4>'+esc(s.title)+'</h4><p>'+esc(s.note)+'</p><span class="chip sm soft">'+esc(s.label)+'</span></div>'+(s.fmt?'<button class="btn ghost sm" data-act="sugAdd" data-i="'+i+'">Add to Idea Bank</button>':'')+'</article>').join('')+'</div><div class="row-gap"><button class="btn ghost" data-act="sugAll">Add all videos to Idea Bank</button></div>':'')
    +'</div></section>'
    +(S.projects.length?'<section class="card"><div class="card-h"><h2>Saved projects</h2></div><ul class="mini">'+S.projects.map(p=>'<li class="split"><button data-act="projLoad" data-id="'+p.id+'"><b>'+esc(p.name||'Untitled project')+'</b><span>'+esc([p.city,p.deckType].filter(Boolean).join(' · '))+'</span></button><button class="icon-btn" data-act="projDel" data-id="'+p.id+'" aria-label="Delete project">'+I('x')+'</button></li>').join('')+'</ul></section>':'');
@@ -2843,11 +3365,12 @@ function libItems(){
 }
 function viewLibrary(){
   const f=ui.lib, list=libItems();
-  const presets=[['film','What do I need to film?'],['posting','What is posting this month?'],['payments','Payment videos already made'],['ideas','Videos that are still ideas'],['shorts','Long-form videos to turn into Shorts']];
+  const pp=P().postedPreset;
+  const presets=[['film','What do I need to film?'],['posting','What is posting this month?']].concat(pp?[['payments',pp.label]]:[],[['ideas','Videos that are still ideas'],['shorts','Long-form videos to turn into Shorts']]);
   return '<div class="page wide">'+head('All content','One library, every video. Filter it any way you like.')
-   +'<div class="chips">'+presets.map(p=>'<button class="chip" data-act="preset" data-p="'+p[0]+'">'+p[1]+'</button>').join('')+'</div>'
+   +'<div class="chips">'+presets.map(p=>'<button class="chip" data-act="preset" data-p="'+p[0]+'">'+esc(p[1])+'</button>').join('')+'</div>'
    +'<div class="filters"><label>Month<select data-ui="lib.month">'+opts(itemMonths().map(k=>[k,monthLabel(k)]),f.month,'All')+'</select></label><label>Status<select data-ui="lib.status">'+opts(STATUSES,f.status,'All')+'</select></label><label>Type<select data-ui="lib.type">'+opts(['Reel','Long Form'],f.type,'All')+'</select></label>'
-   +'<label>Platform<select data-ui="lib.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label><label>Pillar<select data-ui="lib.pillar">'+opts(PILLAR_NAMES,f.pillar,'All')+'</select></label><label>Topic<select data-ui="lib.topic">'+opts(TOPICS,f.topic,'All')+'</select></label><label>Priority<select data-ui="lib.priority">'+opts(PRIORITIES,f.priority,'All')+'</select></label>'
+   +'<label>Platform<select data-ui="lib.platform">'+opts(PLATFORMS,f.platform,'All')+'</select></label><label>Pillar<select data-ui="lib.pillar">'+opts(usedOpts(pillarNames(),'pillar'),f.pillar,'All')+'</select></label><label>Topic<select data-ui="lib.topic">'+opts(usedOpts(P().topics,'topic'),f.topic,'All')+'</select></label><label>Priority<select data-ui="lib.priority">'+opts(PRIORITIES,f.priority,'All')+'</select></label>'
    +'<button class="btn ghost sm" data-act="clearLib">Clear filters</button></div>'
    +'<p class="muted">'+list.length+' of '+S.items.length+' videos'+(ui.q?' matching “'+esc(ui.q)+'”':'')+'</p>'
    +'<section class="card">'+(list.length?'<div class="table-wrap"><table class="tbl clickable"><thead><tr><th>Video</th><th>Type</th><th>Pillar</th><th>Topic</th><th>Status</th><th>Priority</th><th>Platform</th><th>Month</th><th>Publish</th></tr></thead><tbody>'
@@ -2871,7 +3394,7 @@ function planSteps(key){
    {t:'Assign all 8 publish dates',auto:its.length>=8&&dated.length>=8,hint:dated.length+' of 8'},
    {t:'Assign filming dates',auto:its.length>0&&filmed.length===its.length,hint:filmed.length+' of '+n},
    {t:'Create the filming shot list',auto:its.length>0&&shots.length===its.length,hint:shots.length+' of '+n},
-   {t:'Begin collecting jobsite B-roll throughout the month',auto:false,hint:'Tick this when you start'}
+   {t:P().labels.planCollect,auto:false,hint:'Tick this when you start'}
   ].map((s,i)=>Object.assign(s,{manual:!!man[i],done:s.auto||!!man[i]}));
 }
 function viewPlan(){
@@ -2925,18 +3448,314 @@ function clientsCard(){
    +'<ul class="cl-rows">'+rows+'</ul><p class="muted sm pad-s">'+(one?'The only client cannot be archived or deleted.':'To archive or delete the active client, switch to another client first.')+'</p></section>';
 }
 function viewSettings(){
-  const T=S.settings, deck=!!S.deckStarter;
-  return '<div class="page narrow">'+head('Settings','Targets, lead times, links and hashtags are saved separately for each client. You are editing <b>'+esc(coName())+'</b>. Theme, the client list and backups apply to everyone.')
-   +clientsCard()
+  const T=S.settings, pk=P(), tags=Object.keys(pk.hashtagGroups);
+  return '<div class="page narrow">'+head('Settings','Targets, lead times, links, wording and hashtags are saved separately for each client. You are editing <b>'+esc(coName())+'</b>. Theme, the client list and backups apply to everyone.')
+   +clientsCard()+wordingCard()
    +'<section class="card"><div class="card-h"><h2>Monthly targets</h2></div><div class="card-b form-grid two"><div class="fld"><label for="st-r">Reels per month</label><input id="st-r" type="number" min="0" data-s="settings.reelTarget" value="'+T.reelTarget+'"></div><div class="fld"><label for="st-l">Long-form videos per month</label><input id="st-l" type="number" min="0" data-s="settings.longTarget" value="'+T.longTarget+'"></div><div class="fld"><label for="st-t">Theme (all clients)</label><select id="st-t" data-root="theme">'+opts([['auto','Match my device'],['light','Light'],['dark','Dark']],ROOT.theme)+'</select></div></div></section>'
    +'<section class="card"><div class="card-h"><h2>Default lead times</h2></div><div class="card-b"><p class="muted">Used when dates are filled in automatically. All of them count back from the publish date.</p><div class="form-grid two"><div class="fld"><label for="of-f">Filming, days before publish</label><input id="of-f" type="number" min="0" data-s="settings.offsets.film" value="'+T.offsets.film+'"></div><div class="fld"><label for="of-e">Editing deadline, days before publish</label><input id="of-e" type="number" min="0" data-s="settings.offsets.edit" value="'+T.offsets.edit+'"></div><div class="fld"><label for="of-s">Script deadline, days before filming</label><input id="of-s" type="number" min="0" data-s="settings.offsets.script" value="'+T.offsets.script+'"></div><div class="fld"><label for="of-p">Planning day, days before script</label><input id="of-p" type="number" min="0" data-s="settings.offsets.plan" value="'+T.offsets.plan+'"></div></div></div></section>'
-   +'<section class="card"><div class="card-h"><h2>Content pillars</h2></div><div class="card-b pillars">'+PILLARS.map(p=>'<div><h4>'+p.name+'</h4><p>'+esc(p.purpose)+'</p><p class="muted sm">'+esc(p.ex.join(', '))+'</p></div>').join('')+'</div></section>'
-   +'<section class="card"><div class="card-h"><h2>Captions</h2><button class="btn ghost sm" data-act="resetTags">'+(deck?'Reset hashtags':'Clear hashtags')+'</button></div><div class="card-b"><p class="muted">Links are added to YouTube descriptions when filled in. Leave them blank if you don\'t want them.</p><div class="form-grid two"><div class="fld"><label for="st-web">Website</label><input id="st-web" type="url" data-s="settings.website" value="'+esc(T.website)+'" placeholder="https://"></div><div class="fld"><label for="st-quote">Quote link</label><input id="st-quote" type="url" data-s="settings.quoteUrl" value="'+esc(T.quoteUrl)+'" placeholder="https://"></div></div>'
-   +'<h3 class="dr-sec">Hashtag groups</h3><p class="muted sm">Hashtags are optional and only added when a video has Include hashtags turned on.</p><div class="form-grid two">'+Object.keys(HASHTAG_GROUPS).map((g,n)=>'<div class="fld"><label for="ht-'+n+'">'+esc(g)+'</label><textarea id="ht-'+n+'" rows="2" data-s="settings.hashtags.'+g+'">'+esc(T.hashtags[g]||'')+'</textarea></div>').join('')+'</div></div></section>'
+   +'<section class="card"><div class="card-h"><h2>Content pillars</h2><button class="btn ghost sm" data-act="packEdit">Edit wording</button></div><div class="card-b pillars">'+(pk.pillars.length?pk.pillars.map(p=>'<div><h4>'+esc(p.name)+'</h4><p>'+esc(p.purpose)+'</p><p class="muted sm">'+esc(p.ex.join(', '))+'</p></div>').join(''):'<p class="muted">No pillars yet. Add them with Edit wording.</p>')+'</div></section>'
+   +'<section class="card"><div class="card-h"><h2>Captions</h2>'+(tags.length?'<button class="btn ghost sm" data-act="resetTags">'+(tagDefaults()?'Reset hashtags':'Clear hashtags')+'</button>':'')+'</div><div class="card-b"><p class="muted">Links are added to YouTube descriptions when filled in. Leave them blank if you don\'t want them.</p><div class="form-grid two"><div class="fld"><label for="st-web">Website</label><input id="st-web" type="url" data-s="settings.website" value="'+esc(T.website)+'" placeholder="https://"></div><div class="fld"><label for="st-quote">Quote link</label><input id="st-quote" type="url" data-s="settings.quoteUrl" value="'+esc(T.quoteUrl)+'" placeholder="https://"></div></div>'
+   +'<h3 class="dr-sec">Hashtag groups</h3><p class="muted sm">Hashtags are optional and only added when a video has Include hashtags turned on.</p>'+(tags.length?'<div class="form-grid two">'+tags.map((g,n)=>'<div class="fld"><label for="ht-'+n+'">'+esc(g)+'</label><textarea id="ht-'+n+'" rows="2" data-pktag="'+n+'">'+esc(pk.hashtagGroups[g])+'</textarea></div>').join('')+'</div>':'<p class="muted sm">This wording has no hashtag groups. Add some with Edit wording.</p>')+'</div></section>'
    +'<section class="card"><div class="card-h"><h2>Backup and restore</h2></div><div class="card-b"><p class="muted">Your content is saved in this browser only. Export a backup now and then, and use it to move the dashboard to another computer. Import works with any Content HQ backup, including ones saved before client profiles, and asks before changing anything.</p><div class="row-gap"><button class="btn primary" data-act="export">Export this client</button><button class="btn ghost" data-act="exportAll">Export all clients</button><label class="btn ghost file">Import backup<input type="file" accept="application/json,.json" data-import hidden></label><button class="btn danger" data-act="reset">Reset this client</button></div></div></section></div>';
 }
 
-const VIEWS={dashboard:viewDashboard,calendar:viewCalendar,pipeline:viewPipeline,ideas:viewIdeas,month:viewMonth,film:viewFilm,published:viewPublished,performance:viewPerformance,templates:viewTemplates,settings:viewSettings,library:viewLibrary,plan:viewPlan};
+/* ================= client wording (language packs) ================= */
+const PACK_ROWS=[['Pillars',p=>p.pillars.length],['Topics',p=>p.topics.length],['Idea Bank groups',p=>p.groups.length],['Hooks',p=>libCount(p.hookLibrary)],['CTAs',p=>libCount(p.ctaLibrary)],
+  ['Caption openings',p=>libCount(p.captionOpenings)],['Hashtag groups',p=>Object.keys(p.hashtagGroups).length],['Shot types',p=>p.shotList.length],['Checklist items',p=>libCount(p.captureChecklist)],
+  ['Recap fields',p=>p.recapFields.length],['Project ideas',p=>p.projectIdeas.length]];
+function packCounts(p){
+  const W=['pillar','topic','group','hook','CTA','caption opening','hashtag group','shot type','checklist item'];
+  return W.map((w,i)=>{const n=PACK_ROWS[i][1](p);return n+' '+w+(n===1?'':'s');});
+}
+/* The tags "Reset hashtags" goes back to: the starter pack the wording came from. null = nothing to go back to, so it clears. */
+function tagDefaults(){
+  const src=S.pack.source;
+  if(src==='deck')return S.deckStarter?DECK_PACK.hashtagGroups:null;
+  const s=src==='blank'?null:STARTER_PACKS.find(x=>x.source===src);
+  return s?s.hashtagGroups:null;
+}
+const packFileName=p=>'content-hq-pack-'+slug(p.name).replace(/^client$/,'wording')+'.json';
+function exportPack(p){downloadJson(Object.assign({app:'Content HQ',exportedAt:new Date().toISOString()},pclone(p)),packFileName(p));toast(p.name+' wording downloaded');}
+function wordingCard(){
+  const p=S.pack, prev=S.packPrev;
+  return '<section class="card"><div class="card-h"><div><h2>Client wording</h2><p class="muted sm">The pillars, topics, hook, CTA and caption ideas, hashtags, shot lists, labels and AI prompt wording for <b>'+esc(coName())+'</b>. Each client has its own copy, so changing it here never changes another client.</p></div></div><div class="card-b">'
+   +'<div class="pk-cur"><b>'+esc(p.name)+'</b>'+(p.description?'<span class="muted sm">'+esc(p.description)+'</span>':'')+'<span class="sm">'+esc(packCounts(p).join(' · '))+'</span></div>'
+   +'<div class="row-gap pk-btns"><button class="btn primary" data-act="packChange">Change pack</button><button class="btn ghost" data-act="packEdit">Edit wording</button><button class="btn ghost" data-act="packAI">Draft with AI</button>'
+   +'<label class="btn ghost file">Import pack file<input type="file" accept="application/json,.json" data-pack-import="apply" hidden></label><button class="btn ghost" data-act="packExport">Export pack</button>'
+   +(prev?'<button class="btn ghost" data-act="packRestore">Restore previous pack</button>':'')+'</div>'
+   +(prev?'<p class="muted sm pk-prevname">Previous pack: '+esc(prev.name)+'</p>':'')+'</div></section>';
+}
+/* Add client: the starting wording choice */
+function startWordingHtml(){
+  const opt=(v,l,d,on)=>'<label class="chk big pk-o"><input type="radio" name="cl-pack" value="'+v+'"'+(on?' checked':'')+'><span><b>'+esc(l)+'</b><small>'+esc(d)+'</small></span></label>';
+  return '<fieldset class="fld pk-start"><legend>Starting wording</legend><p class="muted sm">Pillars, topics, hook and CTA ideas, hashtags, shot lists and labels. The new client gets its own copy and starts with no content. You can change the wording any time in Settings.</p><div class="pk-opts">'
+   +STARTER_PACKS.map(s=>opt(s.source,s.name,s.description,s.source==='blank')).join('')
+   +opt('file','Import a pack file','A content-hq-pack .json file exported from Content HQ.')
+   +'<div class="pk-file"><label class="btn ghost sm file">Choose pack file<input type="file" accept="application/json,.json" data-pack-import="new" hidden></label><div id="cl-pack-prev" aria-live="polite"></div></div>'
+   +opt('ai','Draft with AI from a meeting summary','Next you paste a summary, copy a prompt into any AI chat, and paste its answer back.')
+   +'</div></fieldset>';
+}
+function packChangeModal(){
+  showModal('<div class="modal-h"><h3>Change pack</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p class="muted sm">Pick new wording for <b>'+esc(coName())+'</b>. You will see what changes before anything is applied.</p><div class="pk-list">'
+   +STARTER_PACKS.map(s=>'<button class="pk-i" data-act="packPick" data-id="'+s.source+'"><b>'+esc(s.name)+'</b><span>'+esc(s.description)+'</span></button>').join('')
+   +'<label class="pk-i"><b>Import a pack file</b><span>A content-hq-pack .json file exported from Content HQ.</span><input type="file" accept="application/json,.json" data-pack-import="apply" hidden></label>'
+   +'<button class="pk-i" data-act="packAI"><b>Draft with AI</b><span>Turn a meeting summary into wording, using any AI chat.</span></button></div></div>','lg');
+}
+const warnHtml=w=>w&&w.length?'<div class="pk-warn" role="status"><b>Check these</b><ul>'+w.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':'';
+/* Replacing a pack always goes through this: what changes, what does not, and a way to export first */
+function packConfirm(pack,warnings){
+  ui.packNext=pack;
+  const cur=S.pack, rows=PACK_ROWS.map(r=>[r[0],r[1](cur),r[1](pack)]);
+  showModal('<div class="modal-h"><h3>Change wording?</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
+   +'<p>Replace <b>'+esc(cur.name)+'</b> with <b>'+esc(pack.name)+'</b> for <b>'+esc(coName())+'</b>.</p>'
+   +'<div class="table-wrap"><table class="tbl pk-diff"><thead><tr><th>What</th><th class="r">Now</th><th class="r">New</th></tr></thead><tbody>'
+   +rows.map(r=>'<tr'+(r[1]!==r[2]?' class="chg"':'')+'><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td class="r">'+r[2]+'</td></tr>').join('')+'</tbody></table></div>'
+   +'<ul class="pk-notes"><li>Pillars, topics, groups, the hook, CTA and caption ideas, hashtags, shot lists, checklists, labels, script hints and the AI prompt rules switch to the new wording.</li>'
+   +'<li><b>Existing videos, ideas, tasks and results are not changed.</b> A pillar, topic or group that isn’t in the new wording still shows, marked “(not in this pack)”.</li>'
+   +'<li>The current wording is kept as the previous pack'+(S.packPrev?' (replacing '+esc(S.packPrev.name)+')':'')+', so <b>Restore previous pack</b> in Settings brings it back.</li></ul>'
+   +warnHtml(warnings)
+   +'<div class="row-gap pk-btns"><button class="btn primary" data-act="packApplyYes">Use '+esc(pack.name)+'</button><button class="btn ghost" data-act="packExportCur">Export current pack first</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>','lg');
+}
+/* Only the wording changes. Jobsite checklist ticks are set aside with the old pack, so new checklist items never inherit them. */
+function applyPack(p){
+  S.packPrev=S.pack;S.packPrevChecks=S.jobsite.checks||{};S.pack=p;S.jobsite.checks={};
+  ui.packNext=null;fixFilters();save(true);closeModal();
+  if(ui.view==='wording'){ui.wd=null;ui.wdErr=null;}
+  render();if(ui.edit.id)renderEditor();
+  toast('Now using '+p.name+'. Restore previous pack in Settings any time.');
+}
+function restorePack(){
+  if(!S.packPrev)return;
+  const cur=S.pack, curC=S.jobsite.checks||{};
+  S.pack=S.packPrev;S.jobsite.checks=S.packPrevChecks||{};S.packPrev=cur;S.packPrevChecks=curC;
+  fixFilters();save(true);closeModal();render();if(ui.edit.id)renderEditor();
+  toast('Restored '+S.pack.name+'. '+cur.name+' is now the previous pack.');
+}
+/* Filter choices that point at a value neither the wording nor any item uses any more go back to All */
+function fixFilters(){
+  const ok=(v,list,field)=>!v||optVals(usedOpts(list,field)).includes(v), pn=pillarNames(), tp=P().topics;
+  if(!ok(ui.lib.pillar,pn,'pillar'))delete ui.lib.pillar;
+  if(!ok(ui.lib.topic,tp,'topic'))delete ui.lib.topic;
+  if(!ok(ui.pub.pillar,pn,'pillar'))ui.pub.pillar='';
+  if(!ok(ui.perf.pillar,pn,'pillar'))ui.perf.pillar='';
+  if(ui.ideaTopic!=='All'&&!ok(ui.ideaTopic,tp,'topic'))ui.ideaTopic='All';
+}
+/* ---------- reading a pack from a file or an AI answer. Pasted text is data only: parsed, cleaned and always escaped. ---------- */
+/* Finds the first complete {...} in text that parses as JSON. Code fences and chat text around it are ignored. */
+function extractJson(text){
+  const t=String(text||'');let starts=0, sawOpen=false, lastErr='';
+  for(let start=t.indexOf('{');start>=0&&starts<25;start=t.indexOf('{',start+1),starts++){
+    sawOpen=true;let depth=0,inStr=false,escp=false,end=-1;
+    for(let i=start;i<t.length;i++){
+      const c=t[i];
+      if(inStr){if(escp)escp=false;else if(c==='\\')escp=true;else if(c==='"')inStr=false;continue;}
+      if(c==='"')inStr=true;else if(c==='{')depth++;else if(c==='}'){depth--;if(!depth){end=i;break;}}
+    }
+    if(end<0)continue;
+    try{return {obj:JSON.parse(t.slice(start,end+1))};}catch(e){if(!lastErr)lastErr=e.message;}
+  }
+  if(!sawOpen)return {error:'There is no JSON in that text. The answer should contain the pack, starting with { and ending with }.'};
+  if(lastErr)return {error:'The JSON has a mistake in it ('+lastErr+'). Ask the AI to return only valid JSON, or fix it and check again.'};
+  return {error:'The JSON looks cut off: it starts with { but never closes. Ask the AI to send the complete JSON again.'};
+}
+function parsePackText(text,from){
+  text=String(text||'');
+  if(!text.trim())return {error:from==='ai'?'Paste the AI’s answer first.':'That file is empty.'};
+  if(text.length>500000)return {error:'That is far too long to be a wording pack.'};
+  let o=null;
+  try{o=JSON.parse(text);}catch(e){const x=extractJson(text);if(x.error)return x;o=x.obj;}
+  return packFromObject(o,from);
+}
+function packFromObject(o,from){
+  if(!isPlain(o))return {error:'That is not a wording pack.'};
+  if(isPlain(o.client)&&isPlain(o.client.data)&&isPlain(o.client.data.pack))o=o.client.data.pack;   // a client backup: use its wording
+  else if(Array.isArray(o.clients)||Array.isArray(o.items)||isPlain(o.client))return {error:'That is a backup file, not a wording pack. Use Import backup under Backup and restore, or Export pack to make a pack file.'};
+  const known=['pillars','topics','groups','hookLibrary','ctaLibrary','captionOpenings','hashtagGroups','shotList','captureChecklist'];
+  if(o.format!==PACK_FORMAT&&!known.some(k=>own(o,k)))return {error:'That does not look like a wording pack. It has none of the expected parts (pillars, topics, hookLibrary and so on).'};
+  const r=cleanPack(o);
+  if(from==='ai')r.pack.source='ai';
+  else if(!['deck','construction','restaurant','realestate','blank'].includes(r.pack.source))r.pack.source='import';
+  return r;
+}
+function packPreviewHtml(r){
+  if(!r)return '';
+  if(r.error)return '<div class="pk-err" role="alert"><b>That didn’t work</b><p>'+esc(r.error)+'</p></div>';
+  const p=r.pack, flat=l=>l.reduce((a,g)=>a.concat(g.items),[]), hooks=flat(p.hookLibrary).slice(0,3), ctas=flat(p.ctaLibrary).slice(0,3);
+  const ul=l=>'<ul>'+l.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  return '<div class="pk-prev"><h3>'+esc(p.name)+'</h3>'+(p.description?'<p class="muted sm">'+esc(p.description)+'</p>':'')+'<p class="sm">'+esc(packCounts(p).join(' · '))+'</p>'
+   +(p.terms.audience?'<p class="sm"><b>Audience:</b> '+esc(p.terms.audience)+'</p>':'')+(p.voice?'<p class="sm"><b>Voice:</b> '+esc(p.voice)+'</p>':'')
+   +(p.pillars.length?'<p class="sm"><b>Pillars:</b> '+esc(p.pillars.map(x=>x.name).join(', '))+'</p>':'')
+   +(hooks.length?'<h4>Sample hooks</h4>'+ul(hooks):'')+(ctas.length?'<h4>Sample CTAs</h4>'+ul(ctas):'')+warnHtml(r.warnings)+'</div>';
+}
+function packFileLoaded(text,mode){
+  const r=parsePackText(text,'file');
+  if(mode==='new'){
+    ui.newPack=r.pack?r:null;
+    const b=$('#cl-pack-prev');if(b)b.innerHTML=packPreviewHtml(r);
+    const o=$('input[name="cl-pack"][value="file"]');if(o)o.checked=true;
+    return;
+  }
+  if(r.error){showModal('<div class="modal-h"><h3>Import pack file</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'+packPreviewHtml(r)+'<div class="row-gap"><button class="btn ghost" data-act="modalClose">OK</button></div></div>');return;}
+  packConfirm(r.pack,r.warnings);
+}
+/* ---------- Edit wording: plain text, one item per line ---------- */
+const libText=l=>l.map(g=>g.items.map(x=>g.cat+' | '+x).join('\n')).join('\n');
+function packToText(p){
+  return {name:p.name,description:p.description,audience:p.terms.audience,voice:p.voice,
+    pillars:p.pillars.map(x=>[x.name,x.purpose,x.ex.join('; ')].join(' | ')).join('\n'),
+    topics:p.topics.map(t=>own(p.groupFor,t)?t+' | '+p.groupFor[t]:t).join('\n'),
+    groups:p.groups.join('\n'),hooks:libText(p.hookLibrary),ctas:libText(p.ctaLibrary),captions:libText(p.captionOpenings),
+    hashtags:Object.keys(p.hashtagGroups).map(g=>g+' | '+p.hashtagGroups[g].replace(/\s*\n\s*/g,' ')).join('\n'),
+    shots:p.shotList.map(x=>x[1]).join('\n'),capture:libText(p.captureChecklist.map(g=>({cat:g.g,items:g.items}))),recap:p.recapFields.map(x=>x[1]).join('\n'),
+    hints:SCRIPT_TYPE_NAMES.map(n=>[n].concat(p.scriptHints[n].ph,[p.scriptHints[n].hookPh]).join(' | ')).join('\n'),
+    labels:LABEL_KEYS.map(k=>k+' | '+p.labels[k]).join('\n'),
+    rulesScript:p.promptRules.script.join('\n'),rulesCaption:p.promptRules.caption.join('\n'),
+    projForm:PROJ_FIELDS.map(k=>{const f=p.projectForm[k];return [k,f.label,f.ph,f.fallback].join(' | ');}).join('\n'),
+    ideas:p.projectIdeas.map(x=>[x.format||'None',x.pillar,x.topic,x.title,x.note,x.label===x.title?'':x.label].join(' | ').replace(/( \| )+$/,'')).join('\n'),
+    preset:p.postedPreset?p.postedPreset.label+' | '+p.postedPreset.pillar:''};
+}
+/* Turns the Edit wording boxes back into a pack. Every problem is listed with its box and line number; nothing saves until there are none. */
+function textToPack(d,base){
+  const E=[], lines=v=>String(v||'').split('\n').map((l,i)=>[l.trim(),i+1]).filter(x=>x[0]);
+  const split=l=>{const i=l.indexOf('|');return i<0?null:[l.slice(0,i).trim(),l.slice(i+1).trim()];};
+  const lc=x=>String(x).toLowerCase(), findIn=(list,v)=>list.find(x=>lc(x)===lc(v));
+  const raw=pclone(base);
+  raw.name=String(d.name||'').trim();if(!raw.name)E.push('About: give the wording a name.');
+  raw.description=d.description;raw.voice=d.voice;raw.terms={audience:d.audience};
+  raw.pillars=lines(d.pillars).map(([l,n])=>{const p=l.split('|').map(x=>x.trim());if(!p[0]){E.push('Pillars, line '+n+': start with the pillar name, like "Projects | Show finished work | Reveal; Walkthrough".');return null;}
+    return {name:p[0],purpose:p[1]||'',ex:p.slice(2).join(' | ').split(';').map(x=>x.trim()).filter(Boolean)};}).filter(Boolean);
+  raw.groups=lines(d.groups).map(x=>x[0]);
+  raw.groupFor={};
+  raw.topics=lines(d.topics).map(([l,n])=>{const p=split(l)||[l,''];if(!p[0]){E.push('Topics, line '+n+': start with the topic name.');return null;}
+    if(p[1]){const g=findIn(raw.groups,p[1]);if(!g)E.push('Topics, line '+n+': the group "'+p[1]+'" is not in the Idea Bank groups box. Add it there or fix the spelling.');else raw.groupFor[p[0]]=g;}
+    return p[0];}).filter(Boolean);
+  const lib=(v,box,eg)=>{const out=[], by=Object.create(null);lines(v).forEach(([l,n])=>{const p=split(l);
+    if(!p||!p[0]||!p[1]){E.push(box+', line '+n+': use "Category | text", like "'+eg+'".');return;}
+    const k=lc(p[0]);if(!by[k]){by[k]={cat:p[0],items:[]};out.push(by[k]);}by[k].items.push(p[1]);});return out;};
+  raw.hookLibrary=lib(d.hooks,'Hooks','Question | Should you ___ or ___?');
+  raw.ctaLibrary=lib(d.ctas,'CTAs','Website | See more on our website.');
+  raw.captionOpenings=lib(d.captions,'Caption openings','FAQ | One question we get all the time is ___.');
+  raw.hashtagGroups={};
+  lines(d.hashtags).forEach(([l,n])=>{const p=split(l)||[l,''];if(!p[0]){E.push('Hashtags, line '+n+': start with the group name, like "General | #Tag #Tag".');return;}if(/\./.test(p[0])){E.push('Hashtags, line '+n+': group names can’t contain a period.');return;}raw.hashtagGroups[p[0]]=p[1];});
+  const keyed=(v,old)=>lines(v).map(([l])=>{const m=old.find(x=>lc(x[1])===lc(l));return [m?m[0]:'',l];});
+  raw.shotList=keyed(d.shots,base.shotList);raw.recapFields=keyed(d.recap,base.recapFields);
+  raw.captureChecklist=lib(d.capture,'Capture checklist','Before | Wide shot of the space').map(g=>({g:g.cat,items:g.items}));
+  raw.scriptHints={};
+  lines(d.hints).forEach(([l,n])=>{const p=l.split('|').map(x=>x.trim()), t=findIn(SCRIPT_TYPE_NAMES,p[0]);
+    if(!t){E.push('Script hints, line '+n+': "'+p[0]+'" is not a script type. Use one of: '+SCRIPT_TYPE_NAMES.join(', ')+'.');return;}
+    raw.scriptHints[t]={ph:[p[1]||'',p[2]||'',p[3]||''],hookPh:p[4]||''};});
+  raw.labels={};
+  lines(d.labels).forEach(([l,n])=>{const p=split(l), k=p&&findIn(LABEL_KEYS,p[0]);
+    if(!k){E.push('Labels, line '+n+': start with one of these names, then | and the text: '+LABEL_KEYS.join(', ')+'.');return;}raw.labels[k]=p[1];});
+  raw.promptRules={script:lines(d.rulesScript).map(x=>x[0]),caption:lines(d.rulesCaption).map(x=>x[0])};
+  raw.projectForm=pclone(base.projectForm);
+  lines(d.projForm).forEach(([l,n])=>{const p=l.split('|').map(x=>x.trim()), k=findIn(PROJ_FIELDS,p[0]);
+    if(!k){E.push('Project form, line '+n+': start with one of: '+PROJ_FIELDS.join(', ')+'.');return;}
+    raw.projectForm[k]={label:p[1]||'',ph:p[2]||'',fallback:p[3]||''};});
+  raw.projectIdeas=lines(d.ideas).map(([l,n])=>{const p=l.split('|').map(x=>x.trim()), f=lc(p[0]).replace(/[-\s]+/g,' ');
+    const fmt=f==='reel'?'Reel':f==='long form'?'Long Form':(f==='none'||f===''?'':null);
+    if(fmt==null){E.push('Project ideas, line '+n+': start with Reel, Long Form or None.');return null;}
+    if(!p[3]){E.push('Project ideas, line '+n+': add a title, like "Reel | Pillar | Topic | Reveal: {name} | Hero shots".');return null;}
+    return {label:p[5]||p[3],format:fmt,pillar:p[1]||'',topic:p[2]||'',title:p[3],note:p[4]||''};}).filter(Boolean);
+  const pr=String(d.preset||'').trim();raw.postedPreset=null;
+  if(pr){const p=split(pr);if(!p||!p[0]||!p[1])E.push('Library shortcut: use "Label | Pillar", or leave it empty.');else raw.postedPreset={label:p[0],pillar:p[1]};}
+  if(E.length)return {errors:E};
+  const r=cleanPack(raw);r.pack.source=base.source;
+  return {errors:[],pack:r.pack,warnings:r.warnings};
+}
+function viewWording(){
+  if(!ui.wd)ui.wd=packToText(S.pack);
+  const d=ui.wd;
+  const box=(k,label,help,rows)=>'<div class="fld"><label for="wd-'+k+'">'+label+'</label>'+(help?'<small class="help">'+help+'</small>':'')+'<textarea id="wd-'+k+'" rows="'+(rows||6)+'" data-ui="wd.'+k+'">'+esc(d[k])+'</textarea></div>';
+  const inp=(k,label,ph)=>'<div class="fld"><label for="wd-'+k+'">'+label+'</label><input id="wd-'+k+'" data-ui="wd.'+k+'" value="'+esc(d[k])+'" placeholder="'+esc(ph||'')+'"></div>';
+  const card=(h,inner)=>'<section class="card"><div class="card-h"><h2>'+h+'</h2></div><div class="card-b">'+inner+'</div></section>';
+  const btns='<div class="row-gap pk-btns"><button class="btn primary" data-act="wdSave">Save wording</button><button class="btn ghost" data-act="wdCancel">Cancel</button></div>';
+  return '<div class="page narrow wd">'+head('Edit wording','Wording for <b>'+esc(coName())+'</b>. One item per line. Nothing changes until you save, and the current wording is kept as the previous pack.')
+   +(ui.wdErr&&ui.wdErr.length?'<div class="pk-err" role="alert" id="wd-err"><b>Fix '+(ui.wdErr.length===1?'this':'these '+ui.wdErr.length)+' before saving</b><ul>'+ui.wdErr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':'')
+   +card('About this wording',inp('name','Name','e.g. Bakery')+box('description','Description','',2)+inp('audience','Who the videos are for','Used in the AI prompts. Leave blank to use the client description.')+box('voice','Voice','How the business sounds. Used in the AI prompts.',2))
+   +card('Pillars and topics',box('pillars','Content pillars','Name | Purpose | example; example',8)+box('groups','Idea Bank groups','One group per line.',5)+box('topics','Topics','Topic | Idea Bank group. The group is optional.',8))
+   +card('Hook, CTA and caption ideas',box('hooks','Hooks','Category | hook text. Use ___ for blanks.',10)+box('ctas','CTAs','Category | CTA text',8)+box('captions','Caption openings','Category | opening line',8))
+   +card('Hashtags',box('hashtags','Hashtag groups','Group name | #Tag #Tag #Tag',5))
+   +card('Filming',box('shots','Shot types','One per line. Ticks already saved on videos stay with a shot type as long as its name is unchanged.',8)+box('capture',esc(P().labels.capture),'Section | item, like "Before | Wide shot".',10)+box('recap','Monthly recap fields','One per line.',6))
+   +card('Script hints',box('hints','Placeholders for each script type','Script type | point 1 | point 2 | point 3 | hook',8))
+   +card('Labels',box('labels','Screen labels','name | text. Names: '+LABEL_KEYS.map(k=>k+' ('+LABEL_HELP[k]+')').join(', ')+'.',8))
+   +card('AI prompt rules',box('rulesScript','Script prompt rules','One rule per line, like "Do not invent prices."',4)+box('rulesCaption','Caption prompt rules','One rule per line.',4))
+   +card(esc(P().labels.projectTab),box('projForm','Form fields','field | label | placeholder | used when blank. Fields: '+PROJ_FIELDS.join(', ')+'.',7)
+     +box('ideas','Project ideas','Reel, Long Form or None | pillar | topic | title | note | short label (optional). Titles and notes can use {name} {inCity} {type} {materials} {usingMaterials} {features} {challenges} {goal}.',10)
+     +inp('preset','Library shortcut for posted videos','Label | Pillar, e.g. "Menu videos already made | Food". Leave empty for none.'))
+   +btns+'</div>';
+}
+/* ---------- Draft with AI. No API: the prompt is copied, the answer pasted back. Nothing typed here is ever saved. ---------- */
+const aiDraft=(mode,name,about)=>({mode:mode,name:name||'',about:about||'',biz:'',aud:'',area:'',tone:'',avoid:'',summary:'',answer:'',newName:'',result:null});
+function aiPackPrompt(){
+  const a=ui.ai, isNew=a.mode==='new', co=String(isNew?a.name:coName()).trim()||'the business', about=String(isNew?a.about:coAbout()).trim();
+  const line=(k,v)=>nonEmpty(v)?[k+': '+String(v).trim()]:[];
+  const labels={};LABEL_KEYS.forEach(k=>{labels[k]=LABEL_HELP[k];});
+  const hints={};SCRIPT_TYPE_NAMES.forEach(n=>{hints[n]={ph:['Hint for point 1','Hint for point 2','Hint for point 3'],hookPh:'Hint for the hook'};});
+  const form={};PROJ_FIELDS.forEach(k=>{form[k]={label:'Field label',ph:'Placeholder',fallback:'Words used when the field is blank'};});
+  const ex={format:PACK_FORMAT,version:1,name:'Short name for this wording',description:'One sentence about who this wording is for',voice:'How the owner talks, in a few words',terms:{audience:'Who the videos are for'},
+    pillars:[{name:'Pillar name',purpose:'What this pillar is for',ex:['Example topic','Example topic']}],topics:['Topic'],groups:['Idea Bank group'],groupFor:{'Topic':'Idea Bank group'},
+    defaults:{pillar:'Pillar for new videos',topic:'Topic for new videos',group:'Group for topics with no group',recapPillar:'Pillar for the Monthly Recap',recapTopic:'Topic for the Monthly Recap'},
+    scriptTypeFor:{topics:{'Topic':'FAQ'},pillars:{'Pillar name':'Project Showcase'}},
+    hookLibrary:[{cat:'Category',items:['Hook with a ___ blank where useful']}],ctaLibrary:[{cat:'Category',items:['Call to action']}],captionOpenings:[{cat:'Category',items:['Caption opening line']}],
+    hashtagGroups:{'Group name':'#Tag #Tag #Tag'},shotList:[['talking','Talking head'],['short-key','Shot label'],['other','Other']],
+    captureChecklist:[{g:'Before',items:['Shot to capture']},{g:'During',items:['Shot to capture']},{g:'After',items:['Shot to capture']}],
+    recapFields:[['month','Month'],['short-key','Field label'],['cta','CTA']],labels:labels,scriptHints:hints,
+    phrases:{showcaseOpen:'Opening line for a project showcase caption',showcaseGoal:'Lead-in for the customer goal, e.g. The goal on this project was',showcaseMade:'Lead-in for what was made, e.g. We made',showcaseFeature:'Lead-in for a standout detail, e.g. One of the standout features is'},
+    promptRules:{script:['Do not invent ...'],caption:['Do not invent ...']},projectForm:form,
+    projectIdeas:[{label:'Short idea name',format:'Reel',pillar:'Pillar name',topic:'Topic',title:'Title using {name}',note:'What to film, using {features}'}],
+    postedPreset:{label:'... videos already made',pillar:'Pillar name'}};
+  return ['You are helping set up the wording for a social video planner used by '+co+'. The planner uses this wording for content pillars, topics, hook and CTA ideas, caption openings, hashtags, shot lists, filming checklists, screen labels, and the rules its AI prompts follow.']
+   .concat(about?['About '+co+': '+about]:[],line('Business type',a.biz),line('Audience',a.aud),line('Service area',a.area),line('Tone',a.tone),line('Things to avoid',a.avoid),
+   ['','MEETING SUMMARY (notes from a conversation with the owner)',String(a.summary||'').trim()||'(no summary provided)','',
+    'TASK','Write a wording pack as JSON, in exactly this format:',JSON.stringify(ex,null,2),'',
+    'SIZES',
+    '- About 7 pillars, each with a short purpose and 3 to 6 examples.',
+    '- About 10 topics and 5 Idea Bank groups. Map every topic to one of the groups in groupFor.',
+    '- 6 hook categories with about 4 hooks each.',
+    '- 5 CTA categories with 2 CTAs each.',
+    '- 6 caption-opening categories with 2 or 3 openings each.',
+    '- 5 hashtag groups with 3 to 5 hashtags each.',
+    '- An 8-item shot list. Keep ["talking","Talking head"] and ["other","Other"]. Keys are short, lowercase, with no spaces.',
+    '- A capture checklist with 3 sections (before, during and after filming), 5 to 8 items each.',
+    '- About 10 recap fields. Keep the "month" and "cta" fields.',
+    '- scriptHints for all 8 script types: '+SCRIPT_TYPE_NAMES.join(', ')+'.',
+    '- scriptTypeFor values must be one of those 8 script types.',
+    '- All 11 labels, all 4 phrases, and all 7 projectForm fields ('+PROJ_FIELDS.join(', ')+'; type means the kind of project).',
+    '- 8 to 14 projectIdeas. format is "Reel", "Long Form", or "" for anything that is not a video. Titles and notes can use these tokens: {name} {inCity} {type} {materials} {usingMaterials} {features} {challenges} {goal}.',
+    '- 3 or 4 promptRules for scripts and for captions, listing what an AI must never make up for this kind of business.','',
+    'RULES',
+    '- Return ONLY the JSON. No explanation before or after it, and no markdown.',
+    "- Use the owner's own words and phrases from the meeting summary wherever you can.",
+    '- Do not invent facts, prices, claims, awards, certifications, or locations that are not in the summary.',
+    '- Write hooks and CTAs the way a person talks on camera: conversational and helpful.',
+    '- Keep blanks as ___ where the specific detail changes from video to video.',
+    '- Avoid hype, buzzwords, excessive emojis, and excessive hashtags.']).join('\n');
+}
+function viewPackAI(){
+  if(!ui.ai)ui.ai=aiDraft('apply');
+  const a=ui.ai, isNew=a.mode==='new', r=a.result;
+  const inp=(k,label,ph)=>'<div class="fld"><label for="ai-'+k+'">'+label+'</label><input id="ai-'+k+'" data-ui="ai.'+k+'" value="'+esc(a[k])+'" placeholder="'+esc(ph||'')+'" autocomplete="off"></div>';
+  const ta=(k,label,rows,ph)=>'<div class="fld"><label for="ai-'+k+'">'+label+'</label><textarea id="ai-'+k+'" rows="'+rows+'" data-ui="ai.'+k+'" placeholder="'+esc(ph||'')+'">'+esc(a[k])+'</textarea></div>';
+  const acts=!(r&&r.pack)?'':isNew?'<div class="row-gap pk-btns"><button class="btn primary" data-act="aiCreate">Create client with this pack</button></div>'
+    :'<div class="row-gap pk-btns"><button class="btn primary" data-act="aiApply">Apply to '+esc(coName())+'</button></div>'
+     +'<details class="adv"><summary>Or create a new client with this pack</summary><div class="adv-b">'+inp('newName','New client name','Business name')
+     +'<div class="row-gap pk-btns"><button class="btn ghost" data-act="aiCreate">Create client with this pack</button></div></div></details>';
+  return '<div class="page narrow">'+head('Draft wording with AI',(isNew?'For a new client. ':'For <b>'+esc(coName())+'</b>. ')+'Copy the prompt into Claude or any AI chat, then paste its answer back here. Nothing is sent anywhere from this page, and the meeting summary is never saved.','<button class="btn ghost" data-act="aiBack">Back</button>')
+   +'<section class="card"><div class="card-h"><h2>1. Describe the business</h2></div><div class="card-b">'
+   +(isNew?inp('name','Client name','Business name')+ta('about','About the business',3,'What the business does, who it serves, and the area it works in'):'')
+   +'<div class="form-grid two">'+inp('biz','Business type','e.g. family bakery, roofing company')+inp('aud','Who the audience is','e.g. busy parents nearby')+inp('area','Service area','Only what the owner said')+inp('tone','Tone','e.g. friendly, plain-spoken')+'</div>'
+   +ta('avoid','Things to avoid',2,'Words, topics or claims to stay away from')
+   +ta('summary','Meeting summary',12,'Paste notes or a summary of your conversation with the owner. It is only used to build the prompt and is never saved.')
+   +'<div class="row-gap pk-btns"><button class="btn primary" data-act="aiCopy">Copy AI pack prompt</button></div></div></section>'
+   +'<section class="card"><div class="card-h"><h2>2. Paste the AI’s answer</h2></div><div class="card-b">'
+   +ta('answer','AI answer',10,'Paste the whole reply. Extra text or code fences around the JSON are fine.')
+   +'<div class="row-gap pk-btns"><button class="btn primary" data-act="aiCheck">Check it</button></div>'
+   +'<div id="ai-result">'+packPreviewHtml(r)+acts+'</div></div></section></div>';
+}
+
+const VIEWS={dashboard:viewDashboard,calendar:viewCalendar,pipeline:viewPipeline,ideas:viewIdeas,month:viewMonth,film:viewFilm,published:viewPublished,performance:viewPerformance,templates:viewTemplates,settings:viewSettings,library:viewLibrary,plan:viewPlan,wording:viewWording,packai:viewPackAI};
 
 /* ================= editor (drawer) ================= */
 const TABS=[['overview','Overview'],['script','Script'],['shoot','Shoot & edit'],['caption','Caption'],['schedule','Schedule'],['repurpose','Repurpose'],['publish','Publish & results']];
@@ -2959,7 +3778,7 @@ function tabOverview(it){
    +F(it,'type','Content type',{t:'select',opts:['Reel','Long Form']})
    +(it.type==='Reel'?F(it,'reelKind','Reel kind',{t:'select',opts:['Standalone','Repurposed','Recap']}):'')
    +F(it,'status','Status',{t:'select',opts:STATUSES})+F(it,'priority','Priority',{t:'select',opts:PRIORITIES})
-   +F(it,'pillar','Content pillar',{t:'select',opts:PILLAR_NAMES})+F(it,'topic','Topic category',{t:'select',opts:TOPICS})+F(it,'group','Idea Bank group',{t:'select',opts:GROUPS})
+   +F(it,'pillar','Content pillar',selOpts(pillarNames(),it.pillar))+F(it,'topic','Topic category',selOpts(P().topics,it.topic))+F(it,'group','Idea Bank group',selOpts(P().groups,it.group))
    +(isIdea?F(it,'ideaFormat','Works best as',{t:'select',opts:['Reel','Long Form','Both'],blank:'Not sure yet'}):'')+'</div>'
    +'<fieldset class="fld"><legend>Platforms</legend><div class="plats">'+PLATFORMS.map(p=>'<label class="chk"><input type="checkbox" data-plat="'+p+'" '+(it.platforms.includes(p)?'checked':'')+'><span>'+p+'</span></label>').join('')+'</div></fieldset>'
    +F(it,'notes','Notes',{t:'textarea',rows:4});
@@ -3064,6 +3883,8 @@ function liveBlocks(it,el){
   const row=el.closest('.tp'), i=+el.dataset.tpb, b=it.blocks[i];
   if(row&&b){const c=$('.tp-cap input',row), has=nonEmpty(b.broll);c.disabled=!has;c.checked=has&&b.captured;}
 }
+/* The shot-type checkboxes come from the client's wording. Labels are escaped because a pack can come from a file or an AI answer. */
+const shotTypes=it=>P().shotList.length?'<div class="fld"><label>Shot types</label><div class="shots compact">'+P().shotList.map(s=>F(it,'shots.'+s[0],esc(s[1]),{t:'check'})).join('')+'</div></div>':'';
 function tabScript(it){
   let h='';
   if(it.type==='Reel'){
@@ -3073,11 +3894,11 @@ function tabScript(it){
       +'<div class="form-grid">'+F(it,'hook',it.scriptType==='FAQ'?'Hook (the question)':'Hook',{t:'textarea',rows:2,wide:true,lib:'hook',ph:d.hookPh})
       +'</div>'+blocksBox(it,'r')+'<div class="form-grid">'
       +F(it,'cta','CTA',{t:'textarea',rows:2,wide:true,lib:'cta',ph:'What should the viewer do next?'})+'</div>'
-      +'<div class="fld"><label>Shot types</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>'
+      +shotTypes(it)
       +F(it,'broll','Other B-roll notes',{t:'textarea',rows:2,ph:'General shots that do not belong to one talking point'})
       +'<div id="sr-box" class="sr-box">'+readyInner(it)+'</div></section>'
       +'<section class="sg-prev"><div class="sg-prev-h"><h3>Speaking guide preview</h3><button class="btn ghost sm" data-act="copyAI">Copy AI script prompt</button></div><div id="sg-prev">'+guideHtml(guideParts(it))+'</div></section>'+speakerSection(it);
-    if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+RECAP_FIELDS.map(r=>F(it,'recap.'+r[0],r[1],{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
+    if(it.reelKind==='Recap')h+='<h3 class="dr-sec">Monthly recap template</h3><div class="form-grid">'+P().recapFields.map(r=>F(it,'recap.'+r[0],esc(r[1]),{t:r[0]==='month'||r[0]==='cta'?'text':'textarea',rows:2})).join('')+'</div>';
     h+=advBlock('strategy','Advanced strategy','<div class="form-grid">'+F(it,'mainTopic','Topic')+F(it,'audienceProblem','Audience problem',{t:'textarea',rows:2})+F(it,'mainMessage','Main message',{t:'textarea',rows:2})+F(it,'takeaway','Desired takeaway',{t:'textarea',rows:2})+F(it,'offer','Offer connected to content',{wide:true})+'</div>');
     return h+scriptExtras(it);
   }
@@ -3114,12 +3935,14 @@ function shortsBlock(it){
 }
 const MODK=/Mac|iPhone|iPad/.test(navigator.platform||'')?'⌘':'Ctrl';
 const TP_HELP='Enter adds the next point. Shift + Enter makes a new line. '+MODK+' + Enter jumps to B-roll.';
-const LIBS={hook:{data:HOOK_LIBRARY,btn:'Browse hooks',title:'Hook ideas',noun:'hook',blanks:true},cta:{data:CTA_LIBRARY,btn:'Browse CTAs',title:'CTA ideas',noun:'CTA'},
-  caption:{data:CAPTION_OPENINGS,btn:'Caption ideas',title:'Caption openings',noun:'opening',blanks:true}};
+/* key = which list in the active client's pack. Read when the list opens, so it always follows the client. */
+const LIBS={hook:{key:'hookLibrary',btn:'Browse hooks',title:'Hook ideas',noun:'hook',blanks:true},cta:{key:'ctaLibrary',btn:'Browse CTAs',title:'CTA ideas',noun:'CTA'},
+  caption:{key:'captionOpenings',btn:'Caption ideas',title:'Caption openings',noun:'opening',blanks:true}};
+const libData=lib=>P()[LIBS[lib].key]||[];
 function libHtml(){
-  const c=ui.libCtx, D=LIBS[c.lib], L=D.data;
+  const c=ui.libCtx, D=LIBS[c.lib], L=libData(c.lib);
   return '<div class="modal-h"><h3>'+D.title+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b">'
-   +'<p class="muted sm">Tap one to use it.'+(D.blanks?' Then fill in the blanks (___).':'')+'</p>'
+   +(L.length?'<p class="muted sm">Tap one to use it.'+(D.blanks?' Then fill in the blanks (___).':'')+'</p>':'<p class="muted sm">This list is empty for '+esc(coName())+'. Add some in Settings › Client wording › Edit wording.</p>')
    +L.map((g,gi)=>'<div class="lib-g"><h4>'+esc(g.cat)+'</h4>'+g.items.map((t,ti)=>'<button class="lib-i" data-act="libPick" data-g="'+gi+'" data-t="'+ti+'">'+esc(t)+'</button>').join('')+'</div>').join('')+'</div>';
 }
 function applyLib(mode){
@@ -3148,16 +3971,16 @@ function liveScript(it){
 }
 function aiPrompt(it){
   const d=scriptDef(it), co=coName(), about=coAbout(), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
-  const shots=REEL_SHOTS.filter(s=>it.shots[s[0]]).map(s=>s[1]);
+  const pk=P(), aud=pk.terms.audience, voice=pk.voice, shots=pk.shotList.filter(s=>it.shots[s[0]]).map(s=>s[1]);
   const extra=[['Audience problem',it.audienceProblem],['Main message',it.mainMessage],['Desired takeaway',it.takeaway],['Offer',it.offer],['Notes',it.notes],['Full script draft',it.script]].filter(x=>nonEmpty(x[1]));
-  return ['You are helping write a short-form video (Reel) speaking guide for '+co+'.'].concat(about?['About '+co+': '+about]:[],['',
+  return ['You are helping write a short-form video (Reel) speaking guide for '+co+'.'].concat(about?['About '+co+': '+about]:[],aud?['Audience: '+aud]:[],voice?['Voice: '+voice]:[],['',
     'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType+' ('+d.flow.join(' > ')+')','Content pillar: '+it.pillar,'Platforms: '+platText(it),'',
     'WHAT WE HAVE SO FAR',line('Hook',it.hook)]).concat(ptLines(it),[line('CTA',it.cta),line('Visuals / B-roll',[shots.join(', ')].concat(it.blocks.filter(b=>nonEmpty(b.broll)).map(b=>'Point '+(it.blocks.indexOf(b)+1)+': '+b.broll.trim()),[it.broll]).filter(nonEmpty).join('; '))],
     extra.length?['','FACTS AND CONTEXT FROM '+co.toUpperCase()].concat(extra.map(x=>x[0]+': '+String(x[1]).trim())):[],
     ['','PLEASE WRITE','1. 5 alternative hooks, one sentence each','2. Concise numbered talking points that follow the '+it.scriptType+' structure ('+d.labels.join(', ')+')','3. 2 CTA options','4. One suggested B-roll shot for each talking point','',
-    'RULES','- Do not invent construction facts, materials, measurements, or building methods.','- Do not invent financing terms, prices, rates, or approval details.','- Do not invent warranties or guarantees.',
+    'RULES'],pk.promptRules.script.map(r=>'- '+r),[
     '- Preserve every factual detail supplied above exactly as given. If something is missing, say what to confirm with '+co+' instead of guessing.',
-    '- Write for '+(about?'the customers described above':co+"'s customers")+', in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
+    '- Write for '+(aud||(about?'the customers described above':co+"'s customers"))+', in conversational language that sounds natural when spoken on camera.','- Avoid generic marketing language and hype.','- Keep each talking point to one or two short sentences.']).join('\n');
 }
 function copyText(txt,msg){
   msg=msg||'Prompt copied. Paste it into Claude.';
@@ -3188,8 +4011,8 @@ function previewBlock(it){
     +'<div id="cap-prev">'+capPreviewHtml(it)+'</div><div class="row-gap"><button class="btn primary sm" data-act="capCopy">'+(L?'Copy YouTube Description':'Copy Caption')+'</button></div></section>';
 }
 function hashBlock(it){
-  return '<div class="form-grid">'+F(it,'hashtagGroup','Hashtag group',{t:'select',opts:HASHTAG_GROUP_NAMES})+'<div class="fld"><label>&nbsp;</label>'+F(it,'includeHashtags','Include hashtags',{t:'check'})+'</div>'
-    +(it.hashtagGroup==='Custom'?F(it,'customHashtags','Custom hashtags',{t:'textarea',rows:2,wide:true,ph:'#DeckBuilder #YourTag'}):'<p class="muted sm wide">'+(esc(hashText(it))||'This group is empty. Edit groups in Settings.')+'</p>')+'</div>';
+  return '<div class="form-grid">'+F(it,'hashtagGroup','Hashtag group',{t:'select',opts:keepOpts(hashNames(),it.hashtagGroup)})+'<div class="fld"><label>&nbsp;</label>'+F(it,'includeHashtags','Include hashtags',{t:'check'})+'</div>'
+    +(it.hashtagGroup==='Custom'?F(it,'customHashtags','Custom hashtags',{t:'textarea',rows:2,wide:true,ph:P().labels.customHashtagsPh}):'<p class="muted sm wide">'+(esc(hashText(it))||'This group is empty. Edit groups in Settings.')+'</p>')+'</div>';
 }
 function completeRow(it){
   return '<div class="form-grid">'+F(it,'captionNeeded',it.type==='Long Form'?'Description needed':'Caption needed',{t:'check'})+F(it,'captionStatus',it.type==='Long Form'?'Caption / description status':'Caption status',{t:'select',opts:STAT3})+'</div>';
@@ -3252,14 +4075,15 @@ function confirmReplace(msg,cb){
 }
 function aiCaptionPrompt(it){
   const co=coName(), about=coAbout(), line=(k,v)=>k+': '+(nonEmpty(v)?String(v).trim():'(not written yet)');
-  return ['You are helping write social captions for a '+co+' video.'+(about?' About '+co+': '+about:''),'',
+  const pk=P(), aud=pk.terms.audience, voice=pk.voice;
+  return ['You are helping write social captions for a '+co+' video.'+(about?' About '+co+': '+about:'')].concat(aud?['Audience: '+aud]:[],voice?['Voice: '+voice]:[],['',
    'VIDEO',line('Title',title(it)),line('Topic',it.mainTopic||title(it)),line('Goal',it.goal),'Script type: '+it.scriptType,'Caption style: '+it.captionStyle+' ('+(CAPTION_STYLES[it.captionStyle]||{flow:[]}).flow.join(' > ')+')','Platforms: '+platText(it),'',
-   'WHAT THE VIDEO SAYS',line('Hook',it.hook)].concat(ptLines(it),[line('CTA',it.cta)],
+   'WHAT THE VIDEO SAYS',line('Hook',it.hook)]).concat(ptLines(it),[line('CTA',it.cta)],
    nonEmpty(socialText(it))?['','CURRENT CAPTION DRAFT',socialText(it)]:[],
    ['','PLEASE WRITE','1. An Instagram / Facebook caption','2. A YouTube Shorts description (shorter, topic-focused, searchable first line)','3. 3 to 5 relevant hashtags','4. One shorter alternate caption','',
-   'RULES','- Do not invent construction facts.','- Do not invent financing terms.','- Do not invent warranty details.','- Do not invent prices.',
+   'RULES'],pk.promptRules.caption.map(r=>'- '+r),[
    '- Preserve every fact provided by '+co+' exactly as given.','- Write naturally, the way a person talks.','- Avoid generic corporate marketing language.','- Avoid excessive emojis.','- Avoid excessive hashtags.',
-   '- Write for '+(about?'the customers described in About':co+"'s customers")+'.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
+   '- Write for '+(aud||(about?'the customers described in About':co+"'s customers"))+'.','- Make the caption useful even if someone only reads the text.','- Do not repeat the script word-for-word.']).join('\n');
 }
 const SHOT_FILTERS=[['all','All'],['a','A-roll'],['b','B-roll'],['manual','Manual'],['todo','Not Captured'],['done','Captured'],['unused','Not Used in Edit']];
 function shotRow(x){
@@ -3286,9 +4110,9 @@ function tabShoot(it){
       +'<span class="arch-b"><button type="button" class="btn ghost sm" data-act="archKeep" data-shot="'+esc(x.id)+'">Make manual shot</button><button type="button" class="btn ghost sm" data-act="archDrop" data-shot="'+esc(x.id)+'">Delete</button></span></li>').join('')+'</ul></div>';
   // The older freeform shoot fields stay exactly as they were, and can be turned into manual shots when wanted
   const toShots=f=>nonEmpty(it[f])?'<button class="link" type="button" data-act="noteToShots" data-field="'+f+'">Turn into manual shots</button>':'';
-  h+=advBlock('shootNotes','Other shoot notes',(it.type==='Reel'?'<div class="fld"><label>Shot types</label><div class="shots compact">'+REEL_SHOTS.map(s=>F(it,'shots.'+s[0],s[1],{t:'check'})).join('')+'</div></div>':'')
+  h+=advBlock('shootNotes','Other shoot notes',(it.type==='Reel'?shotTypes(it):'')
     +'<div class="form-grid">'+F(it,'shotText',it.type==='Reel'?'Other shot notes':'Shot notes',{t:'textarea',rows:3,wide:true,extra:toShots('shotText')})+F(it,'broll',it.type==='Reel'?'Other B-roll notes':'B-roll needed',{t:'textarea',rows:3,extra:toShots('broll')})
-    +F(it,'jobsite','Jobsite footage needed',{t:'textarea',rows:3,extra:toShots('jobsite')})+F(it,'location','Location / project needed',{wide:true})+'</div>');
+    +F(it,'jobsite',esc(P().labels.footageField),{t:'textarea',rows:3,extra:toShots('jobsite')})+F(it,'location','Location / project needed',{wide:true})+'</div>');
   h+='<h3 class="dr-sec">Thumbnail</h3><div class="form-grid">'+F(it,'thumbNeeded','Thumbnail needed',{t:'check'})+F(it,'thumbStatus','Thumbnail status',{t:'select',opts:STAT3})
     +(it.type==='Long Form'?F(it,'thumbIdea','Thumbnail idea',{t:'textarea',rows:2,wide:true}):'')
     +'</div><p class="muted sm">Captions now have their own <button class="link-b" data-act="tab" data-tab="caption">Caption tab</button>.</p>';
@@ -3445,7 +4269,8 @@ function createItem(type,o){
 }
 function createRecap(date){
   const key=date?mk(date):ui.month;
-  const it=createItem('Reel',{reelKind:'Recap',title:monthName(key)+' Monthly Recap',pillar:'Trust',topic:'Company',group:'Company / Trust',publishDate:date||'',plannedMonth:key});
+  const pk=P(), tp=pickIn(pk.topics,pk.defaults.recapTopic);
+  const it=createItem('Reel',{reelKind:'Recap',title:monthName(key)+' Monthly Recap',pillar:pickIn(pillarNames(),pk.defaults.recapPillar),topic:tp,group:groupFor(tp),publishDate:date||'',plannedMonth:key});
   it.recap.month=monthName(key);save();return it;
 }
 function go(v){ui.view=v;window.scrollTo(0,0);render();}
@@ -3467,6 +4292,7 @@ function renderClientUi(){
   const sb=$('#cbSide');if(sb){sb.innerHTML=av+'<span class="cl-n"><small>Client</small><b>'+esc(n)+'</b></span>'+I('down','xs');sb.setAttribute('aria-label',lab);sb.title=n;}
   const tb=$('#cbTop');if(tb){tb.innerHTML=av+'<span class="cl-n">'+esc(n)+'</span>'+I('down','xs');tb.setAttribute('aria-label',lab);tb.title=n;}
   $$('.cmenu').forEach(m=>{m.innerHTML=clientMenuHtml();});
+  const ap=$('#addmenu [data-kind="project"]');if(ap)ap.textContent=P().labels.addProject;
 }
 function closeClientMenus(){$$('.cmenu.open').forEach(m=>m.classList.remove('open'));$$('[data-act="clientMenu"]').forEach(b=>b.setAttribute('aria-expanded','false'));}
 /* Everything in ui that points at the active client's records goes back to a clean state */
@@ -3479,7 +4305,7 @@ function resetClientUi(){
   shareTok++;if(shareImg){URL.revokeObjectURL(shareImg.url);shareImg=null;}
   Object.assign(ui,{carrySel:{},carryOpen:false,carryTarget:'',calDay:'',focus:null,perfOpen:'',snapCtx:null,taskEdit:null,taskHint:null,confirmCb:null,libCtx:null,importData:null,
     lib:{},q:'',pub:{type:'',pillar:'',platform:''},perf:{type:'',platform:'',pillar:'',month:''},ideaTopic:'All',ideaRoadmap:false,attnAll:false,
-    projDraft:blankProj(),projResults:false,planFilm:{a:'',b:''},capTab:''});
+    projDraft:blankProj(),projResults:false,planFilm:{a:'',b:''},capTab:'',wd:null,wdErr:null,ai:null,newPack:null,packNext:null});
   const q=$('#q');if(q)q.value='';
   ui.month=focusMonthDefault();ui.calMonth=ui.month;ui.pipeMonth=ui.month;ui.planMonth=addMonths(mk(today()),1);
 }
@@ -3497,19 +4323,27 @@ function switchClient(id){
 }
 function clientModal(id){
   const c=id?ROOT.clients.find(x=>x.id===id):null;if(id&&!c)return;
+  ui.newPack=null;
   showModal('<div class="modal-h"><h3>'+(c?'Edit client':'Add client')+'</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><form class="modal-b" data-form="saveClient" data-id="'+(c?esc(c.id):'')+'" autocomplete="off">'
    +'<div class="fld"><label for="cl-name">Client name</label><input id="cl-name" value="'+esc(c?c.name:'')+'" placeholder="Business name"></div>'
    +'<div class="fld"><label for="cl-about">About the business</label><textarea id="cl-about" rows="4" placeholder="What the business does, who it serves, and the area it works in">'+esc(c?c.about:'')+'</textarea><small class="help">Used in the AI script and caption prompts. Write it the way you would describe the business to a copywriter.</small></div>'
-   +(c?'':'<p class="muted sm">A new client starts empty: no videos, ideas, roadmap, tasks or hashtags. Pillars, topics, the hook and CTA libraries and the templates are shared by all clients.</p>')
-   +'<div class="row-gap"><button class="btn primary" type="submit">'+(c?'Save client':'Add client')+'</button><button class="btn ghost" type="button" data-act="modalClose">Cancel</button></div></form>');
+   +(c?'<p class="muted sm">To change this client’s wording, use Client wording in Settings.</p>':startWordingHtml())
+   +'<div class="row-gap pk-btns"><button class="btn primary" type="submit">'+(c?'Save client':'Add client')+'</button><button class="btn ghost" type="button" data-act="modalClose">Cancel</button></div></form>',c?'':'lg');
 }
 function saveClientForm(form){
   const name=$('#cl-name').value.trim(), about=$('#cl-about').value.trim();
   if(!name){toast('Give the client a name');$('#cl-name').focus();return;}
   const id=form.dataset.id;
   if(id){const c=ROOT.clients.find(x=>x.id===id);if(!c)return;c.name=name;c.about=about;save(true);closeModal();applyTheme();render();toast('Client saved');return;}
-  const c=makeClient(name,about,blankWorkspace());ROOT.clients.push(c);
-  closeModal();switchClient(c.id);toast('Added '+c.name+'. This workspace is empty and ready.');
+  const pick=form.querySelector('input[name="cl-pack"]:checked'), choice=pick?pick.value:'blank';
+  if(choice==='ai'){closeModal();ui.ai=aiDraft('new',name,about);go('packai');return;}
+  if(choice==='file'&&!ui.newPack){toast('Choose a pack file first, or pick another starting wording');return;}
+  createClientWithPack(name,about,choice==='file'?ui.newPack.pack:starterPack(choice));
+}
+/* A new client always starts with no content, only its own copy of the chosen wording */
+function createClientWithPack(name,about,pack){
+  const c=makeClient(name,about,blankWorkspace(pack));ROOT.clients.push(c);
+  ui.newPack=null;closeModal();switchClient(c.id);toast('Added '+c.name+' with '+c.data.pack.name+' wording. This workspace is empty and ready.');
 }
 function clientCounts(c){
   const d=c.data, p=(n,w)=>n+' '+w+(n===1?'':'s');
@@ -3531,7 +4365,7 @@ function downloadJson(obj,name){
 function exportClient(id){
   save(true);
   const c=ROOT.clients.find(x=>x.id===id)||activeClient();
-  downloadJson({app:'Content HQ',kind:'client',v:2,exportedAt:new Date().toISOString(),client:c},'content-hq-'+slug(c.name)+'-'+today()+'.json');
+  downloadJson({app:'Content HQ',kind:'client',v:3,exportedAt:new Date().toISOString(),client:c},'content-hq-'+slug(c.name)+'-'+today()+'.json');
   toast(c.name+' backup downloaded');
 }
 function exportAll(){
@@ -3572,7 +4406,7 @@ function importDo(mode,confirmed){
   }
   let newRoot=null, added=null, data=null;
   try{
-    if(mode==='restore'||mode==='replaceAll')newRoot=d.kind==='all'?fixRoot(d.o):d.kind==='client'?(c=>({v:2,activeClientId:c.id,theme:ROOT.theme,clients:[c]}))(clientFromFile(d.o.client)):rootFromFlat(d.o,ROOT.theme);
+    if(mode==='restore'||mode==='replaceAll')newRoot=d.kind==='all'?fixRoot(d.o):d.kind==='client'?(c=>({v:3,activeClientId:c.id,theme:ROOT.theme,clients:[c]}))(clientFromFile(d.o.client)):rootFromFlat(d.o,ROOT.theme);
     else if(mode==='add'){
       added=d.kind==='all'?fixRoot(d.o).clients:[d.kind==='client'?clientFromFile(d.o.client):rootFromFlat(d.o).clients[0]];
       const taken=ROOT.clients.map(c=>c.name.toLowerCase());
@@ -3692,7 +4526,7 @@ const ACTS={
     setStatus(it,'Ready to Film');it.prod.script=true;save();render();renderEditor();toast('Moved to Ready to Film');
   },
   lib:a=>{ui.libCtx={lib:a.dataset.lib,field:a.dataset.field,id:ui.edit.id,fromLib:true};showModal(libHtml(),'lg');},
-  libPick:a=>{const c=ui.libCtx;c.text=LIBS[c.lib].data[+a.dataset.g].items[+a.dataset.t];c.fromLib=true;offerText();},
+  libPick:a=>{const c=ui.libCtx,g=libData(c.lib)[+a.dataset.g],t=g&&g.items[+a.dataset.t];if(t==null)return;c.text=t;c.fromLib=true;offerText();},
   libApply:a=>applyLib(a.dataset.mode),
   libBack:()=>showModal(libHtml(),'lg'),
   copyAI:()=>{const it=getItem(ui.edit.id);if(it)copyText(aiPrompt(it));},
@@ -3739,8 +4573,8 @@ const ACTS={
   },
   capComplete:()=>{const it=getItem(ui.edit.id);if(!captionReady(it)){toast('Still needed: '+captionMissing(it).join(', '));return;}it.captionStatus='Done';it.prod.caption=true;save();renderEditor();toast('Caption marked complete');},
   toReadyToPost:()=>{const it=getItem(ui.edit.id);if(!it||postMissing(it).length)return;if(stIdx(it.status)>=5){toast('Already at '+it.status);return;}setStatus(it,'Ready to Post');save();render();renderEditor();toast('Moved to Ready to Post');},
-  // Only the first (deck) client has default hashtags to go back to. Everyone else starts empty.
-  resetTags:()=>{const deck=!!S.deckStarter;S.settings.hashtags=deck?Object.assign({},HASHTAG_GROUPS):emptyTags();save();render();toast(deck?'Hashtag groups reset':'Hashtag groups cleared');},
+  // Hashtags reset to the starter pack the wording came from. The deck tags only come back for the original deck client.
+  resetTags:()=>{const d=tagDefaults(),h=S.pack.hashtagGroups;Object.keys(h).forEach(g=>{h[g]=d&&own(d,g)?d[g]:'';});save();render();toast(d?'Hashtag groups reset':'Hashtag groups cleared');},
   shotFilter:a=>{ui.shotFilter=a.dataset.f;renderEditor();},
   filmFilter:a=>{ui.filmFilter=a.dataset.f;render();},
   shotAdd:()=>{
@@ -3827,15 +4661,16 @@ const ACTS={
   jsReset:()=>{S.jobsite.checks={};save();render();},
   preset:a=>{
     const p=a.dataset.p;ui.q='';const q=$('#q');if(q)q.value='';
-    ui.lib=p==='film'?{status:'Ready to Film'}:p==='posting'?{month:ui.month}:p==='payments'?{pillar:'Payments',status:'Posted'}:p==='ideas'?{status:'Idea'}:{type:'Long Form',preset:'shorts'};
+    ui.lib=p==='film'?{status:'Ready to Film'}:p==='posting'?{month:ui.month}:p==='payments'?{pillar:(P().postedPreset||{}).pillar||'',status:'Posted'}:p==='ideas'?{status:'Idea'}:{type:'Long Form',preset:'shorts'};
     render();
   },
   clearLib:()=>{ui.lib={};ui.q='';const q=$('#q');if(q)q.value='';render();},
   export:()=>exportClient(activeId()),
-  // Resets only the active client: the first (deck) client goes back to the starter content, any other client to empty
+  // Resets only the active client: the first (deck) client goes back to the starter content, any other client to empty. The wording stays.
   reset:()=>{const c=activeClient(), deck=!!S.deckStarter;
-    askConfirm('This replaces everything in <b>'+esc(c.name)+'</b> with '+(deck?'the starter content':'an empty workspace')+'. Its name and description stay, and other clients are not touched. Export this client first if you want to keep its work.','Reset this client',()=>{
-      discardIfEmpty(null);const data=stampClient(deck?seed():blankWorkspace(),c.id);c.data=data;S=data;loadFailed=false;
+    askConfirm('This replaces everything in <b>'+esc(c.name)+'</b> with '+(deck?'the starter content':'an empty workspace')+'. Its name, description and wording stay, and other clients are not touched. Export this client first if you want to keep its work.','Reset this client',()=>{
+      discardIfEmpty(null);const keep={pack:S.pack,packPrev:S.packPrev,packPrevChecks:S.packPrevChecks};
+      const data=stampClient(Object.assign(deck?seed():blankWorkspace(),keep),c.id);c.data=data;S=data;loadFailed=false;
       resetClientUi();save(true);applyTheme();render();toast(deck?'Starter content restored':'Client reset');});},
   /* ---------- Home tasks ---------- */
   taskToggle:a=>{
@@ -3902,6 +4737,34 @@ const ACTS={
   snapSkip:a=>{S.metricSkips[a.dataset.id+'|'+a.dataset.plat+'|'+a.dataset.cp]=true;save();render();toast('Skipped');},
   snapDel:a=>askConfirm('Delete this snapshot? This cannot be undone.','Delete snapshot',()=>{S.perfSnapshots=S.perfSnapshots.filter(x=>x.id!==a.dataset.sid);save();render();if(ui.edit.id)renderEditor();toast('Snapshot deleted');}),
   perfRow:a=>{ui.perfOpen=ui.perfOpen===a.dataset.id?'':a.dataset.id;render();},
+  /* ---------- client wording ---------- */
+  packChange:()=>packChangeModal(),
+  packPick:a=>packConfirm(starterPack(a.dataset.id)),
+  packApplyYes:()=>{const p=ui.packNext;if(!p){closeModal();return;}const fromAi=!!(ui.ai&&ui.ai.result&&ui.ai.result.pack===p);if(fromAi){ui.ai=null;ui.view='settings';}applyPack(p);},
+  packExportCur:()=>exportPack(S.pack),
+  packExport:()=>exportPack(S.pack),
+  packRestore:()=>{const p=S.packPrev;if(!p)return;ui.confirmCb=restorePack;
+    showModal('<div class="modal-h"><h3>Restore previous pack?</h3><button class="icon-btn" data-act="modalClose" aria-label="Close">'+I('x')+'</button></div><div class="modal-b"><p>Switch <b>'+esc(coName())+'</b> back to <b>'+esc(p.name)+'</b>. The current wording, <b>'+esc(S.pack.name)+'</b>, becomes the previous pack, so you can switch again. Videos, ideas, tasks and results are not changed.</p>'
+     +'<div class="row-gap pk-btns"><button class="btn primary" data-act="confirmYes">Restore '+esc(p.name)+'</button><button class="btn ghost" data-act="modalClose">Cancel</button></div></div>');},
+  packEdit:()=>{closeModal();ui.wd=null;ui.wdErr=null;go('wording');},
+  packAI:()=>{closeModal();if(!ui.ai||ui.ai.mode!=='apply')ui.ai=aiDraft('apply');go('packai');},
+  wdSave:()=>{
+    const r=textToPack(ui.wd||packToText(S.pack),S.pack);
+    if(r.errors.length){ui.wdErr=r.errors;render();window.scrollTo(0,0);const b=$('#wd-err');b&&b.focus&&b.focus();return;}
+    S.packPrev=S.pack;S.packPrevChecks=pclone(S.jobsite.checks||{});S.pack=r.pack;ui.wd=null;ui.wdErr=null;
+    fixFilters();save(true);go('settings');toast('Wording saved'+(r.warnings.length?'. '+r.warnings[0]:'.'));
+  },
+  wdCancel:()=>{ui.wd=null;ui.wdErr=null;go('settings');},
+  aiBack:()=>go(ui.ai&&ui.ai.mode==='new'?'dashboard':'settings'),
+  aiCopy:()=>{if(!ui.ai)return;if(!nonEmpty(ui.ai.summary)){toast('Paste the meeting summary first');const f=$('#ai-summary');f&&f.focus();return;}copyText(aiPackPrompt(),'Prompt copied. Paste it into Claude or any AI chat.');},
+  aiCheck:()=>{if(!ui.ai)return;ui.ai.result=parsePackText(ui.ai.answer,'ai');render();const b=$('#ai-result');if(b&&b.scrollIntoView)b.scrollIntoView({block:'start'});},
+  aiApply:()=>{const r=ui.ai&&ui.ai.result;if(r&&r.pack)packConfirm(r.pack,r.warnings);},
+  aiCreate:()=>{
+    const a=ui.ai, r=a&&a.result;if(!r||!r.pack)return;
+    const isNew=a.mode==='new', name=String(isNew?a.name:a.newName).trim();
+    if(!name){toast('Give the new client a name');const f=$(isNew?'#ai-name':'#ai-newName');f&&f.focus();return;}
+    const about=isNew?String(a.about||'').trim():'';ui.ai=null;ui.view='dashboard';createClientWithPack(name,about,r.pack);
+  },
   confirmYes:()=>{const cb=ui.confirmCb;ui.confirmCb=null;closeModal();cb&&cb();},
   modalClose:()=>closeModal()
 };
@@ -3937,6 +4800,7 @@ document.addEventListener('input',e=>{
     return;
   }
   if(el.dataset.root==='theme'){ROOT.theme=el.value;applyTheme();save();return;}
+  if(el.dataset.pktag!=null){const g=Object.keys(S.pack.hashtagGroups)[+el.dataset.pktag];if(g!=null){S.pack.hashtagGroups[g]=el.value.slice(0,2000);save();}return;}
   if(el.dataset.s){
     const v=el.type==='checkbox'?el.checked:(el.type==='number'?Math.max(0,num(el.value)):el.value);
     sp(S,el.dataset.s,v);
@@ -3974,12 +4838,18 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{
   const el=e.target;
+  if(el.matches&&el.matches('input[data-pack-import]')){
+    const f=el.files&&el.files[0], mode=el.dataset.packImport;el.value='';if(!f)return;
+    if(f.size>2e6){toast('That file is too big to be a wording pack');return;}
+    const r=new FileReader();r.onload=()=>packFileLoaded(String(r.result||''),mode);r.onerror=()=>toast('That file could not be read');r.readAsText(f);
+    return;
+  }
   if(el.matches&&el.matches('input[data-import]')){
     const f=el.files&&el.files[0];if(!f)return;
     const r=new FileReader();
     // Nothing changes until a choice is made in the import dialog
     r.onload=()=>{let o=null;try{o=JSON.parse(r.result);}catch(err){}
-      const kind=importKind(o);if(!kind){toast('That file is not a Content HQ backup');return;}
+      const kind=importKind(o);if(!kind){toast(o&&o.format===PACK_FORMAT?'That is a wording pack. Use Import pack file under Client wording.':'That file is not a Content HQ backup');return;}
       ui.importData={kind:kind,o:o};importModal();};
     r.readAsText(f);el.value='';
   }
