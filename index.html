@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Content HQ</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231F2A28'/%3E%3Crect x='16' y='22' width='16' height='56' rx='3' fill='%23B8742E'/%3E%3Crect x='42' y='22' width='16' height='56' rx='3' fill='%232F6B5B'/%3E%3Crect x='68' y='22' width='16' height='56' rx='3' fill='%23D9DED6'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20x='1.5'%20y='1.5'%20width='97'%20height='97'%20rx='23'%20fill='%231B2320'%20stroke='%232E3935'%20stroke-width='3'/%3E%3Cpath%20d='M58%2080H18V43L46%2020L58%2029.8'%20fill='none'%20stroke='%2356A38C'%20stroke-width='6.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3Crect%20x='28'%20y='54'%20width='22'%20height='7'%20rx='3.5'%20fill='%2356A38C'%20opacity='.7'/%3E%3Crect%20x='28'%20y='65'%20width='56'%20height='7'%20rx='3.5'%20fill='%2356A38C'/%3E%3Cline%20x1='70'%20y1='22'%20x2='70'%20y2='80'%20stroke='%23D08A45'%20stroke-width='6.5'%20stroke-linecap='round'/%3E%3Cpath%20d='M62%208h16v7l-8%207-8-7z'%20fill='%23D08A45'%20stroke='%23D08A45'%20stroke-width='3'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -108,9 +108,7 @@ h4{font-size:14px}
 #shell{display:flex;min-height:100vh}
 #side{width:236px;flex:none;background:var(--side);color:var(--sideInk);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:18px 12px}
 .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
-.brand-mark{display:flex;gap:3px;width:30px;height:30px;padding:5px;background:var(--side2);border-radius:8px}
-.brand-mark i{flex:1;border-radius:2px;background:var(--cedar)}
-.brand-mark i:nth-child(2){background:var(--green)}.brand-mark i:nth-child(3){background:#D9DED6}
+.brand-mark{display:block;flex:none}
 .brand-text{display:flex;flex-direction:column;line-height:1.15}
 .brand-text b{font:600 21px var(--fd);letter-spacing:.3px}
 .brand-text small{color:var(--sideInk2);font-size:12px}
@@ -1045,7 +1043,7 @@ button.cbadge.warn:hover{background:var(--attention-soft)}
 <div id="shell">
   <aside id="side">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <svg class="brand-mark" viewBox="0 0 100 100" width="38" height="38" aria-hidden="true"><rect x="1.5" y="1.5" width="97" height="97" rx="23" fill="#1B2320" stroke="#2E3935" stroke-width="3"/><path d="M58 80H18V43L46 20L58 29.8" fill="none" stroke="#56A38C" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="28" y="54" width="22" height="7" rx="3.5" fill="#56A38C" opacity=".7"/><rect x="28" y="65" width="56" height="7" rx="3.5" fill="#56A38C"/><line x1="70" y1="22" x2="70" y2="80" stroke="#D08A45" stroke-width="6.5" stroke-linecap="round"/><path d="M62 8h16v7l-8 7-8-7z" fill="#D08A45" stroke="#D08A45" stroke-width="3" stroke-linejoin="round"/></svg>
       <span class="brand-text"><b>Content HQ</b><small>Content planner</small></span>
     </div>
     <div class="cwrap side-cw">
